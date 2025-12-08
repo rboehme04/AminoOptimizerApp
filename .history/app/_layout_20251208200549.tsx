@@ -1,9 +1,9 @@
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-
-import { Color } from "@/constants/GlobalStyles";
+import "react-native-reanimated";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -19,25 +19,32 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [loaded, error] = useFonts({
+    ...FontAwesome.font,
+  });
+
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    SplashScreen.hideAsync();
-  }, []);
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
 
   return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
   return (
-    <>
-      <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          contentStyle: { backgroundColor: Color.neutralBackgroundDark },
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="index" options={{ title: "Tab One" }} />
-      </Stack>
-    </>
+    <Stack>
+      <Stack.Screen name="index" options={{ title: "Tab One" }} />
+    </Stack>
   );
 }
