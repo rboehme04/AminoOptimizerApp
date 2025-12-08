@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import OptimizerNavBar from "@/components/optimizerNavBar";
@@ -32,6 +32,8 @@ const styles = StyleSheet.create({
   headerButtonsContainer: {
     paddingHorizontal: 16,
     gap: 10,
+    backgroundColor: "red",
+
   },
   rezepteUndFilterContainer: {
     justifyContent: "center",

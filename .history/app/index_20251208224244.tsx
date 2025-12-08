@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     backgroundColor: "orange",
   },
   headerButtonsContainer: {
+
     paddingHorizontal: 16,
     gap: 10,
   },

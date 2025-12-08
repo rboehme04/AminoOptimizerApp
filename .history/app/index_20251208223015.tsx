@@ -1,8 +1,6 @@
+import OptimizerNavBar from "@/components/optimizerNavBar";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import OptimizerNavBar from "@/components/optimizerNavBar";
-import QuestionButton from "@/components/questionButton";
 
 export default function TabOneScreen() {
   return (
@@ -10,7 +8,7 @@ export default function TabOneScreen() {
       <View style={styles.headerContainer}>
         <OptimizerNavBar />
         <View style={styles.headerButtonsContainer}>
-          <QuestionButton />
+
         </View>
       </View>
       <View style={styles.rezepteUndFilterContainer}></View>
@@ -30,6 +28,7 @@ const styles = StyleSheet.create({
     backgroundColor: "orange",
   },
   headerButtonsContainer: {
+    alignItems: "center",
     paddingHorizontal: 16,
     gap: 10,
   },

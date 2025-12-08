@@ -30,8 +30,11 @@ const styles = StyleSheet.create({
     backgroundColor: "orange",
   },
   headerButtonsContainer: {
+    alignItems: "center",
     paddingHorizontal: 16,
     gap: 10,
+    backgroundColor: "red",
+    width: "100%",
   },
   rezepteUndFilterContainer: {
     justifyContent: "center",

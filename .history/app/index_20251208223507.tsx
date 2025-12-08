@@ -1,8 +1,7 @@
-import { StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
 import OptimizerNavBar from "@/components/optimizerNavBar";
 import QuestionButton from "@/components/questionButton";
+import { StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabOneScreen() {
   return (
@@ -30,6 +29,7 @@ const styles = StyleSheet.create({
     backgroundColor: "orange",
   },
   headerButtonsContainer: {
+    alignItems: "center",
     paddingHorizontal: 16,
     gap: 10,
   },
