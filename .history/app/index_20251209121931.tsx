@@ -10,7 +10,6 @@ import OptimizerNavBar from "@/components/optimizerNavBar";
 import QuestionButton from "@/components/questionButton";
 import RezeptErstellenButton from "@/components/rezeptErstellenButton";
 import RezSelectionAndFilterComponent from "@/components/rezSelectionAndFilterComponent";
-import MealRow from "@/components/mealRow";
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
@@ -35,9 +34,7 @@ export default function TabOneScreen() {
       </LinearGradient>
       <View style={styles.rezepteUndFilterContainer}>
         <RezSelectionAndFilterComponent />
-        <View style={styles.mealRowsContainer}>
-          <MealRow />
-        </View>
+        <View style={styles.mealRowsContainer}></View>
       </View>
     </SafeAreaView>
   );
@@ -77,7 +74,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     gap: 10,
   },
-  mealRowsContainer: {
-    gap: 10,
-  },
+  ERROR  [Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: number.
+
+    Check the render method of `RezSelectionAndFilterComponent`.] 
+    
+    Code: rezSelectionAndFilterComponent.tsx
+      49 |               <StarFullIcon width={16} height={16} />
+      50 |             ) : (
+    > 51 |               <StarLineIcon width={16} height={16} />
+         |               ^
+      52 |             )}
+      53 |             <Text
+      54 |               style={[
+    Call Stack
+      RezSelectionAndFilterComponent (components/rezSelectionAndFilterComponent.tsx:51:15)
+      TabOneScreen (app/index.tsx:36:9)
+      RootLayoutNav (app/_layout.tsx:33:7)
+      RootLayout (app/_layout.tsx:26:10)
+     ERROR  [Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: number.
+    
+    Check the render method of `RezSelectionAndFilterComponent`.] 
+    
+    Code: rezSelectionAndFilterComponent.tsx
+      49 |               <StarFullIcon width={16} height={16} />
+      50 |             ) : (
+    > 51 |               <StarLineIcon width={16} height={16} />
+         |               ^
+      52 |             )}
+      53 |             <Text
+      54 |               style={[
+    Call Stack
+      RezSelectionAndFilterComponent (components/rezSelectionAndFilterComponent.tsx:51:15)
+      TabOneScreen (app/index.tsx:36:9)
+      RootLayoutNav (app/_layout.tsx:33:7)
+      RootLayout (app/_layout.tsx:26:10)
 });

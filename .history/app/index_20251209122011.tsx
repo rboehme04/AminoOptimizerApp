@@ -10,7 +10,6 @@ import OptimizerNavBar from "@/components/optimizerNavBar";
 import QuestionButton from "@/components/questionButton";
 import RezeptErstellenButton from "@/components/rezeptErstellenButton";
 import RezSelectionAndFilterComponent from "@/components/rezSelectionAndFilterComponent";
-import MealRow from "@/components/mealRow";
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
@@ -36,7 +35,7 @@ export default function TabOneScreen() {
       <View style={styles.rezepteUndFilterContainer}>
         <RezSelectionAndFilterComponent />
         <View style={styles.mealRowsContainer}>
-          <MealRow />
+          
         </View>
       </View>
     </SafeAreaView>

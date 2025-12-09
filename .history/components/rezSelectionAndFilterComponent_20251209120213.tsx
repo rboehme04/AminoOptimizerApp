@@ -56,10 +56,13 @@ const RezSelectionAndFilterComponent = () => {
                 d={selection === "favoriten" ? STAR_FULL_PATH : STAR_LINE_PATH}
                 fill={
                   selection === "favoriten"
-                    ? Color.neutralInputOnDark
+                    ? Color.neutralBackgroundDark
                     : Color.neutralWhite
                 }
-                stroke="none"
+                stroke={
+                  selection === "favoriten" ? Color.neutralInputOnDark : "none"
+                }
+                strokeWidth={selection === "favoriten" ? 1 : 0}
               />
             </Svg>
             <Text

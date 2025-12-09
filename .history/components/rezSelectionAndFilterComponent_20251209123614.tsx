@@ -49,7 +49,8 @@ const RezSelectionAndFilterComponent = () => {
                 : styles.badgeUnselected,
             ]}
           >
-            <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+            <Image style={{ width: 100, height: 100 }} source={require('path/to/your/local/icon.svg'} />
+            {/* <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
               <Path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -61,7 +62,7 @@ const RezSelectionAndFilterComponent = () => {
                 }
                 stroke="none"
               />
-            </Svg>
+            </Svg> */}
             <Text
               style={[
                 styles.badgeText,

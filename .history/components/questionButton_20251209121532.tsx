@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
   },
   questionButton: {
     height: 44,
+    backgroundColor: "red"
   },
   button: {
     height: 36,

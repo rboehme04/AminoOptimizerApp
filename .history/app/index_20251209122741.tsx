@@ -10,7 +10,7 @@ import OptimizerNavBar from "@/components/optimizerNavBar";
 import QuestionButton from "@/components/questionButton";
 import RezeptErstellenButton from "@/components/rezeptErstellenButton";
 import RezSelectionAndFilterComponent from "@/components/rezSelectionAndFilterComponent";
-import MealRow from "@/components/mealRow";
+
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();

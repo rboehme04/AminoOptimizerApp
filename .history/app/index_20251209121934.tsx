@@ -10,7 +10,6 @@ import OptimizerNavBar from "@/components/optimizerNavBar";
 import QuestionButton from "@/components/questionButton";
 import RezeptErstellenButton from "@/components/rezeptErstellenButton";
 import RezSelectionAndFilterComponent from "@/components/rezSelectionAndFilterComponent";
-import MealRow from "@/components/mealRow";
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
@@ -35,9 +34,7 @@ export default function TabOneScreen() {
       </LinearGradient>
       <View style={styles.rezepteUndFilterContainer}>
         <RezSelectionAndFilterComponent />
-        <View style={styles.mealRowsContainer}>
-          <MealRow />
-        </View>
+        <View style={styles.mealRowsContainer}></View>
       </View>
     </SafeAreaView>
   );
@@ -77,7 +74,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     gap: 10,
   },
-  mealRowsContainer: {
-    gap: 10,
-  },
+  
 });

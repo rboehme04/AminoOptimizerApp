@@ -6,7 +6,7 @@ import Svg, { Path } from "react-native-svg";
 const QuestionButton = () => {
   return (
     <Pressable
-      style={[styles.questionButton, styles.buttonFlexBox]}
+      style={[styles.questionButton]}
       onPress={() => {}}
     >
       <View style={[styles.button, styles.buttonFlexBox]}>

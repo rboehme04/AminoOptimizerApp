@@ -59,7 +59,10 @@ const RezSelectionAndFilterComponent = () => {
                     ? Color.neutralInputOnDark
                     : Color.neutralWhite
                 }
-                stroke="none"
+                stroke={
+                  selection === "favoriten" ? Color.neutralInputOnDark : "none"
+                }
+                strokeWidth={selection === "favoriten" ? 1 : 0}
               />
             </Svg>
             <Text

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import Svg, { Path } from "react-native-svg";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Color, Gap, Typography } from "@/constants/GlobalStyles";
 
@@ -49,7 +48,11 @@ const RezSelectionAndFilterComponent = () => {
                 : styles.badgeUnselected,
             ]}
           >
-            <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+            <Image
+              style={{ width: 16, height: 16 }}
+              source={require("../assets/icons/starfull_icon.svg")}
+            />
+            {/* <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
               <Path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -61,7 +64,7 @@ const RezSelectionAndFilterComponent = () => {
                 }
                 stroke="none"
               />
-            </Svg>
+            </Svg> */}
             <Text
               style={[
                 styles.badgeText,

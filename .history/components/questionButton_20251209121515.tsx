@@ -29,12 +29,13 @@ const QuestionButton = () => {
 
 const styles = StyleSheet.create({
   buttonFlexBox: {
-    justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
   },
   questionButton: {
     height: 44,
+    justifyContent: "center",
+    backgroundColor: "red"
   },
   button: {
     height: 36,

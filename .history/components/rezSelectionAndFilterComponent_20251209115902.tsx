@@ -49,19 +49,11 @@ const RezSelectionAndFilterComponent = () => {
                 : styles.badgeUnselected,
             ]}
           >
-            <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
-              <Path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d={selection === "favoriten" ? STAR_FULL_PATH : STAR_LINE_PATH}
-                fill={
-                  selection === "favoriten"
-                    ? Color.neutralInputOnDark
-                    : Color.neutralWhite
-                }
-                stroke="none"
-              />
-            </Svg>
+            {selection === "favoriten" ? (
+              <StarFullIcon width={16} height={16} />
+            ) : (
+              <StarLineIcon width={16} height={16} />
+            )}
             <Text
               style={[
                 styles.badgeText,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 import { Color, Gap, Typography } from "@/constants/GlobalStyles";
@@ -49,7 +49,8 @@ const RezSelectionAndFilterComponent = () => {
                 : styles.badgeUnselected,
             ]}
           >
-            <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+            <Image style={{ width: 16, height: 16 }} source={require('assets'} />
+            {/* <Svg width={16} height={16} viewBox="0 0 16 16" fill="none">
               <Path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -61,7 +62,7 @@ const RezSelectionAndFilterComponent = () => {
                 }
                 stroke="none"
               />
-            </Svg>
+            </Svg> */}
             <Text
               style={[
                 styles.badgeText,

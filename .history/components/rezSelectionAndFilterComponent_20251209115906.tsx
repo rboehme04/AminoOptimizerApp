@@ -53,13 +53,14 @@ const RezSelectionAndFilterComponent = () => {
               <Path
                 fillRule="evenodd"
                 clipRule="evenodd"
-                d={selection === "favoriten" ? STAR_FULL_PATH : STAR_LINE_PATH}
+                d={
+                  selection === "favoriten" ? STAR_FULL_PATH : STAR_LINE_PATH
+                }
                 fill={
                   selection === "favoriten"
-                    ? Color.neutralInputOnDark
+                    ? Color.neutralBackgroundDark
                     : Color.neutralWhite
                 }
-                stroke="none"
               />
             </Svg>
             <Text
