@@ -1,4 +1,4 @@
-import { Color, Typography } from "@/constants/GlobalStyles";
+import { Color, Gap, Padding, Typography } from "@/constants/GlobalStyles";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Svg, { Path, SvgProps } from "react-native-svg";
@@ -64,46 +64,34 @@ const ChevronRightIcon = ({
   </Svg>
 );
 
-const OptimizedBadge = () => {
-  return (
-    <View style={[styles.optimizedBadge]}>
-      <MagicSparkleIcon width={12} height={12} />
-      <Text style={styles.optimized}>Optimized</Text>
-    </View>
-  );
-};
-
-type MealRowProps = {
-  isOptimized?: boolean;
-};
-
-const MealRow = ({ isOptimized = false }: MealRowProps) => {
+const MealRow = () => {
   return (
     <Pressable style={styles.mealRow} onPress={() => {}}>
       <View style={styles.leftClickContainer}>
         <Text style={styles.title}>High Protein Raspberry Cheesecake Bowl</Text>
         <View style={[styles.bottomContainer]}>
           <View style={[styles.leftContainer]}>
-            {isOptimized ? <OptimizedBadge /> : null}
-            <EatSymbolIcon width={18} height={18} />
-            <View style={styles.ingredientsContainer}>
-              <Text
-                style={[styles.captionTypo]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                Skyr, Himbeeren, Zitronensaft
-              </Text>
+            <View style={[styles.optimizedBadge]}>
+              <MagicSparkleIcon width={12} height={12} />
+              <Text style={styles.optimized}>Optimized</Text>
             </View>
+            <EatSymbolIcon width={18} height={18} />
+            <Text
+              style={[styles.ingredients, styles.kcalTypo]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              Skyr, Himbeeren, Zitronensaft
+            </Text>
           </View>
-          <View style={[styles.rightContainer]}>
+          <View style={[styles.containerFlexBox, styles.calories]}>
             <SolidFireIcon width={18} height={18} />
-            <Text style={styles.captionTypo}>226 kcal</Text>
+            <Text style={styles.kcalTypo}>226 kcal</Text>
           </View>
         </View>
       </View>
       <Pressable
-        style={[styles.rightClickContainer]}
+        style={[styles.rightClickContainer, styles.containerFlexBox]}
         onPress={() => {}}
         accessibilityRole="button"
         accessibilityLabel="Add meal"
@@ -115,27 +103,29 @@ const MealRow = ({ isOptimized = false }: MealRowProps) => {
 };
 
 const styles = StyleSheet.create({
-  mealRow: {
+  containerFlexBox: {
+    gap: Gap.gap_6,
+    alignItems: "center",
     flexDirection: "row",
+  },
+  mealRow: {
+    width: "100%",
+    backgroundColor: Color.neutralBackgroundDarkElevated,
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: Color.neutralBackgroundDarkElevated,
-    borderRadius: 32,
+    flexDirection: "row",
+    borderRadius: 12,
   },
   leftClickContainer: {
     paddingLeft: 16,
     paddingRight: 2,
-    paddingVertical: 12,
+    paddingVertical: 10,
     gap: 6,
     flex: 1,
   },
   title: {
     ...Typography.subheadlineEmphasized,
     color: Color.neutralWhite,
-  },
-  captionTypo: {
-    ...Typography.caption1Regular,
-    color: Color.neutralTextOrTabGrey,
   },
   bottomContainer: {
     flexDirection: "row",
@@ -146,10 +136,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    flex: 1,
-  },
-  ingredientsContainer: {
-    flex: 1,
   },
   optimizedBadge: {
     flexDirection: "row",
@@ -157,25 +143,30 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: Color.brand50GraphicsOrBrandButton,
     paddingLeft: 4,
-    paddingRight: 6,
-    paddingVertical: 1,
+    paddingRight: ,
+    paddingVertical: 2,
     gap: 4,
   },
   optimized: {
     ...Typography.caption1Emphasized,
     color: Color.neutralWhite,
   },
-  rightContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
+  ingredients: {
+    flex: 1,
+    ...Typography.caption1Regular,
+  },
+  kcalTypo: {
+    ...Typography.caption1Regular,
+    color: Color.neutralTextOrTabGrey,
+    textAlign: "left",
+  },
+  calories: {
+    justifyContent: "flex-end",
   },
   rightClickContainer: {
+    width: 48,
     justifyContent: "center",
     alignItems: "center",
-    paddingLeft: 8,
-    paddingRight: 12,
-    alignSelf: "stretch",
   },
   addText: {
     ...Typography.title3Emphasized,

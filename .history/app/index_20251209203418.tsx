@@ -36,8 +36,8 @@ export default function TabOneScreen() {
       <View style={styles.rezepteUndFilterContainer}>
         <RezSelectionAndFilterComponent />
         <View style={styles.mealRowsContainer}>
-          <MealRow isOptimized={true} />
           <MealRow isOptimized={false} />
+          <MealRow isOptimized={true} />
         </View>
       </View>
     </SafeAreaView>

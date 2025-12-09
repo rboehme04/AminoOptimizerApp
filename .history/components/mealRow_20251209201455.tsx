@@ -1,4 +1,4 @@
-import { Color, Typography } from "@/constants/GlobalStyles";
+import { Color, Gap, Typography } from "@/constants/GlobalStyles";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Svg, { Path, SvgProps } from "react-native-svg";
@@ -73,18 +73,14 @@ const OptimizedBadge = () => {
   );
 };
 
-type MealRowProps = {
-  isOptimized?: boolean;
-};
-
-const MealRow = ({ isOptimized = false }: MealRowProps) => {
+const MealRow = () => {
   return (
     <Pressable style={styles.mealRow} onPress={() => {}}>
       <View style={styles.leftClickContainer}>
         <Text style={styles.title}>High Protein Raspberry Cheesecake Bowl</Text>
         <View style={[styles.bottomContainer]}>
           <View style={[styles.leftContainer]}>
-            {isOptimized ? <OptimizedBadge /> : null}
+            <OptimizedBadge />
             <EatSymbolIcon width={18} height={18} />
             <View style={styles.ingredientsContainer}>
               <Text
@@ -103,7 +99,7 @@ const MealRow = ({ isOptimized = false }: MealRowProps) => {
         </View>
       </View>
       <Pressable
-        style={[styles.rightClickContainer]}
+        style={[styles.rightClickContainer, styles.containerFlexBox]}
         onPress={() => {}}
         accessibilityRole="button"
         accessibilityLabel="Add meal"
@@ -115,17 +111,23 @@ const MealRow = ({ isOptimized = false }: MealRowProps) => {
 };
 
 const styles = StyleSheet.create({
-  mealRow: {
+  containerFlexBox: {
+    gap: Gap.gap_6,
+    alignItems: "center",
     flexDirection: "row",
+  },
+  mealRow: {
+    width: "100%",
+    backgroundColor: Color.neutralBackgroundDarkElevated,
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: Color.neutralBackgroundDarkElevated,
-    borderRadius: 32,
+    flexDirection: "row",
+    borderRadius: 12,
   },
   leftClickContainer: {
     paddingLeft: 16,
     paddingRight: 2,
-    paddingVertical: 12,
+    paddingVertical: 10,
     gap: 6,
     flex: 1,
   },
@@ -169,13 +171,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
+    flexShrink: 0,
   },
   rightClickContainer: {
+    width: 48,
     justifyContent: "center",
     alignItems: "center",
-    paddingLeft: 8,
-    paddingRight: 12,
-    alignSelf: "stretch",
   },
   addText: {
     ...Typography.title3Emphasized,
