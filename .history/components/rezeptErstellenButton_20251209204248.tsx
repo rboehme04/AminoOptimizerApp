@@ -1,6 +1,6 @@
+import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 
 import { Color, Gap, Padding, Typography } from "@/constants/GlobalStyles";

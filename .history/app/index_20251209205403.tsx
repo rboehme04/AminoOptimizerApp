@@ -5,12 +5,12 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-import MealRow from "@/components/indexComponents/mealRow";
+import { Color, Typography } from "@/constants/GlobalStyles";
 import OptimizerNavBar from "@/components/indexComponents/optimizerNavBar";
 import QuestionButton from "@/components/indexComponents/questionButton";
 import RezeptErstellenButton from "@/components/indexComponents/rezeptErstellenButton";
 import RezSelectionAndFilterComponent from "@/components/indexComponents/rezSelectionAndFilterComponent";
-import { Color, Typography } from "@/constants/GlobalStyles";
+import MealRow from "@/components/indexComponents/mealRow";
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();

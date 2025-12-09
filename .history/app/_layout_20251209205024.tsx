@@ -37,7 +37,9 @@ function RootLayoutNav() {
         }}
       >
         <Stack.Screen name="index" />
-        <Stack.Screen name="CreateRecipe" />
+        <Stack.Screen
+          name="CreateRecipe"
+        />
       </Stack>
     </>
   );

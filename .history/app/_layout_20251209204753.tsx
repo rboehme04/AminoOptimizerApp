@@ -36,8 +36,11 @@ function RootLayoutNav() {
           headerShown: false,
         }}
       >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="CreateRecipe" />
+        <Stack.Screen name="index" options={{ title: "Tab One" }} />
+        <Stack.Screen
+          name="CreateRecipe"
+          options={{ title: "Rezept erstellen" }}
+        />
       </Stack>
     </>
   );
