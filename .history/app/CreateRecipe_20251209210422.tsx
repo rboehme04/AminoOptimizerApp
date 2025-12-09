@@ -2,7 +2,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
 import { Color, Typography } from "@/constants/GlobalStyles";
 
 export default function CreateRecipeScreen() {

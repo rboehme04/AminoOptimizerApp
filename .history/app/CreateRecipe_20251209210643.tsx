@@ -3,11 +3,13 @@ import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
+import ErstellenNavBar from "@/components/erstellenComponents/erstellenNavBar";
 import { Color, Typography } from "@/constants/GlobalStyles";
 
 export default function CreateRecipeScreen() {
   return (
     <SafeAreaView style={styles.container}>
+      <ErstellenNavBar />
       <Text>Create Recipe</Text>
     </SafeAreaView>
   );

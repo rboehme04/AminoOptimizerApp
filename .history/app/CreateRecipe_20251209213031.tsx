@@ -8,6 +8,7 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 export default function CreateRecipeScreen() {
   return (
     <SafeAreaView style={styles.container}>
+      <ErstellenNavBar />
       <Text>Create Recipe</Text>
     </SafeAreaView>
   );
