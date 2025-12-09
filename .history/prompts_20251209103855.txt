@@ -1,0 +1,2 @@
+please fix this code @rezSelectionAndFilter.tsx (1-117)  
+use GlobalStyles.ts and the {} in assets/icons

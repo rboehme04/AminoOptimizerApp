@@ -1,25 +1,19 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, Text, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Color, Typography } from "@/constants/GlobalStyles";
 import OptimizerNavBar from "@/components/optimizerNavBar";
 import QuestionButton from "@/components/questionButton";
 import RezeptErstellenButton from "@/components/rezeptErstellenButton";
-import RezSelectionAndFilterComponent from "@/components/rezSelectionAndFilterComponent";
+import { Color, Typography } from "@/constants/GlobalStyles";
 
 export default function TabOneScreen() {
-  const insets = useSafeAreaInsets();
-
   return (
-    <SafeAreaView style={styles.Content} edges={["left", "right", "bottom"]}>
+    <SafeAreaView style={styles.Content}>
       <LinearGradient
-        colors={["#262626", Color.neutralBackgroundDark]}
+        colors={["#262626", "#000000"]}
         locations={[0, 0.97]}
-        style={[styles.headerContainer, { paddingTop: insets.top }]}
+        style={styles.headerContainer}
       >
         <OptimizerNavBar />
         <View style={styles.headerButtonsContainer}>
@@ -32,9 +26,7 @@ export default function TabOneScreen() {
           </View>
         </View>
       </LinearGradient>
-      <View style={styles.rezepteUndFilterContainer}>
-        <RezSelectionAndFilterComponent />
-      </View>
+      <View style={styles.rezepteUndFilterContainer}></View>
     </SafeAreaView>
   );
 }
@@ -43,7 +35,6 @@ const styles = StyleSheet.create({
   Content: {
     flex: 1,
     justifyContent: "flex-start",
-    gap: 8,
   },
   headerContainer: {
     justifyContent: "center",
@@ -70,7 +61,7 @@ const styles = StyleSheet.create({
   },
   rezepteUndFilterContainer: {
     justifyContent: "center",
-    paddingHorizontal: 8,
-    gap: 10,
+    paddingHorizontal: 16,
+    gap: 12,
   },
 });

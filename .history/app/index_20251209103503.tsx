@@ -5,11 +5,10 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-import { Color, Typography } from "@/constants/GlobalStyles";
 import OptimizerNavBar from "@/components/optimizerNavBar";
 import QuestionButton from "@/components/questionButton";
 import RezeptErstellenButton from "@/components/rezeptErstellenButton";
-import RezSelectionAndFilterComponent from "@/components/rezSelectionAndFilterComponent";
+import { Color, Typography } from "@/constants/GlobalStyles";
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
@@ -32,9 +31,7 @@ export default function TabOneScreen() {
           </View>
         </View>
       </LinearGradient>
-      <View style={styles.rezepteUndFilterContainer}>
-        <RezSelectionAndFilterComponent />
-      </View>
+      <View style={styles.rezepteUndFilterContainer}></View>
     </SafeAreaView>
   );
 }
@@ -43,7 +40,6 @@ const styles = StyleSheet.create({
   Content: {
     flex: 1,
     justifyContent: "flex-start",
-    gap: 8,
   },
   headerContainer: {
     justifyContent: "center",

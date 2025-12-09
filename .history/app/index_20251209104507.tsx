@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
   Content: {
     flex: 1,
     justifyContent: "flex-start",
-    gap: 8,
   },
   headerContainer: {
     justifyContent: "center",

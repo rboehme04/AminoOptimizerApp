@@ -33,7 +33,7 @@ export default function TabOneScreen() {
         </View>
       </LinearGradient>
       <View style={styles.rezepteUndFilterContainer}>
-        <RezSelectionAndFilterComponent />
+        
       </View>
     </SafeAreaView>
   );
@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
   Content: {
     flex: 1,
     justifyContent: "flex-start",
-    gap: 8,
   },
   headerContainer: {
     justifyContent: "center",
