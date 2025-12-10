@@ -30,14 +30,6 @@ const LeftRightToggle = ({
   const [rightContainerX, setRightContainerX] = React.useState<number | null>(
     null
   );
-  const [leftTextLayout, setLeftTextLayout] = React.useState<{
-    x: number;
-    width: number;
-  } | null>(null);
-  const [rightTextLayout, setRightTextLayout] = React.useState<{
-    x: number;
-    width: number;
-  } | null>(null);
 
   const FIXED_LINE_WIDTH = 40; // Fixed width for the line
   const lineLeft = React.useRef(new Animated.Value(0)).current;
@@ -47,23 +39,6 @@ const LeftRightToggle = ({
     setActiveSide(side);
     onToggle?.(side);
   };
-
-  // Recalculate text centers when container positions or text layouts change
-  React.useEffect(() => {
-    if (leftContainerX !== null && leftTextLayout !== null) {
-      const textCenter =
-        leftContainerX + leftTextLayout.x + leftTextLayout.width / 2;
-      setLeftTextCenter(textCenter);
-    }
-  }, [leftContainerX, leftTextLayout]);
-
-  React.useEffect(() => {
-    if (rightContainerX !== null && rightTextLayout !== null) {
-      const textCenter =
-        rightContainerX + rightTextLayout.x + rightTextLayout.width / 2;
-      setRightTextCenter(textCenter);
-    }
-  }, [rightContainerX, rightTextLayout]);
 
   React.useEffect(() => {
     const textCenter = activeSide === "left" ? leftTextCenter : rightTextCenter;
@@ -92,7 +67,9 @@ const LeftRightToggle = ({
         style={styles.textContainer}
         onPress={() => handleToggle("left")}
         onLayout={event => {
-          setLeftContainerX(event.nativeEvent.layout.x);
+          const containerX = event.nativeEvent.layout.x;
+          // Store container X for later use in text layout
+          (event.target as any)._containerX = containerX;
         }}
       >
         <Text
@@ -102,7 +79,13 @@ const LeftRightToggle = ({
           ]}
           onLayout={event => {
             const { width, x } = event.nativeEvent.layout;
-            setLeftTextLayout({ x, width });
+            // Get container X from parent Pressable
+            const containerX =
+              (event.target as any).parent?._containerX ??
+              event.nativeEvent.layout.x;
+            // Calculate center relative to container: containerX + textX + textWidth/2
+            const textCenter = containerX + x + width / 2;
+            setLeftTextCenter(textCenter);
           }}
         >
           {leftLabel}
@@ -112,7 +95,9 @@ const LeftRightToggle = ({
         style={[styles.textContainer]}
         onPress={() => handleToggle("right")}
         onLayout={event => {
-          setRightContainerX(event.nativeEvent.layout.x);
+          const containerX = event.nativeEvent.layout.x;
+          // Store container X for later use in text layout
+          (event.target as any)._containerX = containerX;
         }}
       >
         <Text
@@ -122,7 +107,13 @@ const LeftRightToggle = ({
           ]}
           onLayout={event => {
             const { width, x } = event.nativeEvent.layout;
-            setRightTextLayout({ x, width });
+            // Get container X from parent Pressable
+            const containerX =
+              (event.target as any).parent?._containerX ??
+              event.nativeEvent.layout.x;
+            // Calculate center relative to container: containerX + textX + textWidth/2
+            const textCenter = containerX + x + width / 2;
+            setRightTextCenter(textCenter);
           }}
         >
           {rightLabel}
@@ -145,7 +136,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
   },
   textContainer: {
     flex: 1,

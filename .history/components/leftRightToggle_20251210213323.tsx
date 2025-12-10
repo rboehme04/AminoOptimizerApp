@@ -51,16 +51,14 @@ const LeftRightToggle = ({
   // Recalculate text centers when container positions or text layouts change
   React.useEffect(() => {
     if (leftContainerX !== null && leftTextLayout !== null) {
-      const textCenter =
-        leftContainerX + leftTextLayout.x + leftTextLayout.width / 2;
+      const textCenter = leftContainerX + leftTextLayout.x + leftTextLayout.width / 2;
       setLeftTextCenter(textCenter);
     }
   }, [leftContainerX, leftTextLayout]);
 
   React.useEffect(() => {
     if (rightContainerX !== null && rightTextLayout !== null) {
-      const textCenter =
-        rightContainerX + rightTextLayout.x + rightTextLayout.width / 2;
+      const textCenter = rightContainerX + rightTextLayout.x + rightTextLayout.width / 2;
       setRightTextCenter(textCenter);
     }
   }, [rightContainerX, rightTextLayout]);
@@ -145,7 +143,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
   },
   textContainer: {
     flex: 1,

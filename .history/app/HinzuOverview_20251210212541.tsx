@@ -12,7 +12,7 @@ export default function HinzuOverviewScreen() {
       <NavBar title="Hinzufügen" />
       <View style={styles.headerContainer}>
         <SearchBar placeholder="Rezept suchen" />
-        <LeftRightToggle leftLabel="Rezepte" rightLabel="Lebensmittel" />
+        <LeftRightToggle leftLabel="Rezepte"/>
       </View>
     </SafeAreaView>
   );

@@ -4,15 +4,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import NavBar from "@/components/navBar";
 import { Color } from "@/constants/GlobalStyles";
 import SearchBar from "@/components/searchBar";
-import LeftRightToggle from "@/components/leftRightToggle";
 
 export default function HinzuOverviewScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <NavBar title="Hinzufügen" />
       <View style={styles.headerContainer}>
-        <SearchBar placeholder="Rezept suchen" />
-        <LeftRightToggle leftLabel="Rezepte" rightLabel="Lebensmittel" />
+        <SearchBar />
+        <LeftRightToggle />
       </View>
     </SafeAreaView>
   );

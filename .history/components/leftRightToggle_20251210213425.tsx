@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
   },
   textContainer: {
     flex: 1,

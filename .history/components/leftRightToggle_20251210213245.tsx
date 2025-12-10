@@ -42,6 +42,8 @@ const LeftRightToggle = ({
   const FIXED_LINE_WIDTH = 40; // Fixed width for the line
   const lineLeft = React.useRef(new Animated.Value(0)).current;
   const isInitialMount = React.useRef(true);
+  const leftTextRef = React.useRef<Text>(null);
+  const rightTextRef = React.useRef<Text>(null);
 
   const handleToggle = (side: "left" | "right") => {
     setActiveSide(side);
@@ -51,16 +53,14 @@ const LeftRightToggle = ({
   // Recalculate text centers when container positions or text layouts change
   React.useEffect(() => {
     if (leftContainerX !== null && leftTextLayout !== null) {
-      const textCenter =
-        leftContainerX + leftTextLayout.x + leftTextLayout.width / 2;
+      const textCenter = leftContainerX + leftTextLayout.x + leftTextLayout.width / 2;
       setLeftTextCenter(textCenter);
     }
   }, [leftContainerX, leftTextLayout]);
 
   React.useEffect(() => {
     if (rightContainerX !== null && rightTextLayout !== null) {
-      const textCenter =
-        rightContainerX + rightTextLayout.x + rightTextLayout.width / 2;
+      const textCenter = rightContainerX + rightTextLayout.x + rightTextLayout.width / 2;
       setRightTextCenter(textCenter);
     }
   }, [rightContainerX, rightTextLayout]);
@@ -84,7 +84,7 @@ const LeftRightToggle = ({
         }).start();
       }
     }
-  }, [activeSide, leftTextCenter, rightTextCenter, lineLeft]);
+  }, [activeSide, leftTextCenter, rightTextCenter, leftContainerX, rightContainerX, lineLeft]);
 
   return (
     <View style={styles.container}>
@@ -96,13 +96,18 @@ const LeftRightToggle = ({
         }}
       >
         <Text
+          ref={leftTextRef}
           style={[
             styles.text,
             activeSide === "left" ? styles.activeText : null,
           ]}
           onLayout={event => {
-            const { width, x } = event.nativeEvent.layout;
-            setLeftTextLayout({ x, width });
+            if (leftContainerX !== null) {
+              const { width, x } = event.nativeEvent.layout;
+              // Calculate center relative to container: containerX + textX + textWidth/2
+              const textCenter = leftContainerX + x + width / 2;
+              setLeftTextCenter(textCenter);
+            }
           }}
         >
           {leftLabel}
@@ -116,13 +121,18 @@ const LeftRightToggle = ({
         }}
       >
         <Text
+          ref={rightTextRef}
           style={[
             styles.text,
             activeSide === "right" ? styles.activeText : null,
           ]}
           onLayout={event => {
-            const { width, x } = event.nativeEvent.layout;
-            setRightTextLayout({ x, width });
+            if (rightContainerX !== null) {
+              const { width, x } = event.nativeEvent.layout;
+              // Calculate center relative to container: containerX + textX + textWidth/2
+              const textCenter = rightContainerX + x + width / 2;
+              setRightTextCenter(textCenter);
+            }
           }}
         >
           {rightLabel}
@@ -145,7 +155,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
   },
   textContainer: {
     flex: 1,

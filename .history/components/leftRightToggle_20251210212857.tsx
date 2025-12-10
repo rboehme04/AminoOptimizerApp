@@ -1,4 +1,4 @@
-import { Color, Typography } from "@/constants/GlobalStyles";
+import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import * as React from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -24,49 +24,21 @@ const LeftRightToggle = ({
   const [rightTextCenter, setRightTextCenter] = React.useState<number | null>(
     null
   );
-  const [leftContainerX, setLeftContainerX] = React.useState<number | null>(
-    null
-  );
-  const [rightContainerX, setRightContainerX] = React.useState<number | null>(
-    null
-  );
-  const [leftTextLayout, setLeftTextLayout] = React.useState<{
-    x: number;
-    width: number;
-  } | null>(null);
-  const [rightTextLayout, setRightTextLayout] = React.useState<{
-    x: number;
-    width: number;
-  } | null>(null);
 
-  const FIXED_LINE_WIDTH = 40; // Fixed width for the line
+  const FIXED_LINE_WIDTH = 100; // Fixed width for the line
   const lineLeft = React.useRef(new Animated.Value(0)).current;
   const isInitialMount = React.useRef(true);
+  const leftTextRef = React.useRef<Text>(null);
+  const rightTextRef = React.useRef<Text>(null);
 
   const handleToggle = (side: "left" | "right") => {
     setActiveSide(side);
     onToggle?.(side);
   };
 
-  // Recalculate text centers when container positions or text layouts change
   React.useEffect(() => {
-    if (leftContainerX !== null && leftTextLayout !== null) {
-      const textCenter =
-        leftContainerX + leftTextLayout.x + leftTextLayout.width / 2;
-      setLeftTextCenter(textCenter);
-    }
-  }, [leftContainerX, leftTextLayout]);
-
-  React.useEffect(() => {
-    if (rightContainerX !== null && rightTextLayout !== null) {
-      const textCenter =
-        rightContainerX + rightTextLayout.x + rightTextLayout.width / 2;
-      setRightTextCenter(textCenter);
-    }
-  }, [rightContainerX, rightTextLayout]);
-
-  React.useEffect(() => {
-    const textCenter = activeSide === "left" ? leftTextCenter : rightTextCenter;
+    const textCenter =
+      activeSide === "left" ? leftTextCenter : rightTextCenter;
 
     if (textCenter !== null) {
       const targetLeft = textCenter - FIXED_LINE_WIDTH / 2;
@@ -91,9 +63,6 @@ const LeftRightToggle = ({
       <Pressable
         style={styles.textContainer}
         onPress={() => handleToggle("left")}
-        onLayout={event => {
-          setLeftContainerX(event.nativeEvent.layout.x);
-        }}
       >
         <Text
           style={[
@@ -102,7 +71,10 @@ const LeftRightToggle = ({
           ]}
           onLayout={event => {
             const { width, x } = event.nativeEvent.layout;
-            setLeftTextLayout({ x, width });
+            // Calculate center position: container x + text x + text width / 2
+            event.target.measure((fx, fy, width, height, px, py) => {
+              setLeftTextCenter(px + width / 2);
+            });
           }}
         >
           {leftLabel}
@@ -111,9 +83,6 @@ const LeftRightToggle = ({
       <Pressable
         style={[styles.textContainer]}
         onPress={() => handleToggle("right")}
-        onLayout={event => {
-          setRightContainerX(event.nativeEvent.layout.x);
-        }}
       >
         <Text
           style={[
@@ -122,7 +91,10 @@ const LeftRightToggle = ({
           ]}
           onLayout={event => {
             const { width, x } = event.nativeEvent.layout;
-            setRightTextLayout({ x, width });
+            // Calculate center position: container x + text x + text width / 2
+            event.target.measure((fx, fy, width, height, px, py) => {
+              setRightTextCenter(px + width / 2);
+            });
           }}
         >
           {rightLabel}
@@ -133,7 +105,7 @@ const LeftRightToggle = ({
           styles.line,
           {
             left: lineLeft,
-            width: FIXED_LINE_WIDTH,
+            width: lineWidth,
           },
         ]}
       />
@@ -145,7 +117,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
   },
   textContainer: {
     flex: 1,
