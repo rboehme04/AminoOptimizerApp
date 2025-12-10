@@ -1,0 +1,55 @@
+import { Color, Typography } from "@/constants/GlobalStyles";
+import { MaterialIcons } from "@expo/vector-icons";
+import * as React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const PicturePlaceHolder = () => {
+  return (
+    <SafeAreaView style={styles.pictureOuterContainer}>
+      <View style={styles.pictureInnerContainer}>
+        <MaterialIcons
+          name="add-a-photo"
+          size={36}
+          color={Color.neutralTextOrTabGrey}
+          style={styles.icon}
+        />
+        <View style={styles.textContainer}>
+          <Text style={styles.bild}>Bild</Text>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  pictureOuterContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Color.neutralInputOnDark,
+    borderRadius: 12,
+    width: "100%",
+    aspectRatio: 1,
+  },
+  pictureInnerContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 8,
+    marginBottom: 8,
+    backgroundColor: "red",
+  },
+  icon: {
+    width: 36,
+    height: 40,
+  },
+  textContainer: {
+    backgroundColor: "blue",
+  },
+  bild: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralTextOrTabGrey,
+    textAlign: "center",
+  },
+});
+
+export default PicturePlaceHolder;
