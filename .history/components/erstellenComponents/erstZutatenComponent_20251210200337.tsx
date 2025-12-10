@@ -75,7 +75,6 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
 };
 
 const ZutatenContainer = () => {
-  const router = useRouter();
   const [ingredients] = React.useState<Ingredient[]>([
     {
       id: "1",
@@ -106,12 +105,7 @@ const ZutatenContainer = () => {
             <IngredientRow key={ingredient.id} ingredient={ingredient} />
           ))}
         </View>
-        <Pressable
-          style={styles.addButtonContainer}
-          onPress={() => {
-            router.push("/HinzuOverview");
-          }}
-        >
+        <Pressable style={styles.addButtonContainer} onPress={() => {}}>
           <AddCircleOutlineIcon
             size={24}
             color={Color.brand40LetzteButtonOrBlueText}

@@ -1,6 +1,5 @@
 import { CloseXIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
@@ -75,7 +74,6 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
 };
 
 const ZutatenContainer = () => {
-  const router = useRouter();
   const [ingredients] = React.useState<Ingredient[]>([
     {
       id: "1",
@@ -106,12 +104,7 @@ const ZutatenContainer = () => {
             <IngredientRow key={ingredient.id} ingredient={ingredient} />
           ))}
         </View>
-        <Pressable
-          style={styles.addButtonContainer}
-          onPress={() => {
-            router.push("/HinzuOverview");
-          }}
-        >
+        <Pressable style={styles.addButtonContainer} onPress={() => {}}>
           <AddCircleOutlineIcon
             size={24}
             color={Color.brand40LetzteButtonOrBlueText}
