@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
   rightContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 8,
   },
   kcalText: {
     ...Typography.subheadlineRegular,

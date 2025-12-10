@@ -58,8 +58,10 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   return (
     <View style={styles.ingredientRow}>
       <Pressable style={styles.leftContainer} onPress={() => {}}>
+      <View style={styles.leftContainer}>
         <Text style={styles.ingredientName}>{ingredient.name}</Text>
         <Text style={styles.ingredientAmount}>{ingredient.amount}</Text>
+      </View>
       </Pressable>
       <View style={styles.rightContainer}>
         <Text style={styles.kcalText}>{ingredient.calories}</Text>

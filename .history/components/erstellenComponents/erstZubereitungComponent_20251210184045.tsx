@@ -15,6 +15,7 @@ type Props = {
   value?: string;
   onChangeText: (text: string) => void;
   onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 const ErstZubereitungComponent = ({ value, onChangeText, onFocus }: Props) => {
@@ -95,10 +96,8 @@ const styles = StyleSheet.create({
   container: {},
   labelContainer: {
     flexDirection: "row",
-    alignSelf: "flex-start",
-    alignItems: "center",
     height: 44,
-    paddingRight: 16,
+    alignItems: "center",
     gap: 4,
   },
   labelText: {

@@ -57,7 +57,7 @@ interface IngredientRowProps {
 const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   return (
     <View style={styles.ingredientRow}>
-      <Pressable style={styles.leftContainer} onPress={() => {}}>
+      <Pressable style={styles.leftContainer} onPress={() => {console.log("left container pressed");()}}>
         <Text style={styles.ingredientName}>{ingredient.name}</Text>
         <Text style={styles.ingredientAmount}>{ingredient.amount}</Text>
       </Pressable>

@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,12 +22,37 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 
 export default function CreateRecipeScreen() {
   const [titleFocused, setTitleFocused] = useState(false);
+  const [zubereitungFocused, setZubereitungFocused] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [zubereitung, setZubereitung] = useState("");
   const titleInputRef = useRef<TextInput>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  // Listen for keyboard show/hide events
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const handleDismissKeyboard = () => {
+    setTitleFocused(false);
+    setZubereitungFocused(false);
+    titleInputRef.current?.blur();
+    Keyboard.dismiss();
+  };
+
   const handleZubereitungFocus = () => {
+    setZubereitungFocused(true);
     // Scroll to show the TextInput above the keyboard
     // Use a small delay to allow keyboard animation to start
     setTimeout(() => {
@@ -34,6 +61,12 @@ export default function CreateRecipeScreen() {
       }
     }, 100);
   };
+
+  const handleZubereitungBlur = () => {
+    setZubereitungFocused(false);
+  };
+
+  const showOverlay = keyboardVisible && (titleFocused || zubereitungFocused);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,8 +81,8 @@ export default function CreateRecipeScreen() {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollViewContent}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
+          onScrollBeginDrag={handleDismissKeyboard}
         >
           <View style={styles.innerContainer}>
             <View style={styles.topContainer}>
@@ -80,6 +113,7 @@ export default function CreateRecipeScreen() {
                 value={zubereitung}
                 onChangeText={setZubereitung}
                 onFocus={handleZubereitungFocus}
+                onBlur={handleZubereitungBlur}
               />
             </View>
           </View>
@@ -87,6 +121,13 @@ export default function CreateRecipeScreen() {
         {/* TODO: Add Error handling when saving empty recipe */}
         <NextButton text="Speichern" />
       </KeyboardAvoidingView>
+      {showOverlay && (
+        <Pressable
+          style={styles.overlay}
+          onPress={handleDismissKeyboard}
+          pointerEvents="box-none"
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -140,4 +181,12 @@ const styles = StyleSheet.create({
     borderColor: Color.neutralWhite,
   },
   bottomContainer: {},
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "transparent",
+  },
 });

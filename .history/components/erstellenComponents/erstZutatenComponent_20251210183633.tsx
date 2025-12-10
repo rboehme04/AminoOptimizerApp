@@ -62,7 +62,7 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
         <Text style={styles.ingredientAmount}>{ingredient.amount}</Text>
       </Pressable>
       <View style={styles.rightContainer}>
-        <Text style={styles.kcalText}>{ingredient.calories}</Text>
+          <Text style={styles.kcalText}>{ingredient.calories}</Text>
         <Pressable style={styles.removeClickContainer} onPress={onPress}>
           <View style={styles.closexContainer}>
             <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
   rightContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 8,
   },
   kcalText: {
     ...Typography.subheadlineRegular,

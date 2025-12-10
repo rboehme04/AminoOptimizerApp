@@ -97,9 +97,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "flex-start",
     alignItems: "center",
-    height: 44,
-    paddingRight: 16,
     gap: 4,
+    backgroundColor: "red",
   },
   labelText: {
     ...Typography.subheadlineRegular,

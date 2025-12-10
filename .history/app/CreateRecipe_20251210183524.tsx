@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -25,6 +26,12 @@ export default function CreateRecipeScreen() {
   const titleInputRef = useRef<TextInput>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const handleDismissKeyboard = () => {
+    setTitleFocused(false);
+    titleInputRef.current?.blur();
+    Keyboard.dismiss();
+  };
+
   const handleZubereitungFocus = () => {
     // Scroll to show the TextInput above the keyboard
     // Use a small delay to allow keyboard animation to start
@@ -48,52 +55,52 @@ export default function CreateRecipeScreen() {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollViewContent}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
+          onScrollBeginDrag={handleDismissKeyboard}
         >
-          <View style={styles.innerContainer}>
-            <View style={styles.topContainer}>
-              <View style={styles.picturePlaceHolderContainer}>
-                <PicturePlaceHolder />
+            <View style={styles.innerContainer}>
+              <View style={styles.topContainer}>
+                <View style={styles.picturePlaceHolderContainer}>
+                  <PicturePlaceHolder />
+                </View>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.labelText}>Name des Rezepts</Text>
+                  <TextInput
+                    ref={titleInputRef}
+                    style={[
+                      styles.titleInput,
+                      titleFocused && styles.titleInputFocused,
+                    ]}
+                    value={title}
+                    onChangeText={setTitle}
+                    placeholder="Name des Rezepts ..."
+                    placeholderTextColor={Color.neutralTextOrTabGrey}
+                    onFocus={() => setTitleFocused(true)}
+                    onBlur={() => setTitleFocused(false)}
+                    returnKeyType="done"
+                  />
+                </View>
               </View>
-              <View style={styles.titleContainer}>
-                <Text style={styles.labelText}>Name des Rezepts</Text>
-                <TextInput
-                  ref={titleInputRef}
-                  style={[
-                    styles.titleInput,
-                    titleFocused && styles.titleInputFocused,
-                  ]}
-                  value={title}
-                  onChangeText={setTitle}
-                  placeholder="Name des Rezepts ..."
-                  placeholderTextColor={Color.neutralTextOrTabGrey}
-                  onFocus={() => setTitleFocused(true)}
-                  onBlur={() => setTitleFocused(false)}
-                  returnKeyType="done"
+              <View style={styles.bottomContainer}>
+                <ErstZutatenComponent />
+                <ErstZubereitungComponent
+                  value={zubereitung}
+                  onChangeText={setZubereitung}
+                  onFocus={handleZubereitungFocus}
                 />
               </View>
             </View>
-            <View style={styles.bottomContainer}>
-              <ErstZutatenComponent />
-              <ErstZubereitungComponent
-                value={zubereitung}
-                onChangeText={setZubereitung}
-                onFocus={handleZubereitungFocus}
-              />
-            </View>
-          </View>
-        </ScrollView>
-        {/* TODO: Add Error handling when saving empty recipe */}
-        <NextButton text="Speichern" />
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
+          </ScrollView>
+          {/* TODO: Add Error handling when saving empty recipe */}
+          <NextButton text="Speichern" />
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   keyboardAvoidingView: {
     flex: 1,

@@ -117,6 +117,18 @@ const ZutatenContainer = () => {
       amount: "200ml",
       calories: "96 kcal",
     },
+    {
+      id: "8",
+      name: "Milch",
+      amount: "200ml",
+      calories: "96 kcal",
+    },
+    {
+      id: "9",
+      name: "Milch",
+      amount: "200ml",
+      calories: "96 kcal",
+    },
   ]);
 
   return (

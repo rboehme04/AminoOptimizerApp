@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     height: 44,
     paddingRight: 16,
     gap: 4,
+    backgroundColor: "red",
   },
   labelText: {
     ...Typography.subheadlineRegular,

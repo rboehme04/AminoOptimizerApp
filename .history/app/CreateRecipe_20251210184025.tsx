@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -24,6 +26,12 @@ export default function CreateRecipeScreen() {
   const [zubereitung, setZubereitung] = useState("");
   const titleInputRef = useRef<TextInput>(null);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const handleDismissKeyboard = () => {
+    setTitleFocused(false);
+    titleInputRef.current?.blur();
+    Keyboard.dismiss();
+  };
 
   const handleZubereitungFocus = () => {
     // Scroll to show the TextInput above the keyboard
@@ -48,8 +56,8 @@ export default function CreateRecipeScreen() {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollViewContent}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
+          onScrollBeginDrag={handleDismissKeyboard}
         >
           <View style={styles.innerContainer}>
             <View style={styles.topContainer}>

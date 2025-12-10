@@ -117,6 +117,7 @@ const ZutatenContainer = () => {
       amount: "200ml",
       calories: "96 kcal",
     },
+
   ]);
 
   return (

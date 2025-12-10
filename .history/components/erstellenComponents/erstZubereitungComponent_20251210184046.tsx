@@ -15,9 +15,10 @@ type Props = {
   value?: string;
   onChangeText: (text: string) => void;
   onFocus?: () => void;
+  onBlur?: () => void;
 };
 
-const ErstZubereitungComponent = ({ value, onChangeText, onFocus }: Props) => {
+const ErstZubereitungComponent = ({ value, onChangeText, onFocus, onBlur }: Props) => {
   const [textareaFocused, setTextareaFocused] = useState(false);
   const [expanded, setExpanded] = useState(true);
   const rotation = useRef(new Animated.Value(expanded ? 1 : 0)).current;
@@ -95,10 +96,8 @@ const styles = StyleSheet.create({
   container: {},
   labelContainer: {
     flexDirection: "row",
-    alignSelf: "flex-start",
-    alignItems: "center",
     height: 44,
-    paddingRight: 16,
+    alignItems: "center",
     gap: 4,
   },
   labelText: {

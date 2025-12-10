@@ -62,7 +62,9 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
         <Text style={styles.ingredientAmount}>{ingredient.amount}</Text>
       </Pressable>
       <View style={styles.rightContainer}>
-        <Text style={styles.kcalText}>{ingredient.calories}</Text>
+        <Pressable>
+          <Text style={styles.kcalText}>{ingredient.calories}</Text>
+        </Pressable>
         <Pressable style={styles.removeClickContainer} onPress={onPress}>
           <View style={styles.closexContainer}>
             <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />

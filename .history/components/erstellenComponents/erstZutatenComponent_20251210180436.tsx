@@ -56,12 +56,12 @@ interface IngredientRowProps {
 
 const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   return (
-    <View style={styles.ingredientRow}>
-      <Pressable style={styles.leftContainer} onPress={() => {}}>
+    <View style={styles.ingredientRow} collapsable={false}>
+      <View style={styles.leftContainer} pointerEvents="box-none">
         <Text style={styles.ingredientName}>{ingredient.name}</Text>
         <Text style={styles.ingredientAmount}>{ingredient.amount}</Text>
-      </Pressable>
-      <View style={styles.rightContainer}>
+      </View>
+      <View style={styles.rightContainer} pointerEvents="box-none">
         <Text style={styles.kcalText}>{ingredient.calories}</Text>
         <Pressable style={styles.removeClickContainer} onPress={onPress}>
           <View style={styles.closexContainer}>

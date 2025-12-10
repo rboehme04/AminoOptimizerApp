@@ -95,11 +95,11 @@ const styles = StyleSheet.create({
   container: {},
   labelContainer: {
     flexDirection: "row",
-    alignSelf: "flex-start",
     alignItems: "center",
+    alignSelf: "flex-start",
     height: 44,
-    paddingRight: 16,
     gap: 4,
+    backgroundColor: "red",
   },
   labelText: {
     ...Typography.subheadlineRegular,
