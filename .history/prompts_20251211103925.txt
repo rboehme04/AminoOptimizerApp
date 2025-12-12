@@ -1,0 +1,7 @@
+please fix this code {code snippet}  
+use GlobalStyles.ts and the icons in ./assets/icons/icons.tsx
+
+Todos:
+
+    - detailseite
+    1
