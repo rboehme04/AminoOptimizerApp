@@ -379,15 +379,3 @@ export const Peach3dIcon = ({
     {...props}
   />
 );
-
-export const FlexedBiceps3dIcon = ({
-  size = 24,
-  ...props
-}: ImageProps & { size?: number }) => (
-  <Image
-    source={flexedBiceps3dImage}
-    style={[{ width: size, height: size }, props.style] as ImageStyle}
-    resizeMode="contain"
-    {...props}
-  />
-);
