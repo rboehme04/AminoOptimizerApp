@@ -1,8 +1,5 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import HinzuRezAmountInput from "@/components/erstellenComponents/hinzuRezAmountInput";
 import HinzufügenButton from "@/components/erstellenComponents/hinzufügenButton";
@@ -12,13 +9,13 @@ import ZutatenDropDown from "@/components/zutatenDropDown";
 
 export default function HinzuRezDetailScreen() {
   const insets = useSafeAreaInsets();
-
+  
   return (
     <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
-      <ScrollView
+      <ScrollView 
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: insets.top },
+          { paddingTop: insets.top }
         ]}
       >
         <RecipeDetailTopComponent isOptimized={true} />
@@ -48,5 +45,6 @@ const styles = StyleSheet.create({
   },
   dropDownsContainer: {
     paddingHorizontal: 16,
+    gap: 12,
   },
 });

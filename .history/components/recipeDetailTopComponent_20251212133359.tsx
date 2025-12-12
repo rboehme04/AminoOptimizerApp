@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   EditPencilIcon,
+  AppleNaeprofilIcon,
   OptimizedIcon,
   ShareIcon,
   StarLineIcon,

@@ -26,7 +26,8 @@ const RecipeDetailTopComponent = ({
       { icon: <EditPencilIcon size={20} />, onPress: () => {} },
       { icon: <ShareIcon size={20} />, onPress: () => {} },
       { icon: <StarLineIcon size={20} />, onPress: () => {} },
-        ],
+      { icon: <AppleNaeprofilIcon size={20} />, onPress: () => {} },
+    ],
     []
   );
 

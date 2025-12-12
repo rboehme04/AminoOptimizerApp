@@ -9,6 +9,7 @@ import HinzufügenButton from "@/components/erstellenComponents/hinzufügenButto
 import RecipeDetailTopComponent from "@/components/recipeDetailTopComponent";
 import ZubereitungDropDown from "@/components/zubereitungDropDown";
 import ZutatenDropDown from "@/components/zutatenDropDown";
+import { AppleNaeprofilIcon } from "@/assets/icons/icons";
 
 export default function HinzuRezDetailScreen() {
   const insets = useSafeAreaInsets();
@@ -28,6 +29,7 @@ export default function HinzuRezDetailScreen() {
           <View style={styles.dropDownsContainer}>
             <ZutatenDropDown />
             <ZubereitungDropDown isExpanded={false} />
+            <AppleNaeprofilIcon
           </View>
         </View>
       </ScrollView>

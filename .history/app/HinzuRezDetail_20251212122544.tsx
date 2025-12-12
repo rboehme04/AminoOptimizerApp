@@ -48,5 +48,6 @@ const styles = StyleSheet.create({
   },
   dropDownsContainer: {
     paddingHorizontal: 16,
+    gap: 12,
   },
 });

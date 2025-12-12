@@ -11,6 +11,7 @@ import {
 } from "@/assets/icons/icons";
 import NavBar from "@/components/navBar";
 import { Color, Typography } from "@/constants/GlobalStyles"
+import { AppleNaeprofilIcon } from "@/assets/icons/icons";
 const breakfastImage = require("@/assets/images/FrühstücksBowlPicture.png");
 
 interface RecipeDetailTopComponentProps {
@@ -26,7 +27,8 @@ const RecipeDetailTopComponent = ({
       { icon: <EditPencilIcon size={20} />, onPress: () => {} },
       { icon: <ShareIcon size={20} />, onPress: () => {} },
       { icon: <StarLineIcon size={20} />, onPress: () => {} },
-        ],
+      { icon: <LionNaeprofilIcon size={20} />, onPress: () => {} },
+    ],
     []
   );
 

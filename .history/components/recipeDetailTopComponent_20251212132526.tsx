@@ -5,10 +5,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   EditPencilIcon,
+  AppleNaeprofilIcon,
   OptimizedIcon,
   ShareIcon,
   StarLineIcon,
 } from "@/assets/icons/icons";
+import { redApple} f
 import NavBar from "@/components/navBar";
 import { Color, Typography } from "@/constants/GlobalStyles"
 const breakfastImage = require("@/assets/images/FrühstücksBowlPicture.png");
@@ -26,7 +28,8 @@ const RecipeDetailTopComponent = ({
       { icon: <EditPencilIcon size={20} />, onPress: () => {} },
       { icon: <ShareIcon size={20} />, onPress: () => {} },
       { icon: <StarLineIcon size={20} />, onPress: () => {} },
-        ],
+      { icon: <AppleNaeprofilIcon size={24} />, onPress: () => {} },
+    ],
     []
   );
 

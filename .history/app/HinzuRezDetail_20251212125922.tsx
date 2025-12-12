@@ -28,6 +28,7 @@ export default function HinzuRezDetailScreen() {
           <View style={styles.dropDownsContainer}>
             <ZutatenDropDown />
             <ZubereitungDropDown isExpanded={false} />
+            <
           </View>
         </View>
       </ScrollView>
