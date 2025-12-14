@@ -1,0 +1,91 @@
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+
+import DetailsNaehstoffprofilComponent from "@/components/detailsNaehstoffprofilComponent";
+import RecipeDetailTopComponent from "@/components/recipeDetailTopComponent";
+import ZubereitungDropDown from "@/components/zubereitungDropDown";
+import ZutatenDropDown from "@/components/zutatenDropDown";
+import { Color, Typography } from "@/constants/GlobalStyles";
+import NextButton from "@/components/nextButton";
+
+export default function HinzuRezDetailScreen() {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <SafeAreaView style={styles.container} edges={["left", "right"]}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingTop: insets.top },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <RecipeDetailTopComponent isOptimized={true} />
+        <View style={styles.innerContainer}>
+          <View style={styles.dropDownsContainer}>
+            <ZutatenDropDown />
+            <ZubereitungDropDown isExpanded={false} />
+            <DetailsNaehstoffprofilComponent type="rez" />
+            <View style={styles.rezLoeschenOuterContainer}>
+              <Pressable
+                style={[
+                  styles.rezLoeschenInnerContainer,
+                  {
+                    paddingBottom:
+                    Padding.padding_next_buttoninsets.bottom + (Platform.OS === "android" ? 20 : 0),
+                  },
+                ]}
+                onPress={() => {}}
+              >
+                <Text style={styles.rezLoeschenLabel}>Rezept löschen?</Text>
+                <Text style={styles.rezLoeschenText}>löschen</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+      <NextButton text="Optimieren" />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    gap: 16,
+  },
+  innerContainer: {
+    paddingHorizontal: 16,
+    gap: 16,
+  },
+  dropDownsContainer: {},
+  rezLoeschenOuterContainer: {
+    paddingTop: 16,
+    alignItems: "center",
+  },
+  rezLoeschenInnerContainer: {
+    flexWrap: "wrap",
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+  rezLoeschenLabel: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralTextOrTabGrey,
+  },
+  rezLoeschenText: {
+    ...Typography.subheadlineRegular,
+    color: Color.destructive50,
+  },
+});

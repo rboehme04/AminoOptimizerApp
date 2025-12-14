@@ -1,0 +1,50 @@
+import NavBar from "@/components/navBar";
+import { Color, Typography } from "@/constants/GlobalStyles";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const InfoScreen = () => {
+  return (
+    <SafeAreaView>
+      <NavBar title="Wie funktioniert es?" />
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.infoParagraphContainer}>
+          <Text style={styles.infoParagraphTitle}>Wie funktioniert es?</Text>
+          <Text style={styles.infoParagraphTitle}>
+            Nicht jedes Protein ist gleich wertvoll. Entscheidend ist, ob alle
+            essentiellen Aminosäuren in der richtigen Menge vorhanden sind.
+            Diese kann dein Körper nicht selbst herstellen.
+          </Text>
+        </View>
+        <View style={styles.infoParagraphContainer}>
+          <Text style={styles.infoParagraphTitle}>Wie funktioniert es?</Text>
+          <Text style={styles.infoParagraphTitle}>
+            Nicht jedes Protein ist gleich wertvoll. Entscheidend ist, ob alle
+            essentiellen Aminosäuren in der richtigen Menge vorhanden sind.
+            Diese kann dein Körper nicht selbst herstellen.
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    gap: 10,
+  },
+  infoParagraphContainer: {
+    gap: 2,
+  },
+  infoParagraphTitle: {
+    ...Typography.bodyEmphasized,
+    color: Color.neutralWhite,
+  },
+  infoParagraphText: {
+    ...Typography.bodyRegular,
+    color: Color.neutralWhite,
+  },
+});
+
+export default InfoScreen;

@@ -1,0 +1,36 @@
+import { Color, Typography } from "@/constants/GlobalStyles";
+import { StyleSheet, Text, View } from "react-native";
+
+export default function SettingsCategoryRowComponent({ label }: { label: string }) {
+  return (
+    <View style={styles.container}>
+        <View style={styles.labelContainer}>
+            <Text>{label}</Text>
+        </View>
+      <Text>{label}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({ 
+  container: {
+    flexDirection: "row",
+    paddingTop: 8,
+    paddingBottom: 4,
+    paddingHorizontal: 10,
+    gap: 10,
+  },
+  labelContainer: {
+    width: 115,
+  },
+  clickContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingBottom: 14,
+    gap: 10,
+  },
+  text: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralWhite,
+  },
+});
