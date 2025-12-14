@@ -8,24 +8,13 @@ import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
 import SearchBar from "@/components/searchBar";
 import { Padding } from "@/constants/GlobalStyles";
-import { supabase } from "@/utils/supabase";
 
-type LebensmittelItem = {
-  id: string | number;
-  title: string;
-  portion: string;
-  calories: string;
-};
+import { supabase } from '../utils/supabase';
 
 export default function HinzuOverviewScreen() {
   const [activeSide, setActiveSide] = React.useState<"Rezept" | "Lebensmittel">(
     "Lebensmittel"
   );
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<LebensmittelItem[]>(
-    []
-  );
-  const [isSearching, setIsSearching] = React.useState(false);
 
   // Placeholder data - will be replaced with database fetch in the future
   const meals = React.useMemo(
@@ -38,59 +27,8 @@ export default function HinzuOverviewScreen() {
     []
   );
 
-  // Search function for Lebensmittel
-  React.useEffect(() => {
-    const searchFoods = async () => {
-      if (activeSide !== "Lebensmittel" || !searchQuery.trim()) {
-        setSearchResults([]);
-        return;
-      }
-
-      setIsSearching(true);
-      try {
-        const { data, error } = await supabase
-          .from("opennutrition_foods")
-          .select("id, name, calories")
-          .ilike("name", `%${searchQuery.trim()}%`)
-          .limit(50)
-          .order("name", { ascending: true });
-
-        if (error) {
-          console.error("Error searching foods:", error);
-          setSearchResults([]);
-        } else {
-          // Transform the data to match the expected format
-          const transformedResults = (data || []).map(food => ({
-            id: food.id,
-            title: food.name,
-            portion: "100 g",
-            calories: food.calories
-              ? `${Math.round(food.calories)} kcal`
-              : "0 kcal",
-          }));
-          setSearchResults(transformedResults);
-        }
-      } catch (error) {
-        console.error("Error searching foods:", error);
-        setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    };
-
-    // Debounce the search
-    const timeoutId = setTimeout(() => {
-      searchFoods();
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery, activeSide]);
-
   const handleToggle = (side: "left" | "right") => {
     setActiveSide(side === "left" ? "Rezept" : "Lebensmittel");
-    // Clear search when switching sides
-    setSearchQuery("");
-    setSearchResults([]);
   };
 
   return (
@@ -101,8 +39,6 @@ export default function HinzuOverviewScreen() {
           placeholder={
             activeSide === "Rezept" ? "Rezept suchen" : "Lebensmittel suchen"
           }
-          value={searchQuery}
-          onChangeText={setSearchQuery}
         />
         <LeftRightToggle
           leftLabel="Rezepte"
@@ -117,14 +53,7 @@ export default function HinzuOverviewScreen() {
         showsVerticalScrollIndicator={false}
         keyboardDismissMode="on-drag"
       >
-        <RezSelectionAndFilterComponent
-          activeSide={activeSide}
-          searchResults={
-            activeSide === "Lebensmittel" && searchQuery.trim()
-              ? searchResults
-              : undefined
-          }
-        />
+        <RezSelectionAndFilterComponent activeSide={activeSide} />
       </ScrollView>
       <NextButton text="Fertig" badge={2} />
     </SafeAreaView>

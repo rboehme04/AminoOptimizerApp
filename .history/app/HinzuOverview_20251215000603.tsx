@@ -53,7 +53,7 @@ export default function HinzuOverviewScreen() {
           .select("id, name, calories")
           .ilike("name", `%${searchQuery.trim()}%`)
           .limit(50)
-          .order("name", { ascending: true });
+          .order("name", { escending: true });
 
         if (error) {
           console.error("Error searching foods:", error);
