@@ -47,7 +47,7 @@ export default function TabOneScreen() {
         </View>
       </LinearGradient>
       <View style={styles.rezepteUndFilterContainer}>
-        <RezSelectionAndFilterComponent activeSide="left" />
+        <RezSelectionAndFilterComponent activeSide="" />
         <View style={styles.mealRowsContainer}>
           <MealRow isOptimized={true} />
           <MealRow isOptimized={false} />

@@ -156,10 +156,18 @@ const RezSelectionAndFilterComponent = ({
       </View>
       {hasNoFavorites ? (
         <View style={styles.emptyStateContainer}>
-          <Text style={styles.emptyStateText}>
-            Deine Favoriten sind noch leer. Tippe auf den Stern, um Rezepte oder
-            Lebensmittel hinzuzufügen.
-          </Text>
+          <View style={styles.emptyStateTextContainer}>
+            <Text style={styles.emptyStateText}>
+              Deine Favoriten sind noch leer.{"\n"}
+            </Text>
+            <View style={styles.inlineIconContainer}>
+              <Text style={styles.emptyStateText}>Tippe auf </Text>
+              <StarLineIcon size={16} color={Color.neutralTextOrTabGrey} />
+              <Text style={styles.emptyStateText}>
+                , um Rezepte oder Lebensmittel hinzuzufügen.
+              </Text>
+            </View>
+          </View>
         </View>
       ) : (
         <View style={styles.itemsContainer}>
@@ -235,6 +243,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     alignItems: "center",
     justifyContent: "center",
+  },
+  emptyStateTextContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inlineIconContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   emptyStateText: {
     ...Typography.bodyRegular,

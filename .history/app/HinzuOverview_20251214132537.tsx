@@ -52,6 +52,11 @@ export default function HinzuOverviewScreen() {
         keyboardDismissMode="on-drag"
       >
         <RezSelectionAndFilterComponent activeSide={activeSide} />
+        {/* <View style={styles.mealRowsContainer}>
+          {activeSide === "left"
+            ? meals.map(meal => <AddMealRow key={meal.id} />)
+            : lebensmittel.map(item => <AddLebensmittelRow key={item.id} />)}
+        </View> */}
       </ScrollView>
       <NextButton text="Fertig" badge={2} />
     </SafeAreaView>

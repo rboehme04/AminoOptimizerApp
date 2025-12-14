@@ -156,10 +156,7 @@ const RezSelectionAndFilterComponent = ({
       </View>
       {hasNoFavorites ? (
         <View style={styles.emptyStateContainer}>
-          <Text style={styles.emptyStateText}>
-            Deine Favoriten sind noch leer. Tippe auf den Stern, um Rezepte oder
-            Lebensmittel hinzuzufügen.
-          </Text>
+          <Text style={styles.emptyStateText}>Keine Favoriten gefunden</Text>
         </View>
       ) : (
         <View style={styles.itemsContainer}>

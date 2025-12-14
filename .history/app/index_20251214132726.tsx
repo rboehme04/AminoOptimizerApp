@@ -1,5 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
@@ -15,6 +16,7 @@ import NavBar from "@/components/navBar";
 import { Color, Typography } from "@/constants/GlobalStyles";
 
 export default function TabOneScreen() {
+  const [activeSide, setActiveSide] = React.useState<"left" | "right">("right");
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -47,7 +49,7 @@ export default function TabOneScreen() {
         </View>
       </LinearGradient>
       <View style={styles.rezepteUndFilterContainer}>
-        <RezSelectionAndFilterComponent activeSide="left" />
+        <RezSelectionAndFilterComponent activeSide={activeSide} />
         <View style={styles.mealRowsContainer}>
           <MealRow isOptimized={true} />
           <MealRow isOptimized={false} />
