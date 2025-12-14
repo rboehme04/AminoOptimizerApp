@@ -1,54 +1,69 @@
-import { AddIcon, EatSymbolIcon, SolidFireIcon } from "@/assets/icons/icons";
+import {
+  AddIcon,
+  EatSymbolIcon,
+  MagicSparkleIcon,
+  SolidFireIcon,
+} from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-type LebensmittelRowProps = {
+const OptimizedBadge = () => {
+  return (
+    <View style={[styles.optimizedBadge]}>
+      <MagicSparkleIcon width={12} height={12} />
+      <Text style={styles.optimized}>Optimized</Text>
+    </View>
+  );
+};
+
+type AddMealRowProps = {
   title?: string;
-  portion?: string;
+  ingredients?: string;
   calories?: string;
+  isOptimized?: boolean;
   onPress?: () => void;
   onAddPress?: () => void;
 };
 
-const LebensmittelRow = ({
-  title = "Apfel (mit Schale), frisch",
-  portion = "1 Frucht, mittelgroß",
-  calories = "52 kcal",
+const AddMealRow = ({
+  title = "Frühstücks Bowl",
+  ingredients = "Banane, Haferflocken, Blaubeeren, Heidelbeeren",
+  calories = "555 kcal",
+  isOptimized = false,
   onPress,
   onAddPress = () => {},
-}: LebensmittelRowProps) => {
+}: AddMealRowProps) => {
   const router = useRouter();
 
   const handlePress = () => {
     if (onPress) {
       onPress();
     } else {
-      router.push("/HinzuLebDetail");
+      router.push("/HinzuRezDetail");
     }
   };
 
   return (
-    <View style={styles.lebensmittelRow}>
+    <View style={styles.mealRow}>
       <Pressable style={styles.leftClickContainer} onPress={handlePress}>
-        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-          {title}
-        </Text>
+      <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">{title}</Text>
         <View style={[styles.bottomContainer]}>
           <View style={[styles.leftContainer]}>
+            {isOptimized ? <OptimizedBadge /> : null}
             <EatSymbolIcon
               width={18}
               height={18}
               color={Color.neutralTagColor}
             />
-            <View style={styles.portionContainer}>
+            <View style={styles.ingredientsContainer}>
               <Text
                 style={[styles.captionTypo]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {portion}
+                {ingredients}
               </Text>
             </View>
           </View>
@@ -66,7 +81,7 @@ const LebensmittelRow = ({
         style={[styles.rightClickContainer]}
         onPress={onAddPress}
         accessibilityRole="button"
-        accessibilityLabel="Add ingredient"
+        accessibilityLabel="Add meal"
       >
         <View style={styles.addButton}>
           <AddIcon size={24} color={Color.neutralWhite} />
@@ -77,7 +92,7 @@ const LebensmittelRow = ({
 };
 
 const styles = StyleSheet.create({
-  lebensmittelRow: {
+  mealRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -110,7 +125,7 @@ const styles = StyleSheet.create({
     gap: 4,
     flex: 1,
   },
-  portionContainer: {
+  ingredientsContainer: {
     flex: 1,
   },
   rightContainer: {
@@ -135,6 +150,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  optimizedBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 12,
+    backgroundColor: Color.brand50GraphicsOrBrandButton,
+    paddingLeft: 4,
+    paddingRight: 6,
+    paddingVertical: 1,
+    gap: 4,
+  },
+  optimized: {
+    ...Typography.caption1Emphasized,
+    color: Color.neutralWhite,
+  },
 });
 
-export default LebensmittelRow;
+export default AddMealRow;
