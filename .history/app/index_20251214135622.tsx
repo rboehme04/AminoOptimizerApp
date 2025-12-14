@@ -7,6 +7,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { SettingsIcon } from "@/assets/icons/icons";
+import MealRow from "@/components/indexComponents/mealRow";
 import QuestionButton from "@/components/indexComponents/questionButton";
 import RezeptErstellenButton from "@/components/indexComponents/rezeptErstellenButton";
 import RezSelectionAndFilterComponent from "@/components/indexComponents/rezSelectionAndFilterComponent";
@@ -46,7 +47,11 @@ export default function TabOneScreen() {
         </View>
       </LinearGradient>
       <View style={styles.rezepteUndFilterContainer}>
-        <RezSelectionAndFilterComponent isOptimizerHome={true} />
+        <RezSelectionAndFilterComponent activeSide="Rezept" />
+        <View style={styles.mealRowsContainer}>
+          <MealRow isOptimized={true} />
+          <MealRow isOptimized={false} />
+        </View>
       </View>
     </SafeAreaView>
   );

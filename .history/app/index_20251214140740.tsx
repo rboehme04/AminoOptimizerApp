@@ -7,6 +7,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { SettingsIcon } from "@/assets/icons/icons";
+import MealRow from "@/components/indexComponents/mealRow";
 import QuestionButton from "@/components/indexComponents/questionButton";
 import RezeptErstellenButton from "@/components/indexComponents/rezeptErstellenButton";
 import RezSelectionAndFilterComponent from "@/components/indexComponents/rezSelectionAndFilterComponent";

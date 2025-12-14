@@ -4,7 +4,6 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { StarFullIcon, StarLineIcon } from "@/assets/icons/icons";
 import AddLebensmittelRow from "@/components/erstellenComponents/addLebRow";
 import AddMealRow from "@/components/erstellenComponents/addMealRow";
-import MealRow from "@/components/indexComponents/mealRow";
 import { Color, Gap, Typography } from "@/constants/GlobalStyles";
 
 type RecipeItem = {
@@ -12,7 +11,6 @@ type RecipeItem = {
   title: string;
   ingredients: string;
   calories: string;
-  isOptimized: boolean;
 };
 
 type LebensmittelItem = {
@@ -22,21 +20,16 @@ type LebensmittelItem = {
   calories: string;
 };
 
-type RezSelectionAndFilterComponentProps =
-  | {
-      isOptimizerHome: true;
-      activeSide?: "Rezept" | "Lebensmittel";
-    }
-  | {
-      isOptimizerHome?: false;
-      activeSide: "Rezept" | "Lebensmittel";
-    };
+type RezSelectionAndFilterComponentProps = {
+  activeSide: "Rezept" | "Lebensmittel";
+  isOptimizerHome?: boolean;
+};
 
-const RezSelectionAndFilterComponent = (
-  props: RezSelectionAndFilterComponentProps
-) => {
-  const isOptimizerHome = props.isOptimizerHome ?? false;
-  const effectiveActiveSide = isOptimizerHome ? "Rezept" : props.activeSide;
+const RezSelectionAndFilterComponent = ({
+  activeSide,
+  isOptimizerHome = false,
+}: RezSelectionAndFilterComponentProps) => {
+  const effectiveActiveSide = isOptimizerHome ? "Rezept" : activeSide;
   const [selection, setSelection] = useState<"letzte" | "favoriten">("letzte");
 
   // Placeholder data - will be replaced with database fetch in the future
@@ -50,21 +43,18 @@ const RezSelectionAndFilterComponent = (
           title: "Frühstücks Bowl",
           ingredients: "Banane, Haferflocken, Blaubeeren",
           calories: "555 kcal",
-          isOptimized: false,
         },
         {
           id: 2,
           title: "Protein Smoothie",
           ingredients: "Whey Protein, Banane, Milch",
           calories: "320 kcal",
-          isOptimized: true,
         },
         {
           id: 3,
           title: "Avocado Toast",
           ingredients: "Avocado, Vollkornbrot, Ei",
           calories: "420 kcal",
-          isOptimized: true,
         },
       ] as RecipeItem[];
     } else {
@@ -177,25 +167,14 @@ const RezSelectionAndFilterComponent = (
       ) : (
         <View style={styles.itemsContainer}>
           {effectiveActiveSide === "Rezept"
-            ? (displayedItems as RecipeItem[]).map(recipe =>
-                isOptimizerHome ? (
-                  <MealRow
-                    key={recipe.id}
-                    title={recipe.title}
-                    ingredients={recipe.ingredients}
-                    calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
-                  />
-                ) : (
-                  <AddMealRow
-                    key={recipe.id}
-                    title={recipe.title}
-                    ingredients={recipe.ingredients}
-                    calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
-                  />
-                )
-              )
+            ? (displayedItems as RecipeItem[]).map(recipe => (
+                <AddMealRow
+                  key={recipe.id}
+                  title={recipe.title}
+                  ingredients={recipe.ingredients}
+                  calories={recipe.calories}
+                />
+              ))
             : (displayedItems as LebensmittelItem[]).map(item => (
                 <AddLebensmittelRow
                   key={item.id}

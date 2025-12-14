@@ -12,7 +12,6 @@ type RecipeItem = {
   title: string;
   ingredients: string;
   calories: string;
-  isOptimized: boolean;
 };
 
 type LebensmittelItem = {
@@ -184,7 +183,7 @@ const RezSelectionAndFilterComponent = (
                     title={recipe.title}
                     ingredients={recipe.ingredients}
                     calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
+                    isOptimized={true}
                   />
                 ) : (
                   <AddMealRow
@@ -192,7 +191,6 @@ const RezSelectionAndFilterComponent = (
                     title={recipe.title}
                     ingredients={recipe.ingredients}
                     calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
                   />
                 )
               )

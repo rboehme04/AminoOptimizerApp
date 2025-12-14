@@ -192,7 +192,7 @@ const RezSelectionAndFilterComponent = (
                     title={recipe.title}
                     ingredients={recipe.ingredients}
                     calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
+                    // isOptimized={recipe.isOptimized}
                   />
                 )
               )

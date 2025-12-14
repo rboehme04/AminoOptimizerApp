@@ -4,7 +4,6 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { StarFullIcon, StarLineIcon } from "@/assets/icons/icons";
 import AddLebensmittelRow from "@/components/erstellenComponents/addLebRow";
 import AddMealRow from "@/components/erstellenComponents/addMealRow";
-import MealRow from "@/components/indexComponents/mealRow";
 import { Color, Gap, Typography } from "@/constants/GlobalStyles";
 
 type RecipeItem = {
@@ -12,7 +11,6 @@ type RecipeItem = {
   title: string;
   ingredients: string;
   calories: string;
-  isOptimized: boolean;
 };
 
 type LebensmittelItem = {
@@ -22,27 +20,19 @@ type LebensmittelItem = {
   calories: string;
 };
 
-type RezSelectionAndFilterComponentProps =
-  | {
-      isOptimizerHome: true;
-      activeSide?: "Rezept" | "Lebensmittel";
-    }
-  | {
-      isOptimizerHome?: false;
-      activeSide: "Rezept" | "Lebensmittel";
-    };
+type RezSelectionAndFilterComponentProps = {
+  activeSide: "Rezept" | "Lebensmittel";
+};
 
-const RezSelectionAndFilterComponent = (
-  props: RezSelectionAndFilterComponentProps
-) => {
-  const isOptimizerHome = props.isOptimizerHome ?? false;
-  const effectiveActiveSide = isOptimizerHome ? "Rezept" : props.activeSide;
+const RezSelectionAndFilterComponent = ({
+  activeSide,
+}: RezSelectionAndFilterComponentProps) => {
   const [selection, setSelection] = useState<"letzte" | "favoriten">("letzte");
 
   // Placeholder data - will be replaced with database fetch in the future
   // Only fetches data for the current activeSide
   const recentItems = useMemo(() => {
-    if (effectiveActiveSide === "Rezept") {
+    if (activeSide === "Rezept") {
       // Recipes data - will be replaced with database fetch
       return [
         {
@@ -50,21 +40,18 @@ const RezSelectionAndFilterComponent = (
           title: "Frühstücks Bowl",
           ingredients: "Banane, Haferflocken, Blaubeeren",
           calories: "555 kcal",
-          isOptimized: false,
         },
         {
           id: 2,
           title: "Protein Smoothie",
           ingredients: "Whey Protein, Banane, Milch",
           calories: "320 kcal",
-          isOptimized: true,
         },
         {
           id: 3,
           title: "Avocado Toast",
           ingredients: "Avocado, Vollkornbrot, Ei",
           calories: "420 kcal",
-          isOptimized: true,
         },
       ] as RecipeItem[];
     } else {
@@ -90,19 +77,19 @@ const RezSelectionAndFilterComponent = (
         },
       ] as LebensmittelItem[];
     }
-  }, [effectiveActiveSide]);
+  }, [activeSide]);
 
   // Placeholder data - will be replaced with database fetch in the future
   // Only fetches data for the current activeSide
   const favoriteItems = useMemo(() => {
-    if (effectiveActiveSide === "Rezept") {
+    if (activeSide === "Rezept") {
       // Recipes favorites - will be replaced with database fetch
       return [] as RecipeItem[];
     } else {
       // Lebensmittel favorites - will be replaced with database fetch
       return [] as LebensmittelItem[];
     }
-  }, [effectiveActiveSide]);
+  }, [activeSide]);
 
   const displayedItems = selection === "letzte" ? recentItems : favoriteItems;
 
@@ -176,26 +163,15 @@ const RezSelectionAndFilterComponent = (
         </View>
       ) : (
         <View style={styles.itemsContainer}>
-          {effectiveActiveSide === "Rezept"
-            ? (displayedItems as RecipeItem[]).map(recipe =>
-                isOptimizerHome ? (
-                  <MealRow
-                    key={recipe.id}
-                    title={recipe.title}
-                    ingredients={recipe.ingredients}
-                    calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
-                  />
-                ) : (
-                  <AddMealRow
-                    key={recipe.id}
-                    title={recipe.title}
-                    ingredients={recipe.ingredients}
-                    calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
-                  />
-                )
-              )
+          {activeSide === "Rezept"
+            ? (displayedItems as RecipeItem[]).map(recipe => (
+                <AddMealRow
+                  key={recipe.id}
+                  title={recipe.title}
+                  ingredients={recipe.ingredients}
+                  calories={recipe.calories}
+                />
+              ))
             : (displayedItems as LebensmittelItem[]).map(item => (
                 <AddLebensmittelRow
                   key={item.id}

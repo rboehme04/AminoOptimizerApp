@@ -12,7 +12,6 @@ type RecipeItem = {
   title: string;
   ingredients: string;
   calories: string;
-  isOptimized: boolean;
 };
 
 type LebensmittelItem = {
@@ -57,14 +56,13 @@ const RezSelectionAndFilterComponent = (
           title: "Protein Smoothie",
           ingredients: "Whey Protein, Banane, Milch",
           calories: "320 kcal",
-          isOptimized: true,
+          isOptimized: false,
         },
         {
           id: 3,
           title: "Avocado Toast",
           ingredients: "Avocado, Vollkornbrot, Ei",
           calories: "420 kcal",
-          isOptimized: true,
         },
       ] as RecipeItem[];
     } else {
@@ -184,7 +182,7 @@ const RezSelectionAndFilterComponent = (
                     title={recipe.title}
                     ingredients={recipe.ingredients}
                     calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
+                    isOptimized={true}
                   />
                 ) : (
                   <AddMealRow
@@ -192,7 +190,6 @@ const RezSelectionAndFilterComponent = (
                     title={recipe.title}
                     ingredients={recipe.ingredients}
                     calories={recipe.calories}
-                    isOptimized={recipe.isOptimized}
                   />
                 )
               )
