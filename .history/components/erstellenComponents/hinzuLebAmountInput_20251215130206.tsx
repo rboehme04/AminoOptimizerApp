@@ -175,7 +175,6 @@ const HinzuLebAmountInput = ({
             <View pointerEvents="auto">
               <DropDown
                 width={windowPosition.width || undefined}
-                items={dropdownItems}
                 onSelect={selectedValue => {
                   setSelectedLabel(selectedValue);
                   setIsDropdownOpen(false);
@@ -207,9 +206,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     ...Typography.subheadlineRegular,
     color: Color.neutralWhite,
-    backgroundColor: Color.neutralTagColor,
+    backgroundColor: Color.neutralInputOnDark,
     borderWidth: 1,
-    borderColor: Color.neutralTagColor,
+    borderColor: Color.neutralInputOnDark,
     borderRadius: 12,
   },
   textInputFocused: {

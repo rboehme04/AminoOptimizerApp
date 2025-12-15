@@ -175,7 +175,6 @@ const HinzuLebAmountInput = ({
             <View pointerEvents="auto">
               <DropDown
                 width={windowPosition.width || undefined}
-                items={dropdownItems}
                 onSelect={selectedValue => {
                   setSelectedLabel(selectedValue);
                   setIsDropdownOpen(false);

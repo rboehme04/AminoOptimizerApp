@@ -1,11 +1,6 @@
-import {
-  naehrstoffprofilRows,
-  type NaehrstoffRowConfig,
-  type NutritionalValueConfig,
-} from "@/assets/datasetConfig";
+import { naehrstoffprofilRows } from "@/assets/datasetConfig";
 import { ChevronRightIcon, EatSymbolIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { supabase } from "@/utils/supabase";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -20,8 +15,15 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ProgressBar from "./progressBar";
 
+interface NutritionalValue {
+  label: string;
+  current: number;
+  reference: number;
+  measuringUnit: string;
+}
+
 interface ValueRowContainerProps {
-  value: NutritionalValueConfig;
+  value: NutritionalValue;
 }
 
 const ValueRowContainer = ({ value }: ValueRowContainerProps) => {
@@ -49,7 +51,7 @@ const ValueRowContainer = ({ value }: ValueRowContainerProps) => {
 
 interface NaehrstoffprofilRowProps {
   title?: string;
-  values: NutritionalValueConfig[];
+  values: NutritionalValue[];
   onPress?: () => void;
   icon?: React.ComponentType<{ size?: number }>;
 }
@@ -117,7 +119,12 @@ interface DetailsNaehrstoffprofilComponentProps {
   type: "rez" | "leb";
   label?: string;
   id?: string;
-  rows?: NaehrstoffRowConfig[];
+  rows?: Array<{
+    title: string;
+    values: NutritionalValue[];
+    onPress?: () => void;
+    icon?: React.ComponentType<{ size?: number }>;
+  }>;
 }
 
 function DetailsNaehrstoffprofilComponent({
@@ -127,65 +134,6 @@ function DetailsNaehrstoffprofilComponent({
   rows = naehrstoffprofilRows,
 }: DetailsNaehrstoffprofilComponentProps) {
   const insets = useSafeAreaInsets();
-  const [resolvedRows, setResolvedRows] = useState<NaehrstoffRowConfig[]>(rows);
-
-  useEffect(() => {
-    if (type !== "leb" || !id) {
-      setResolvedRows(rows);
-      return;
-    }
-
-    const loadNutrients = async () => {
-      // collect all column names we need for the current rows
-      const columns = Array.from(
-        new Set(
-          rows
-            .flatMap(row => row.values.map(v => v.column))
-            .filter((col): col is string => !!col)
-        )
-      );
-
-      if (columns.length === 0) {
-        setResolvedRows(rows);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("opennutrition_foods")
-        .select(columns.join(","))
-        .eq("id", id)
-        .single();
-
-      if (error || !data) {
-        console.warn("Failed to load nutrient details for food", { id, error });
-        setResolvedRows(rows);
-        return;
-      }
-      const rowData = data as unknown as Record<string, number | null>;
-
-      const updatedRows: NaehrstoffRowConfig[] = rows.map(row => ({
-        ...row,
-        values: row.values.map(value => {
-          const raw = value.column ? rowData[value.column] : null;
-          const numeric =
-            typeof raw === "number"
-              ? raw
-              : typeof raw === "string"
-              ? Number(raw) || 0
-              : 0;
-
-          return {
-            ...value,
-            current: numeric,
-          };
-        }),
-      }));
-
-      setResolvedRows(updatedRows);
-    };
-
-    loadNutrients();
-  }, [type, id, rows]);
 
   return (
     <View
@@ -198,7 +146,7 @@ function DetailsNaehrstoffprofilComponent({
     >
       <Text style={styles.labelText}>{label}</Text>
       <View style={styles.rowsListContainer}>
-        {resolvedRows.map((row, index) => (
+        {rows.map((row, index) => (
           <NaehrstoffprofilRow
             key={`${row.title}-${index}`}
             title={row.title}

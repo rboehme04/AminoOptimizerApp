@@ -161,6 +161,7 @@ function DetailsNaehrstoffprofilComponent({
         setResolvedRows(rows);
         return;
       }
+
       const rowData = data as unknown as Record<string, number | null>;
 
       const updatedRows: NaehrstoffRowConfig[] = rows.map(row => ({

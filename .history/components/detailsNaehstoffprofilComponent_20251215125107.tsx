@@ -7,16 +7,7 @@ import { ChevronRightIcon, EatSymbolIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { supabase } from "@/utils/supabase";
 import { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  UIManager,
-  View,
-} from "react-native";
+import { Animated, LayoutAnimation, Platform, Pressable, StyleSheet, Text, UIManager, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ProgressBar from "./progressBar";
 
@@ -140,9 +131,9 @@ function DetailsNaehrstoffprofilComponent({
       const columns = Array.from(
         new Set(
           rows
-            .flatMap(row => row.values.map(v => v.column))
-            .filter((col): col is string => !!col)
-        )
+            .flatMap((row) => row.values.map((v) => v.column))
+            .filter((col): col is string => !!col),
+        ),
       );
 
       if (columns.length === 0) {
@@ -161,18 +152,19 @@ function DetailsNaehrstoffprofilComponent({
         setResolvedRows(rows);
         return;
       }
+
       const rowData = data as unknown as Record<string, number | null>;
 
-      const updatedRows: NaehrstoffRowConfig[] = rows.map(row => ({
+      const updatedRows: NaehrstoffRowConfig[] = rows.map((row) => ({
         ...row,
-        values: row.values.map(value => {
+        values: row.values.map((value) => {
           const raw = value.column ? rowData[value.column] : null;
           const numeric =
             typeof raw === "number"
               ? raw
               : typeof raw === "string"
-              ? Number(raw) || 0
-              : 0;
+                ? Number(raw) || 0
+                : 0;
 
           return {
             ...value,

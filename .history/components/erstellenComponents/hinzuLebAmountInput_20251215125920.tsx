@@ -13,14 +13,15 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 import DropDown from "../dropDown";
 
 const dropdownItems = [
-  "g",
-  "kg",
   "Frucht, mittelgroß",
   "Frucht, klein",
   "Frucht, groß",
+  "1 g",
+  "1 kg",
 ];
 
-type HinzuLebAmountInputProps = {
+type HinzuRezAmountInputProps = {
+  label?: string;
   initialValue?: number;
   min?: number;
   max?: number;
@@ -28,11 +29,12 @@ type HinzuLebAmountInputProps = {
 };
 
 const HinzuLebAmountInput = ({
+  label = "Rezept Portionen",
   initialValue = 1,
   min = 0,
   max = 99,
   onChange,
-}: HinzuLebAmountInputProps) => {
+}: HinzuRezAmountInputProps) => {
   const [value, setValue] = React.useState(initialValue.toString());
   const [isFocused, setIsFocused] = React.useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -175,7 +177,6 @@ const HinzuLebAmountInput = ({
             <View pointerEvents="auto">
               <DropDown
                 width={windowPosition.width || undefined}
-                items={dropdownItems}
                 onSelect={selectedValue => {
                   setSelectedLabel(selectedValue);
                   setIsDropdownOpen(false);
@@ -207,9 +208,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     ...Typography.subheadlineRegular,
     color: Color.neutralWhite,
-    backgroundColor: Color.neutralTagColor,
+    backgroundColor: Color.neutralInputOnDark,
     borderWidth: 1,
-    borderColor: Color.neutralTagColor,
+    borderColor: Color.neutralInputOnDark,
     borderRadius: 12,
   },
   textInputFocused: {

@@ -25,7 +25,7 @@ export interface NutrientReferenceGroup {
   icon?: ComponentType<{ size?: number }>;
 }
 
-// Todo: not all measuringUnits are correct, check Naehrstoffprofil with examples
+
 
 export const nutrientReferences: NutrientReferenceGroup[] = [
   {
