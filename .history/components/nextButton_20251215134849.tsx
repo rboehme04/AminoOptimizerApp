@@ -48,7 +48,7 @@ const NextButton = ({
             {text}
           </Text>
         </Pressable>
-        {/* Todo: only display if > 0 */}
+        {/* Todo: only display if >  */}
         {badge !== undefined && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{badge}</Text>

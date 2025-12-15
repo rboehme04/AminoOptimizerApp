@@ -119,7 +119,11 @@ const ZutatenContainer = ({
   const activeIngredients = externalIngredients ?? ingredients;
 
   const handleAddPress = () => {
-    onAddPress?.();
+    if (onAddPress) {
+      onAddPress();
+    } else {
+      router.push("/HinzuOverview");
+    }
   };
 
   const showEmptyState = activeIngredients.length === 0;
@@ -129,7 +133,11 @@ const ZutatenContainer = ({
       <Text style={styles.headerText}>Zutaten</Text>
       <View style={styles.ingredientsContainer}>
         <View style={styles.listContainer}>
-          {!showEmptyState &&
+          {showEmptyState ? (
+            <Text style={styles.emptyText}>
+              Noch keine Lebensmittel hinzugefügt.
+            </Text>
+          ) : (
             activeIngredients.map(ingredient => (
               <IngredientRow
                 key={ingredient.id}
@@ -140,7 +148,8 @@ const ZutatenContainer = ({
                     : undefined
                 }
               />
-            ))}
+            ))
+          )}
         </View>
         <Pressable style={styles.addButtonContainer} onPress={handleAddPress}>
           <AddCircleOutlineIcon
@@ -222,6 +231,12 @@ const styles = StyleSheet.create({
   addButtonText: {
     ...Typography.subheadlineRegular,
     color: Color.brand40LetzteButtonOrBlueText,
+  },
+  emptyText: {
+    ...Typography.caption1Regular,
+    color: Color.neutralTextOrTabGrey,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
 });
 

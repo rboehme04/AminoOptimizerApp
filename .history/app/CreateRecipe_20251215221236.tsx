@@ -137,11 +137,13 @@ export default function CreateRecipeScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <NextButton
-        text="Speichern"
-        onPress={handleSave}
-        disabled={isSaving || !title.trim() || ingredients.length === 0}
-      />
+      <View style={styles.footer}>
+        <NextButton
+          text="Speichern"
+          onPress={handleSave}
+          disabled={isSaving || !title.trim() || ingredients.length === 0}
+        />
+      </View>
     </SafeAreaView>
   );
 }

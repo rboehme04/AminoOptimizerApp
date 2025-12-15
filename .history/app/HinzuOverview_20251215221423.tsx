@@ -28,8 +28,20 @@ export default function HinzuOverviewScreen() {
   const [searchResults, setSearchResults] = React.useState<LebensmittelItem[]>(
     []
   );
+  const [isSearching, setIsSearching] = React.useState(false);
   const { ingredients } = useRecipeDraft();
   const { addIngredient } = useRecipeDraftActions();
+
+  // Placeholder data - will be replaced with database fetch in the future
+  const meals = React.useMemo(
+    () => [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }],
+    []
+  );
+
+  const lebensmittel = React.useMemo(
+    () => [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }],
+    []
+  );
 
   // Search function for Lebensmittel
   React.useEffect(() => {
@@ -39,6 +51,7 @@ export default function HinzuOverviewScreen() {
         return;
       }
 
+      setIsSearching(true);
       try {
         const trimmedQuery = searchQuery.trim();
         const { data, error } = await supabase
@@ -97,6 +110,8 @@ export default function HinzuOverviewScreen() {
       } catch (error) {
         console.error("Error searching foods:", error);
         setSearchResults([]);
+      } finally {
+        setIsSearching(false);
       }
     };
 

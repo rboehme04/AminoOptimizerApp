@@ -137,11 +137,13 @@ export default function CreateRecipeScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <NextButton
-        text="Speichern"
-        onPress={handleSave}
-        disabled={isSaving || !title.trim() || ingredients.length === 0}
-      />
+      <View style={styles.footer}>
+        <NextButton
+          text="Speichern"
+          onPress={handleSave}
+          disabled={isSaving || !title.trim() || ingredients.length === 0}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -195,4 +197,13 @@ const styles = StyleSheet.create({
     borderColor: Color.neutralWhite,
   },
   bottomContainer: {},
+  footer: {
+    paddingBottom: 12,
+    alignItems: "center",
+  },
+  errorText: {
+    ...Typography.caption1Regular,
+    color: Color.destructive50,
+    marginBottom: 4,
+  },
 });

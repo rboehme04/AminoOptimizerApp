@@ -28,6 +28,7 @@ export default function HinzuOverviewScreen() {
   const [searchResults, setSearchResults] = React.useState<LebensmittelItem[]>(
     []
   );
+  const [isSearching, setIsSearching] = React.useState(false);
   const { ingredients } = useRecipeDraft();
   const { addIngredient } = useRecipeDraftActions();
 
@@ -39,6 +40,7 @@ export default function HinzuOverviewScreen() {
         return;
       }
 
+      setIsSearching(true);
       try {
         const trimmedQuery = searchQuery.trim();
         const { data, error } = await supabase
@@ -97,6 +99,8 @@ export default function HinzuOverviewScreen() {
       } catch (error) {
         console.error("Error searching foods:", error);
         setSearchResults([]);
+      } finally {
+        setIsSearching(false);
       }
     };
 

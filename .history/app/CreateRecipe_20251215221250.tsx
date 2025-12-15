@@ -137,6 +137,7 @@ export default function CreateRecipeScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
       <NextButton
         text="Speichern"
         onPress={handleSave}
