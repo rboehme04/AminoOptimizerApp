@@ -1,15 +1,13 @@
 import { naehrstoffprofilRows } from "@/assets/datasetConfig";
-import { ChevronRightIcon, EatSymbolIcon } from "@/assets/icons/icons";
+import { ChevronRightIcon, EatSymbolIcon, Lion3dIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Animated,
-  LayoutAnimation,
   Platform,
   Pressable,
   StyleSheet,
   Text,
-  UIManager,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -65,17 +63,7 @@ const NaehrstoffprofilRow = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    if (
-      Platform.OS === "android" &&
-      UIManager.setLayoutAnimationEnabledExperimental
-    ) {
-      UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
-  }, []);
-
   const toggleExpanded = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const toValue = isExpanded ? 0 : 1;
     setIsExpanded(!isExpanded);
 

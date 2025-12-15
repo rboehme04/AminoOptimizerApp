@@ -1,7 +1,7 @@
 import { naehrstoffprofilRows } from "@/assets/datasetConfig";
 import { ChevronRightIcon, EatSymbolIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   LayoutAnimation,
@@ -63,6 +63,8 @@ const NaehrstoffprofilRow = ({
   icon: Icon = EatSymbolIcon,
 }: NaehrstoffprofilRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -73,6 +75,23 @@ const NaehrstoffprofilRow = ({
       UIManager.setLayoutAnimationEnabledExperimental(true);
     }
   }, []);
+
+  const durationForHeight = (height: number) => {
+    if (height <= 0) {
+      return 180;
+    }
+    // Keep a roughly constant velocity across rows; clamp to avoid extremes.
+    return Math.max(180, Math.min(750, Math.round(height * 3)));
+  };
+
+  useEffect(() => {
+    if (contentHeight === 0) return;
+    Animated.timing(contentAnim, {
+      toValue: isExpanded ? contentHeight : 0,
+      duration: durationForHeight(contentHeight),
+      useNativeDriver: false,
+    }).start();
+  }, [contentHeight, isExpanded, contentAnim]);
 
   const toggleExpanded = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

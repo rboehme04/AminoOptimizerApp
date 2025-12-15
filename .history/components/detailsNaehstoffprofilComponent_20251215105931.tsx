@@ -1,7 +1,7 @@
 import { naehrstoffprofilRows } from "@/assets/datasetConfig";
 import { ChevronRightIcon, EatSymbolIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   LayoutAnimation,
@@ -63,6 +63,8 @@ const NaehrstoffprofilRow = ({
   icon: Icon = EatSymbolIcon,
 }: NaehrstoffprofilRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -73,6 +75,23 @@ const NaehrstoffprofilRow = ({
       UIManager.setLayoutAnimationEnabledExperimental(true);
     }
   }, []);
+
+  const durationForHeight = (height: number) => {
+    if (height <= 0) {
+      return 180;
+    }
+    // Keep a roughly constant velocity across rows; clamp to avoid extremes.
+    return Math.max(180, Math.min(750, Math.round(height * 3)));
+  };
+
+  useEffect(() => {
+    if (contentHeight === 0) return;
+    Animated.timing(contentAnim, {
+      toValue: isExpanded ? contentHeight : 0,
+      duration: durationForHeight(contentHeight),
+      useNativeDriver: false,
+    }).start();
+  }, [contentHeight, isExpanded, contentAnim]);
 
   const toggleExpanded = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -95,6 +114,23 @@ const NaehrstoffprofilRow = ({
     outputRange: ["0deg", "90deg"],
   });
 
+  const renderValueRows = useMemo(
+    () =>
+      values.map((value, index) => (
+        <ValueRowContainer key={`${value.label}-${index}`} value={value} />
+      )),
+    [values],
+  );
+
+  const handleContentLayout = (event: {
+    nativeEvent: { layout: { height: number } };
+  }) => {
+    const height = event?.nativeEvent?.layout?.height ?? 0;
+    if (height > 0 && height !== contentHeight) {
+      setContentHeight(height);
+    }
+  };
+
   return (
     <View style={styles.rowOuterContainer}>
       <Pressable style={styles.rowInnerContainer} onPress={toggleExpanded}>
@@ -104,12 +140,25 @@ const NaehrstoffprofilRow = ({
           <ChevronRightIcon size={20} color={Color.neutralWhite} />
         </Animated.View>
       </Pressable>
-      {isExpanded && values.length > 0 && (
-        <View style={styles.valueRowListContainer}>
-          {values.map((value, index) => (
-            <ValueRowContainer key={`${value.label}-${index}`} value={value} />
-          ))}
-        </View>
+      {values.length > 0 && (
+        <>
+          <View
+            pointerEvents="none"
+            style={styles.valueRowMeasurer}
+            onLayout={handleContentLayout}
+          >
+            <View style={styles.valueRowListContainer}>{renderValueRows}</View>
+          </View>
+          <Animated.View
+            pointerEvents={isExpanded ? "auto" : "none"}
+            style={[
+              styles.valueRowAnimatedContainer,
+              { height: contentAnim, opacity: contentHeight ? 1 : 0 },
+            ]}
+          >
+            <View style={styles.valueRowListContainer}>{renderValueRows}</View>
+          </Animated.View>
+        </>
       )}
     </View>
   );
@@ -189,6 +238,15 @@ const styles = StyleSheet.create({
   valueRowListContainer: {
     gap: 16,
     paddingBottom: 12,
+  },
+  valueRowAnimatedContainer: {
+    overflow: "hidden",
+  },
+  valueRowMeasurer: {
+    position: "absolute",
+    opacity: 0,
+    zIndex: -1,
+    width: "100%",
   },
   valueRowOuterContainer: {
     gap: 16,

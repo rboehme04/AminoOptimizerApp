@@ -1,7 +1,7 @@
 import { naehrstoffprofilRows } from "@/assets/datasetConfig";
 import { ChevronRightIcon, EatSymbolIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   LayoutAnimation,
@@ -63,6 +63,8 @@ const NaehrstoffprofilRow = ({
   icon: Icon = EatSymbolIcon,
 }: NaehrstoffprofilRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [contentHeight, setContentHeight] = useState(0);
+  const contentAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

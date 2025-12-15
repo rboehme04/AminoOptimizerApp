@@ -4,12 +4,10 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  LayoutAnimation,
   Platform,
   Pressable,
   StyleSheet,
   Text,
-  UIManager,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -64,36 +62,63 @@ const NaehrstoffprofilRow = ({
 }: NaehrstoffprofilRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (
-      Platform.OS === "android" &&
-      UIManager.setLayoutAnimationEnabledExperimental
-    ) {
-      UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
-  }, []);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [shouldRenderContent, setShouldRenderContent] = useState(false);
+  const slideAnim = useRef(new Animated.Value(0)).current;
 
   const toggleExpanded = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const toValue = isExpanded ? 0 : 1;
     setIsExpanded(!isExpanded);
+    if (!isExpanded) {
+      setShouldRenderContent(true);
+    }
 
     Animated.timing(rotateAnim, {
       toValue,
       duration: 200,
       useNativeDriver: true,
     }).start();
-
-    if (onPress) {
-      onPress();
-    }
+    onPress?.();
   };
 
   const rotateInterpolate = rotateAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "90deg"],
   });
+
+  useEffect(() => {
+    if (!shouldRenderContent || contentHeight === 0) {
+      return;
+    }
+
+    Animated.timing(slideAnim, {
+      toValue: isExpanded ? contentHeight : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start(() => {
+      if (!isExpanded) {
+        setShouldRenderContent(false);
+      }
+    });
+  }, [contentHeight, isExpanded, shouldRenderContent, slideAnim]);
+
+  const animatedContentStyles = {
+    height: slideAnim,
+    opacity: slideAnim.interpolate({
+      inputRange: [0, Math.max(contentHeight, 1)],
+      outputRange: [0, 1],
+      extrapolate: "clamp",
+    }),
+    transform: [
+      {
+        translateY: slideAnim.interpolate({
+          inputRange: [0, Math.max(contentHeight, 1)],
+          outputRange: [-8, 0],
+          extrapolate: "clamp",
+        }),
+      },
+    ],
+  };
 
   return (
     <View style={styles.rowOuterContainer}>
@@ -104,12 +129,19 @@ const NaehrstoffprofilRow = ({
           <ChevronRightIcon size={20} color={Color.neutralWhite} />
         </Animated.View>
       </Pressable>
-      {isExpanded && values.length > 0 && (
-        <View style={styles.valueRowListContainer}>
+      {shouldRenderContent && values.length > 0 && (
+        <Animated.View
+          style={[styles.valueRowListContainer, animatedContentStyles]}
+          onLayout={(event) => {
+            if (contentHeight === 0) {
+              setContentHeight(event.nativeEvent.layout.height);
+            }
+          }}
+        >
           {values.map((value, index) => (
             <ValueRowContainer key={`${value.label}-${index}`} value={value} />
           ))}
-        </View>
+        </Animated.View>
       )}
     </View>
   );
@@ -189,6 +221,7 @@ const styles = StyleSheet.create({
   valueRowListContainer: {
     gap: 16,
     paddingBottom: 12,
+    overflow: "hidden",
   },
   valueRowOuterContainer: {
     gap: 16,

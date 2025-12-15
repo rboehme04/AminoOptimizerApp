@@ -35,7 +35,7 @@ export const nutrientReferences: NutrientReferenceGroup[] = [
       { label: "Fett", reference: 65, measuringUnit: "g", column: "total_fat" }, // ~30% kcal
       { label: "Ballaststoffe", reference: 30, measuringUnit: "g", column: "dietary_fiber" },
       { label: "Wasser", reference: 2000, measuringUnit: "g", column: "water" },
-      { label: "Salz", reference: 6, measuringUnit: "g", column: "salt" },
+      
       { label: "Alkohol", reference: 0, measuringUnit: "g", column: "ethyl_alcohol" },
     ],
     icon: Lion3dIcon,
