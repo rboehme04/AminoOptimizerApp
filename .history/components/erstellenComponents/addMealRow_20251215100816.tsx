@@ -7,7 +7,7 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import AddIconButton from "./addIconButton";
+import AddIconButton, { AddIconButtonHandle } from "./addIconButton";
 
 const OptimizedBadge = () => {
   return (
@@ -36,6 +36,7 @@ const AddMealRow = ({
   onAddPress = () => {},
 }: AddMealRowProps) => {
   const router = useRouter();
+  const addButtonRef = React.useRef<AddIconButtonHandle>(null);
 
   const handlePress = () => {
     if (onPress) {
@@ -43,6 +44,11 @@ const AddMealRow = ({
     } else {
       router.push("/HinzuRezDetail");
     }
+  };
+
+  const handleAddPress = () => {
+    onAddPress();
+    addButtonRef.current?.trigger();
   };
 
   return (
@@ -79,11 +85,14 @@ const AddMealRow = ({
           </View>
         </View>
       </Pressable>
-      <AddIconButton
-        containerStyle={styles.rightClickContainer}
+      <Pressable
+        style={[styles.rightClickContainer]}
+        onPress={handleAddPress}
+        accessibilityRole="button"
         accessibilityLabel="Add meal"
-        onPress={onAddPress}
-      />
+      >
+        <AddIconButton ref={addButtonRef} />
+      </Pressable>
     </View>
   );
 };

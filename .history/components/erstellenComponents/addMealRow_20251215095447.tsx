@@ -1,4 +1,5 @@
 import {
+  AddIcon,
   EatSymbolIcon,
   MagicSparkleIcon,
   SolidFireIcon,
@@ -7,7 +8,6 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import AddIconButton from "./addIconButton";
 
 const OptimizedBadge = () => {
   return (
@@ -79,11 +79,16 @@ const AddMealRow = ({
           </View>
         </View>
       </Pressable>
-      <AddIconButton
-        containerStyle={styles.rightClickContainer}
-        accessibilityLabel="Add meal"
+      <Pressable
+        style={[styles.rightClickContainer]}
         onPress={onAddPress}
-      />
+        accessibilityRole="button"
+        accessibilityLabel="Add meal"
+      >
+        <View style={styles.addButton}>
+          <AddIcon size={24} color={Color.neutralWhite} />
+        </View>
+      </Pressable>
     </View>
   );
 };
@@ -136,6 +141,16 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingRight: 13,
     alignSelf: "stretch",
+  },
+  addButton: {
+    height: 40,
+    width: 40,
+    borderRadius: 9999,
+    borderStyle: "solid",
+    borderColor: Color.neutralStrokeColor,
+    borderWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   optimizedBadge: {
     flexDirection: "row",

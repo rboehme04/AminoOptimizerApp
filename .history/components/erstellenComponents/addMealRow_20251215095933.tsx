@@ -1,4 +1,6 @@
 import {
+  AddIcon,
+  CheckMarkIcon,
   EatSymbolIcon,
   MagicSparkleIcon,
   SolidFireIcon,
@@ -6,8 +8,7 @@ import {
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { useRouter } from "expo-router";
 import * as React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import AddIconButton from "./addIconButton";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 
 const OptimizedBadge = () => {
   return (
@@ -36,6 +37,42 @@ const AddMealRow = ({
   onAddPress = () => {},
 }: AddMealRowProps) => {
   const router = useRouter();
+  const addAnim = React.useRef(new Animated.Value(0)).current;
+
+  const animatedButtonStyle = React.useMemo(
+    () => ({
+      backgroundColor: addAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: ["transparent", Color.brand50GraphicsOrBrandButton],
+      }),
+      borderColor: addAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+          Color.neutralStrokeColor,
+          Color.brand50GraphicsOrBrandButton,
+        ],
+      }),
+      transform: [
+        {
+          scale: addAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 0.94],
+          }),
+        },
+      ],
+    }),
+    [addAnim]
+  );
+
+  const addIconOpacity = addAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+
+  const checkIconOpacity = addAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
 
   const handlePress = () => {
     if (onPress) {
@@ -43,6 +80,22 @@ const AddMealRow = ({
     } else {
       router.push("/HinzuRezDetail");
     }
+  };
+
+  const handleAddPress = () => {
+    onAddPress();
+    Animated.sequence([
+      Animated.timing(addAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: false,
+      }),
+      Animated.timing(addAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: false,
+      }),
+    ]).start();
   };
 
   return (
@@ -79,11 +132,23 @@ const AddMealRow = ({
           </View>
         </View>
       </Pressable>
-      <AddIconButton
-        containerStyle={styles.rightClickContainer}
+      <Pressable
+        style={[styles.rightClickContainer]}
+        onPress={handleAddPress}
+        accessibilityRole="button"
         accessibilityLabel="Add meal"
-        onPress={onAddPress}
-      />
+      >
+        <Animated.View style={[styles.addButton, animatedButtonStyle]}>
+          <Animated.View
+            style={{ position: "absolute", opacity: addIconOpacity }}
+          >
+            <AddIcon size={24} color={Color.neutralWhite} />
+          </Animated.View>
+          <Animated.View style={{ opacity: checkIconOpacity }}>
+            <CheckMarkIcon size={24} color={Color.neutralWhite} />
+          </Animated.View>
+        </Animated.View>
+      </Pressable>
     </View>
   );
 };
@@ -136,6 +201,16 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
     paddingRight: 13,
     alignSelf: "stretch",
+  },
+  addButton: {
+    height: 40,
+    width: 40,
+    borderRadius: 9999,
+    borderStyle: "solid",
+    borderColor: Color.neutralStrokeColor,
+    borderWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   optimizedBadge: {
     flexDirection: "row",

@@ -1,4 +1,5 @@
 import {
+  ChevronRightIcon,
   EatSymbolIcon,
   MagicSparkleIcon,
   SolidFireIcon,
@@ -7,7 +8,6 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import AddIconButton from "./addIconButton";
 
 const OptimizedBadge = () => {
   return (
@@ -18,47 +18,31 @@ const OptimizedBadge = () => {
   );
 };
 
-type AddMealRowProps = {
+type MealRowProps = {
   title?: string;
   ingredients?: string;
   calories?: string;
   isOptimized?: boolean;
-  onPress?: () => void;
-  onAddPress?: () => void;
 };
 
-const AddMealRow = ({
-  title = "Frühstücks Bowl",
-  ingredients = "Banane, Haferflocken, Blaubeeren, Heidelbeeren",
-  calories = "555 kcal",
+const MealRow = ({
+  title = "High Protein Raspberry Cheesecake Bowl",
+  ingredients = "Skyr, Himbeeren, Zitronensaft",
+  calories = "226 kcal",
   isOptimized = false,
-  onPress,
-  onAddPress = () => {},
-}: AddMealRowProps) => {
+}: MealRowProps) => {
   const router = useRouter();
 
-  const handlePress = () => {
-    if (onPress) {
-      onPress();
-    } else {
-      router.push("/HinzuRezDetail");
-    }
-  };
-
   return (
-    <View style={styles.mealRow}>
-      <Pressable style={styles.leftClickContainer} onPress={handlePress}>
+    <Pressable style={styles.mealRow} onPress={() => router.push("/RezDetail")}>
+      <View style={styles.leftOuterContainer}>
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {title}
         </Text>
         <View style={[styles.bottomContainer]}>
           <View style={[styles.leftContainer]}>
             {isOptimized ? <OptimizedBadge /> : null}
-            <EatSymbolIcon
-              width={18}
-              height={18}
-              color={Color.neutralTagColor}
-            />
+            <EatSymbolIcon width={18} height={18} />
             <View style={styles.ingredientsContainer}>
               <Text
                 style={[styles.captionTypo]}
@@ -70,21 +54,15 @@ const AddMealRow = ({
             </View>
           </View>
           <View style={[styles.rightContainer]}>
-            <SolidFireIcon
-              width={18}
-              height={18}
-              color={Color.neutralTagColor}
-            />
+            <SolidFireIcon width={18} height={18} />
             <Text style={styles.captionTypo}>{calories}</Text>
           </View>
         </View>
-      </Pressable>
-      <AddIconButton
-        containerStyle={styles.rightClickContainer}
-        accessibilityLabel="Add meal"
-        onPress={onAddPress}
-      />
-    </View>
+      </View>
+      <View style={[styles.rightOuterContainer]}>
+        <ChevronRightIcon />
+      </View>
+    </Pressable>
   );
 };
 
@@ -96,11 +74,11 @@ const styles = StyleSheet.create({
     backgroundColor: Color.neutralBackgroundDarkElevated,
     borderRadius: 32,
   },
-  leftClickContainer: {
+  leftOuterContainer: {
     paddingLeft: 16,
-    paddingRight: 8,
+    paddingRight: 2,
     paddingVertical: 12,
-    gap: 4,
+    gap: 6,
     flex: 1,
   },
   title: {
@@ -125,18 +103,6 @@ const styles = StyleSheet.create({
   ingredientsContainer: {
     flex: 1,
   },
-  rightContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  rightClickContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingLeft: 4,
-    paddingRight: 13,
-    alignSelf: "stretch",
-  },
   optimizedBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -151,6 +117,24 @@ const styles = StyleSheet.create({
     ...Typography.caption1Emphasized,
     color: Color.neutralWhite,
   },
+  rightContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  rightOuterContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingLeft: 8,
+    paddingRight: 12,
+    alignSelf: "stretch",
+    backgroundColor: "red",
+  },
+  addText: {
+    ...Typography.title3Emphasized,
+    color: Color.neutralWhite,
+    lineHeight: 24,
+  },
 });
 
-export default AddMealRow;
+export default MealRow;
