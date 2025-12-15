@@ -198,6 +198,7 @@ const ItemList = ({
           title={item.title}
           portion={item.portion}
           calories={item.calories}
+          
         />
       ))}
     </View>

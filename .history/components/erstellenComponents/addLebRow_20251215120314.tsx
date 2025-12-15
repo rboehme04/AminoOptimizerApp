@@ -23,6 +23,8 @@ const LebensmittelRow = ({
   onAddPress = () => {},
 }: LebensmittelRowProps) => {
 
+  console.log("itemId", itemId);
+
   const router = useRouter();
 
   const handlePress = () => {

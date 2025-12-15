@@ -38,9 +38,7 @@ const RezSelectionAndFilterComponent = (
   props: RezSelectionAndFilterComponentProps
 ) => {
   const isOptimizerHome = props.isOptimizerHome ?? false;
-  const effectiveActiveSide: "Rezept" | "Lebensmittel" = isOptimizerHome
-    ? "Rezept"
-    : props.activeSide ?? "Rezept";
+  const effectiveActiveSide = isOptimizerHome ? "Rezept" : props.activeSide;
   const searchResults = props.searchResults;
 
   const [selection, setSelection] = useState<"letzte" | "favoriten">("letzte");
@@ -63,7 +61,11 @@ const RezSelectionAndFilterComponent = (
   return (
     <View style={styles.container}>
       {!searchResults && (
-        <SelectionToggle selection={selection} onSelect={setSelection} />
+        <SelectionToggle
+          selection={selection}
+          onSelect={setSelection}
+          disabled={Boolean(searchResults)}
+        />
       )}
 
       {hasNoFavorites ? (
@@ -141,7 +143,9 @@ const Badge = ({
       ]}
     >
       {icon}
-      <Text style={[styles.badgeText, isSelected && styles.badgeTextSelected]}>
+      <Text
+        style={[styles.badgeText, isSelected && styles.badgeTextSelected]}
+      >
         {label}
       </Text>
     </View>

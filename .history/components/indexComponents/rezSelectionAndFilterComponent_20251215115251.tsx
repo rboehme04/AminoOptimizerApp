@@ -63,7 +63,10 @@ const RezSelectionAndFilterComponent = (
   return (
     <View style={styles.container}>
       {!searchResults && (
-        <SelectionToggle selection={selection} onSelect={setSelection} />
+        <SelectionToggle
+          selection={selection}
+          onSelect={setSelection}
+        />
       )}
 
       {hasNoFavorites ? (
@@ -141,7 +144,9 @@ const Badge = ({
       ]}
     >
       {icon}
-      <Text style={[styles.badgeText, isSelected && styles.badgeTextSelected]}>
+      <Text
+        style={[styles.badgeText, isSelected && styles.badgeTextSelected]}
+      >
         {label}
       </Text>
     </View>

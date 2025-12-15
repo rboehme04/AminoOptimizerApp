@@ -6,7 +6,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import AddIconButton from "./addIconButton";
 
 type LebensmittelRowProps = {
-  itemId?: string | number;
+  itemId?: string;
   title?: string;
   portion?: string;
   calories?: string;
@@ -22,7 +22,6 @@ const LebensmittelRow = ({
   onPress,
   onAddPress = () => {},
 }: LebensmittelRowProps) => {
-
   const router = useRouter();
 
   const handlePress = () => {
@@ -31,7 +30,7 @@ const LebensmittelRow = ({
     } else {
       router.push({
         pathname: "/HinzuLebDetail",
-        params: { id: itemId?.toString() },
+        params: { id: itemId },
       });
     }
   };

@@ -21,7 +21,8 @@ export default function HinzuLebDetailScreen() {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (!id) return; // just check presence
+    const foodId = id ? Number(id) : null;
+    if (!foodId) return;
 
     const fetchFood = async () => {
       setLoading(true);
@@ -29,15 +30,12 @@ export default function HinzuLebDetailScreen() {
       const { data, error: supabaseError } = await supabase
         .from("opennutrition_foods")
         .select("name, calories, protein, carbohydrates, total_fat")
-        .eq("id", id) // <-- use id as string
+        .eq("id", foodId)
         .single();
 
       if (supabaseError) {
         console.error("Failed to fetch food", supabaseError);
         setError(supabaseError.message);
-        setFood(null);
-      } else if (!data) {
-        setError("Lebensmittel nicht gefunden.");
         setFood(null);
       } else {
         setFood(data);

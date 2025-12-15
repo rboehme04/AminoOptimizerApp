@@ -23,6 +23,8 @@ export default function HinzuLebDetailScreen() {
   React.useEffect(() => {
     if (!id) return; // just check presence
 
+    console.log("foodId", id);
+
     const fetchFood = async () => {
       setLoading(true);
       setError(null);

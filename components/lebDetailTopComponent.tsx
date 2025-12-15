@@ -9,16 +9,29 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 
 interface LebDetailTopComponentProps {
   navbarTitle?: string;
+  name?: string;
+  calories?: number | null;
+  protein?: number | null;
+  carbohydrates?: number | null;
+  totalFat?: number | null;
 }
 
 const LebDetailTopComponent = ({
   navbarTitle = "",
+  name = "",
+  calories = null,
+  protein = null,
+  carbohydrates = null,
+  totalFat = null,
 }: LebDetailTopComponentProps) => {
   const insets = useSafeAreaInsets();
   const rightActions = React.useMemo(
     () => [{ icon: <StarLineIcon size={20} />, onPress: () => {} }],
     []
   );
+
+  const formatMacro = (value: number | null, unit: string) =>
+    value === null || value === undefined ? "-" : `${value}${unit}`;
 
   return (
     <View
@@ -41,15 +54,31 @@ const LebDetailTopComponent = ({
               numberOfLines={3}
               ellipsizeMode="tail"
             >
-              Apfel (mit Schale), frisch
+              {name || "Lebensmittel"}
             </Text>
           </View>
           <View style={styles.macrosContainer}>
             {[
-              { value: "85 kcal", label: "Kalorien", align: "left" as const },
-              { value: "0,4g", label: "Protein", align: "center" as const },
-              { value: "18,7g", label: "Carbs", align: "center" as const },
-              { value: "<0,1g", label: "Fett", align: "right" as const },
+              {
+                value: formatMacro(calories, " kcal"),
+                label: "Kalorien",
+                align: "left" as const,
+              },
+              {
+                value: formatMacro(protein, "g"),
+                label: "Protein",
+                align: "center" as const,
+              },
+              {
+                value: formatMacro(carbohydrates, "g"),
+                label: "Carbs",
+                align: "center" as const,
+              },
+              {
+                value: formatMacro(totalFat, "g"),
+                label: "Fett",
+                align: "right" as const,
+              },
             ].map((macro, index) => (
               <View key={index} style={styles.macroCard}>
                 <Text style={[styles.macroValue, { textAlign: macro.align }]}>

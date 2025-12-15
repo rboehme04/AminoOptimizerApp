@@ -22,16 +22,18 @@ export default function HinzuLebDetailScreen() {
 
   React.useEffect(() => {
     if (!id) return; // just check presence
-
+  
+    console.log("foodId", id);
+  
     const fetchFood = async () => {
       setLoading(true);
       setError(null);
       const { data, error: supabaseError } = await supabase
         .from("opennutrition_foods")
         .select("name, calories, protein, carbohydrates, total_fat")
-        .eq("id", id) // <-- use id as string
+        .eq("id", id)   // <-- use id as string
         .single();
-
+  
       if (supabaseError) {
         console.error("Failed to fetch food", supabaseError);
         setError(supabaseError.message);
@@ -44,7 +46,7 @@ export default function HinzuLebDetailScreen() {
       }
       setLoading(false);
     };
-
+  
     fetchFood();
   }, [id]);
 
