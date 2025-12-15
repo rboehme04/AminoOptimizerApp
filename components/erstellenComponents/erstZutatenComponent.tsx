@@ -43,17 +43,17 @@ const AddCircleOutlineIcon = ({
   </Svg>
 );
 
-interface Ingredient {
+type Ingredient = {
   id: string;
   name: string;
   amount: string;
-  calories: string;
-}
+  calories?: string;
+};
 
-interface IngredientRowProps {
+type IngredientRowProps = {
   ingredient: Ingredient;
   onPress?: () => void;
-}
+};
 
 const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   const router = useRouter();
@@ -83,7 +83,17 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   );
 };
 
-const ZutatenContainer = () => {
+type ZutatenContainerProps = {
+  ingredients?: Ingredient[];
+  onAddPress?: () => void;
+  onRemoveIngredient?: (id: string) => void;
+};
+
+const ZutatenContainer = ({
+  ingredients: externalIngredients,
+  onAddPress,
+  onRemoveIngredient,
+}: ZutatenContainerProps) => {
   const router = useRouter();
   const [ingredients] = React.useState<Ingredient[]>([
     {
@@ -106,20 +116,44 @@ const ZutatenContainer = () => {
     },
   ]);
 
+  const activeIngredients = externalIngredients ?? ingredients;
+
+  const handleAddPress = () => {
+    if (onAddPress) {
+      onAddPress();
+    } else {
+      router.push("/HinzuOverview");
+    }
+  };
+
+  const showEmptyState = activeIngredients.length === 0;
+
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Zutaten</Text>
       <View style={styles.ingredientsContainer}>
         <View style={styles.listContainer}>
-          {ingredients.map(ingredient => (
-            <IngredientRow key={ingredient.id} ingredient={ingredient} />
-          ))}
+          {showEmptyState ? (
+            <Text style={styles.emptyText}>
+              Noch keine Lebensmittel hinzugefügt.
+            </Text>
+          ) : (
+            activeIngredients.map(ingredient => (
+              <IngredientRow
+                key={ingredient.id}
+                ingredient={ingredient}
+                onPress={
+                  onRemoveIngredient
+                    ? () => onRemoveIngredient(ingredient.id)
+                    : undefined
+                }
+              />
+            ))
+          )}
         </View>
         <Pressable
           style={styles.addButtonContainer}
-          onPress={() => {
-            router.push("/HinzuOverview");
-          }}
+          onPress={handleAddPress}
         >
           <AddCircleOutlineIcon
             size={24}
@@ -200,6 +234,12 @@ const styles = StyleSheet.create({
   addButtonText: {
     ...Typography.subheadlineRegular,
     color: Color.brand40LetzteButtonOrBlueText,
+  },
+  emptyText: {
+    ...Typography.caption1Regular,
+    color: Color.neutralTextOrTabGrey,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
 });
 

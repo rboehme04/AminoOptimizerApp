@@ -204,7 +204,11 @@ const ItemList = ({
           title={item.title}
           portion={item.portion}
           calories={item.calories}
-          onAddPress={onAddIngredient ? () => onAddIngredient(item) : undefined}
+          onAddPress={
+            onAddIngredient
+              ? () => onAddIngredient(item)
+              : undefined
+          }
         />
       ))}
     </View>

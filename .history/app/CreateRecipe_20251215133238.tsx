@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -10,15 +9,19 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 import { CloseXIcon } from "@/assets/icons/icons";
 import ErstZubereitungComponent from "@/components/erstellenComponents/erstZubereitungComponent";
 import ErstZutatenComponent from "@/components/erstellenComponents/erstZutatenComponent";
 import PicturePlaceHolder from "@/components/erstellenComponents/picturePlaceHolder";
 import NavBar from "@/components/navBar";
-import NextButton from "@/components/nextButton";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { useRecipeDraft, useRecipeDraftActions } from "@/hooks/useRecipeDraft";
+import NextButton from "@/components/nextButton";
+import {
+  useRecipeDraft,
+  useRecipeDraftActions,
+} from "@/hooks/useRecipeDraft";
 import { initDatabase, insertRecipe } from "@/utils/sqlite";
 
 export default function CreateRecipeScreen() {
@@ -70,9 +73,7 @@ export default function CreateRecipeScreen() {
       router.back();
     } catch (error) {
       console.error("Fehler beim Speichern des Rezepts", error);
-      setErrorMessage(
-        "Speichern fehlgeschlagen. Bitte später erneut versuchen."
-      );
+      setErrorMessage("Speichern fehlgeschlagen. Bitte später erneut versuchen.");
     } finally {
       setIsSaving(false);
     }
@@ -139,7 +140,11 @@ export default function CreateRecipeScreen() {
       </KeyboardAvoidingView>
       <View style={styles.footer}>
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
-        <NextButton text="Speichern" onPress={handleSave} disabled={isSaving} />
+        <NextButton
+          text="Speichern"
+          onPress={handleSave}
+          disabled={isSaving}
+        />
       </View>
     </SafeAreaView>
   );
