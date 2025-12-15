@@ -1,5 +1,4 @@
-import { useFocusEffect } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { StarFullIcon, StarLineIcon } from "@/assets/icons/icons";
@@ -8,12 +7,11 @@ import AddMealRow from "@/components/erstellenComponents/addMealRow";
 import MealRow from "@/components/indexComponents/mealRow";
 import { Color, Gap, Typography } from "@/constants/GlobalStyles";
 import {
-  getRecentLebensmittel,
-  getRecentRecipes,
   RecentLebensmittelItem,
   RecentRecipeItem,
+  getRecentLebensmittel,
+  getRecentRecipes,
 } from "@/utils/recentItems";
-import { getAllRecipesOrderedByCreatedDesc, RecipeRow } from "@/utils/sqlite";
 
 type RecipeItem = RecentRecipeItem;
 type LebensmittelItem = RecentLebensmittelItem;
@@ -46,21 +44,13 @@ const RezSelectionAndFilterComponent = (
   const showingFavorites = selection === "favoriten";
 
   const recentItems = useRecentItems(effectiveActiveSide);
-  const homeRecipes = useHomeRecipes(isOptimizerHome);
   const favoriteItems = useFavoriteItems(effectiveActiveSide);
 
-  let displayedItems: RecipeItem[] | LebensmittelItem[];
-
-  if (searchResults) {
-    displayedItems = searchResults;
-  } else if (showingFavorites) {
-    displayedItems = favoriteItems;
-  } else if (isOptimizerHome && effectiveActiveSide === "Rezept") {
-    // Optimizer home, "Letzte" selected: show all stored recipes ordered by creation date
-    displayedItems = homeRecipes;
-  } else {
-    displayedItems = recentItems;
-  }
+  const displayedItems = searchResults
+    ? searchResults
+    : showingFavorites
+    ? favoriteItems
+    : recentItems;
 
   const hasNoFavorites =
     !searchResults && showingFavorites && favoriteItems.length === 0;
@@ -248,60 +238,6 @@ const useRecentItems = (activeSide: "Rezept" | "Lebensmittel") => {
       isCancelled = true;
     };
   }, [activeSide]);
-
-  return items;
-};
-
-const mapRecipeRowToItem = (row: RecipeRow): RecipeItem => {
-  let ingredientsSummary = "";
-  try {
-    const parsed = JSON.parse(row.ingredients_json) as Array<{
-      title?: string;
-    }>;
-    if (Array.isArray(parsed)) {
-      ingredientsSummary = parsed
-        .map(ingredient => ingredient.title)
-        .filter(Boolean)
-        .join(", ");
-    }
-  } catch (error) {
-    console.error("Error parsing ingredients_json for recipe", error);
-  }
-
-  return {
-    id: row.id,
-    title: row.title,
-    ingredients: ingredientsSummary,
-    // TODO: replace with real calories once available
-    calories: "0 kcal",
-    isOptimized: false,
-  };
-};
-
-const useHomeRecipes = (enabled: boolean) => {
-  const [items, setItems] = useState<RecipeItem[]>([]);
-
-  const load = useCallback(async () => {
-    try {
-      const rows = await getAllRecipesOrderedByCreatedDesc();
-      setItems(rows.map(mapRecipeRowToItem));
-    } catch (error) {
-      console.error("Error loading recipes for home view", error);
-      setItems([]);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!enabled) return;
-    load();
-  }, [enabled, load]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!enabled) return;
-      load();
-    }, [enabled, load])
-  );
 
   return items;
 };

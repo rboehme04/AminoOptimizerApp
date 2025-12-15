@@ -1,5 +1,5 @@
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 
 type HinzufügenButtonProps = {
   onPress?: () => void;
@@ -17,7 +17,9 @@ const HinzufügenButton = ({
         onPress={onPress}
         disabled={disabled}
       >
-        <Text style={[styles.text, disabled && styles.textDisabled]}>
+        <Text
+          style={[styles.text, disabled && styles.textDisabled]}
+        >
           Hinzufügen
         </Text>
       </Pressable>

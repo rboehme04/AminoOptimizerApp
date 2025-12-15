@@ -1,5 +1,4 @@
-import { useFocusEffect } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { StarFullIcon, StarLineIcon } from "@/assets/icons/icons";
@@ -281,27 +280,33 @@ const mapRecipeRowToItem = (row: RecipeRow): RecipeItem => {
 const useHomeRecipes = (enabled: boolean) => {
   const [items, setItems] = useState<RecipeItem[]>([]);
 
-  const load = useCallback(async () => {
-    try {
-      const rows = await getAllRecipesOrderedByCreatedDesc();
-      setItems(rows.map(mapRecipeRowToItem));
-    } catch (error) {
-      console.error("Error loading recipes for home view", error);
-      setItems([]);
-    }
-  }, []);
-
   useEffect(() => {
-    if (!enabled) return;
-    load();
-  }, [enabled, load]);
+    if (!enabled) {
+      return;
+    }
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!enabled) return;
-      load();
-    }, [enabled, load])
-  );
+    let isCancelled = false;
+
+    const load = async () => {
+      try {
+        const rows = await getAllRecipesOrderedByCreatedDesc();
+        if (!isCancelled) {
+          setItems(rows.map(mapRecipeRowToItem));
+        }
+      } catch (error) {
+        console.error("Error loading recipes for home view", error);
+        if (!isCancelled) {
+          setItems([]);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [enabled]);
 
   return items;
 };

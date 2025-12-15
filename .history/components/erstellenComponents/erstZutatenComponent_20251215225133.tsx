@@ -58,19 +58,14 @@ type IngredientRowProps = {
 const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   const router = useRouter();
 
-  const handlePress = () => {
-    router.push({
-      pathname: "/HinzuLebDetail",
-      params: {
-        id: ingredient.id,
-        portion: ingredient.amount,
-      },
-    });
-  };
-
   return (
     <View style={styles.ingredientRow}>
-      <Pressable style={styles.leftContainer} onPress={handlePress}>
+      <Pressable
+        style={styles.leftContainer}
+        onPress={() => {
+          router.push("/HinzuLebDetail");
+        }}
+      >
         <View>
           <Text style={styles.ingredientName}>{ingredient.name}</Text>
           <Text style={styles.ingredientAmount}>{ingredient.amount}</Text>

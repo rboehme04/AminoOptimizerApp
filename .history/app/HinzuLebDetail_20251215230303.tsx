@@ -34,8 +34,7 @@ export default function HinzuLebDetailScreen() {
   const [food, setFood] = React.useState<any | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const { ingredients } = useRecipeDraft();
-  const { addIngredient, updateIngredient } = useRecipeDraftActions();
+  const { addIngredient } = useRecipeDraftActions();
 
   React.useEffect(() => {
     if (!id) return; // just check presence
@@ -87,15 +86,7 @@ export default function HinzuLebDetailScreen() {
       calories: caloriesValue != null ? `${caloriesValue} kcal` : undefined,
     };
 
-    // Check if this ingredient is already added - update if exists, add if new
-    const alreadyAdded = ingredients.some(
-      existing => existing.id === String(id)
-    );
-    if (alreadyAdded) {
-      updateIngredient(ingredient);
-    } else {
-      addIngredient(ingredient);
-    }
+    addIngredient(ingredient);
 
     // Track as recently used Lebensmittel (fire-and-forget)
     addRecentLebensmittel({

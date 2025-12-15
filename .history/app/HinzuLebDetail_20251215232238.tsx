@@ -146,7 +146,12 @@ export default function HinzuLebDetailScreen() {
           />
           <HinzufügenButton
             onPress={handleAddPress}
-            disabled={!food || amount == null || loading}
+            disabled={
+              !food ||
+              amount == null ||
+              loading ||
+              ingredients.some(existing => existing.id === String(id))
+            }
           />
           <DetailsNaehstoffprofilComponent
             type="leb"

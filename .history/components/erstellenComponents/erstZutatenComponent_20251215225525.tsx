@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { parseAmount } from "@/utils/parseAmount";
 
 // Simple Add Icon (plus sign)
 const AddIcon = ({
@@ -55,16 +56,48 @@ type IngredientRowProps = {
   onPress?: () => void;
 };
 
+// Helper function to parse amount string like "30g", "30 g", "1 kg", etc.
+const parseAmount = (
+  amountStr: string
+): { amount: number; unit: "g" | "kg" } | null => {
+  const trimmed = amountStr.trim();
+  // Match patterns like "30g", "30 g", "1kg", "1 kg", "0.5 kg", etc.
+  const match = trimmed.match(/^(\d+(?:\.\d+)?)\s*(g|kg)?$/i);
+  if (!match) return null;
+
+  const value = parseFloat(match[1]);
+  const unitStr = match[2]?.toLowerCase();
+
+  if (isNaN(value) || value <= 0) return null;
+
+  // Default to "g" if no unit specified, or if value is < 1000 and unit is "g" or missing
+  if (!unitStr || unitStr === "g") {
+    return { amount: value, unit: "g" };
+  }
+  if (unitStr === "kg") {
+    return { amount: value, unit: "kg" };
+  }
+
+  return null;
+};
+
 const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   const router = useRouter();
 
   const handlePress = () => {
+    const parsed = parseAmount(ingredient.amount);
+    const params: { id: string; amount?: string; unit?: string } = {
+      id: ingredient.id,
+    };
+
+    if (parsed) {
+      params.amount = parsed.amount.toString();
+      params.unit = parsed.unit;
+    }
+
     router.push({
       pathname: "/HinzuLebDetail",
-      params: {
-        id: ingredient.id,
-        portion: ingredient.amount,
-      },
+      params,
     });
   };
 

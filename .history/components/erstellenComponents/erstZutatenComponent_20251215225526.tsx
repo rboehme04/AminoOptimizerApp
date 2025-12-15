@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { parseAmount } from "@/utils/parseAmount";
 
 // Simple Add Icon (plus sign)
 const AddIcon = ({
@@ -59,12 +60,19 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   const router = useRouter();
 
   const handlePress = () => {
+    const parsed = parseAmount(ingredient.amount);
+    const params: { id: string; amount?: string; unit?: string } = {
+      id: ingredient.id,
+    };
+
+    if (parsed) {
+      params.amount = parsed.amount.toString();
+      params.unit = parsed.unit;
+    }
+
     router.push({
       pathname: "/HinzuLebDetail",
-      params: {
-        id: ingredient.id,
-        portion: ingredient.amount,
-      },
+      params,
     });
   };
 

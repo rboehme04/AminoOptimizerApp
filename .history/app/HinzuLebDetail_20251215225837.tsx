@@ -11,31 +11,36 @@ import HinzuLebAmountInput from "@/components/erstellenComponents/hinzuLebAmount
 import HinzufügenButton from "@/components/erstellenComponents/hinzufügenButton";
 import LebDetailTopComponent from "@/components/lebDetailTopComponent";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { useRecipeDraft, useRecipeDraftActions } from "@/hooks/useRecipeDraft";
-import { parseAmount } from "@/utils/parseAmount";
+import { useRecipeDraftActions } from "@/hooks/useRecipeDraft";
 import { addRecentLebensmittel } from "@/utils/recentItems";
+import { parseAmount } from "@/utils/parseAmount";
 import { supabase } from "@/utils/supabase";
 
 export default function HinzuLebDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { id, portion: portionParam } = useLocalSearchParams<{
+  const {
+    id,
+    amount: amountParam,
+    unit: unitParam,
+  } = useLocalSearchParams<{
     id?: string;
-    portion?: string;
+    amount?: string;
+    unit?: "g" | "kg";
   }>();
 
-  // Parse initial amount and unit from portion param, default to 100g if not provided
-  const parsedPortion = portionParam ? parseAmount(portionParam) : null;
-  const initialAmount = parsedPortion?.amount ?? 100;
-  const initialUnit = parsedPortion?.unit ?? "g";
+  // Parse initial amount and unit from params, default to 100g if not provided
+  const initialAmount = amountParam != null ? parseFloat(amountParam) : 100;
+  const initialUnit: "g" | "kg" = unitParam === "kg" ? "kg" : "g";
 
-  const [amount, setAmount] = React.useState<number | null>(initialAmount);
+  const [amount, setAmount] = React.useState<number | null>(
+    !isNaN(initialAmount) && initialAmount > 0 ? initialAmount : 100
+  );
   const [unit, setUnit] = React.useState<"g" | "kg">(initialUnit);
   const [food, setFood] = React.useState<any | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const { ingredients } = useRecipeDraft();
-  const { addIngredient, updateIngredient } = useRecipeDraftActions();
+  const { addIngredient } = useRecipeDraftActions();
 
   React.useEffect(() => {
     if (!id) return; // just check presence
@@ -87,15 +92,7 @@ export default function HinzuLebDetailScreen() {
       calories: caloriesValue != null ? `${caloriesValue} kcal` : undefined,
     };
 
-    // Check if this ingredient is already added - update if exists, add if new
-    const alreadyAdded = ingredients.some(
-      existing => existing.id === String(id)
-    );
-    if (alreadyAdded) {
-      updateIngredient(ingredient);
-    } else {
-      addIngredient(ingredient);
-    }
+    addIngredient(ingredient);
 
     // Track as recently used Lebensmittel (fire-and-forget)
     addRecentLebensmittel({

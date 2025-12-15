@@ -11,31 +11,18 @@ import HinzuLebAmountInput from "@/components/erstellenComponents/hinzuLebAmount
 import HinzufügenButton from "@/components/erstellenComponents/hinzufügenButton";
 import LebDetailTopComponent from "@/components/lebDetailTopComponent";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { useRecipeDraft, useRecipeDraftActions } from "@/hooks/useRecipeDraft";
-import { parseAmount } from "@/utils/parseAmount";
+import { useRecipeDraftActions } from "@/hooks/useRecipeDraft";
 import { addRecentLebensmittel } from "@/utils/recentItems";
 import { supabase } from "@/utils/supabase";
 
 export default function HinzuLebDetailScreen() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { id, portion: portionParam } = useLocalSearchParams<{
-    id?: string;
-    portion?: string;
-  }>();
-
-  // Parse initial amount and unit from portion param, default to 100g if not provided
-  const parsedPortion = portionParam ? parseAmount(portionParam) : null;
-  const initialAmount = parsedPortion?.amount ?? 100;
-  const initialUnit = parsedPortion?.unit ?? "g";
-
-  const [amount, setAmount] = React.useState<number | null>(initialAmount);
-  const [unit, setUnit] = React.useState<"g" | "kg">(initialUnit);
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const [amount, setAmount] = React.useState<number | null>(100);
+  const [unit, setUnit] = React.useState<"g" | "kg">("g");
   const [food, setFood] = React.useState<any | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const { ingredients } = useRecipeDraft();
-  const { addIngredient, updateIngredient } = useRecipeDraftActions();
 
   React.useEffect(() => {
     if (!id) return; // just check presence
@@ -71,45 +58,6 @@ export default function HinzuLebDetailScreen() {
   const factor =
     food && typeof portionInGrams === "number" ? portionInGrams / 100 : 1;
 
-  const handleAddPress = () => {
-    if (!food || !id || amount == null) return;
-
-    const portionText =
-      unit === "g" ? `${amount} g` : amount === 1 ? "1 kg" : `${amount} kg`;
-
-    const caloriesValue =
-      food.calories != null ? Math.round(food.calories * factor) : undefined;
-
-    const ingredient = {
-      id: String(id),
-      title: food.name,
-      portion: portionText,
-      calories: caloriesValue != null ? `${caloriesValue} kcal` : undefined,
-    };
-
-    // Check if this ingredient is already added - update if exists, add if new
-    const alreadyAdded = ingredients.some(
-      existing => existing.id === String(id)
-    );
-    if (alreadyAdded) {
-      updateIngredient(ingredient);
-    } else {
-      addIngredient(ingredient);
-    }
-
-    // Track as recently used Lebensmittel (fire-and-forget)
-    addRecentLebensmittel({
-      id: id,
-      title: food.name,
-      portion: portionText,
-      calories: caloriesValue != null ? `${caloriesValue} kcal` : "0 kcal",
-    }).catch(error =>
-      console.error("Error adding recent Lebensmittel item", error)
-    );
-
-    router.back();
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={["left", "right"]}>
       <ScrollView
@@ -139,15 +87,11 @@ export default function HinzuLebDetailScreen() {
         />
         <View style={styles.innerContainer}>
           <HinzuLebAmountInput
-            initialValue={amount ?? 100}
-            initialUnit={unit}
+            initialValue={100}
             onChange={setAmount}
             onUnitChange={setUnit}
           />
-          <HinzufügenButton
-            onPress={handleAddPress}
-            disabled={!food || amount == null || loading}
-          />
+          <HinzufügenButton />
           <DetailsNaehstoffprofilComponent
             type="leb"
             id={id}

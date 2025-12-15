@@ -19,8 +19,8 @@ import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { useRecipeDraft, useRecipeDraftActions } from "@/hooks/useRecipeDraft";
-import { addRecentRecipe } from "@/utils/recentItems";
 import { initDatabase, insertRecipe } from "@/utils/sqlite";
+import { addRecentRecipe } from "@/utils/recentItems";
 
 export default function CreateRecipeScreen() {
   const router = useRouter();

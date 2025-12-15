@@ -1,5 +1,6 @@
 import { EatSymbolIcon, SolidFireIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
+import { parseAmount } from "@/utils/parseAmount";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -28,12 +29,19 @@ const LebensmittelRow = ({
     if (onPress) {
       onPress();
     } else {
+      const parsed = parseAmount(portion);
+      const params: { id: string; amount?: string; unit?: string } = {
+        id: itemId?.toString() ?? "",
+      };
+
+      if (parsed) {
+        params.amount = parsed.amount.toString();
+        params.unit = parsed.unit;
+      }
+
       router.push({
         pathname: "/HinzuLebDetail",
-        params: {
-          id: itemId?.toString() ?? "",
-          portion: portion,
-        },
+        params,
       });
     }
   };

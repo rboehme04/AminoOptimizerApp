@@ -28,12 +28,19 @@ const LebensmittelRow = ({
     if (onPress) {
       onPress();
     } else {
+      const parsed = parseAmount(portion);
+      const params: { id: string; amount?: string; unit?: string } = {
+        id: itemId?.toString() ?? "",
+      };
+
+      if (parsed) {
+        params.amount = parsed.amount.toString();
+        params.unit = parsed.unit;
+      }
+
       router.push({
         pathname: "/HinzuLebDetail",
-        params: {
-          id: itemId?.toString() ?? "",
-          portion: portion,
-        },
+        params,
       });
     }
   };

@@ -10,8 +10,8 @@ import NextButton from "@/components/nextButton";
 import SearchBar from "@/components/searchBar";
 import { Padding } from "@/constants/GlobalStyles";
 import { useRecipeDraft, useRecipeDraftActions } from "@/hooks/useRecipeDraft";
-import { addRecentLebensmittel } from "@/utils/recentItems";
 import { supabase } from "@/utils/supabase";
+import { addRecentLebensmittel } from "@/utils/recentItems";
 
 type LebensmittelItem = {
   id: string | number;
