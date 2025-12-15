@@ -30,8 +30,17 @@ const LebDetailTopComponent = ({
     []
   );
 
-  const formatMacro = (value: number | null, unit: string) =>
-    value === null || value === undefined ? "-" : `${value}${unit}`;
+  const formatMacro = (value: number | null, unit: string) => {
+    if (value === null || value === undefined) return "-";
+
+    // Round to 1 decimal place and avoid trailing ".0" for whole numbers
+    const rounded = Math.round(value * 10) / 10;
+    const formatted = Number.isInteger(rounded)
+      ? rounded.toString()
+      : rounded.toFixed(1);
+
+    return `${formatted}${unit}`;
+  };
 
   return (
     <View

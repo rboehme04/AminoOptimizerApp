@@ -12,7 +12,10 @@ import { ChevronDownIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import DropDown from "../dropDown";
 
-const dropdownItems = ["g", "kg"];
+const dropdownItems = [
+  "g",
+  "kg",
+];
 
 type HinzuLebAmountInputProps = {
   initialValue?: number;
@@ -25,7 +28,7 @@ type HinzuLebAmountInputProps = {
 const HinzuLebAmountInput = ({
   initialValue = 1,
   min = 0,
-  max = 99999,
+  max = 99,
   onChange,
   onUnitChange,
 }: HinzuLebAmountInputProps) => {

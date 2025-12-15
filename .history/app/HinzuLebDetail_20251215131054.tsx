@@ -53,9 +53,6 @@ export default function HinzuLebDetailScreen() {
   const portionInGrams =
     amount != null ? (unit === "g" ? amount : amount * 1000) : undefined;
 
-  const factor =
-    food && typeof portionInGrams === "number" ? portionInGrams / 100 : 1;
-
   return (
     <SafeAreaView style={styles.container} edges={["left", "right"]}>
       <ScrollView
@@ -68,20 +65,10 @@ export default function HinzuLebDetailScreen() {
         <LebDetailTopComponent
           navbarTitle="Hinzufügen"
           name={food?.name}
-          calories={
-            food?.calories != null
-              ? Math.round(food.calories * factor)
-              : undefined
-          }
-          protein={food?.protein != null ? food.protein * factor : undefined}
-          carbohydrates={
-            food?.carbohydrates != null
-              ? food.carbohydrates * factor
-              : undefined
-          }
-          totalFat={
-            food?.total_fat != null ? food.total_fat * factor : undefined
-          }
+          calories={food?.calories}
+          protein={food?.protein}
+          carbohydrates={food?.carbohydrates}
+          totalFat={food?.total_fat}
         />
         <View style={styles.innerContainer}>
           <HinzuLebAmountInput

@@ -29,27 +29,6 @@ const ValueRowContainer = ({ value }: ValueRowContainerProps) => {
   const percentage =
     reference === 0 ? 0 : Math.round((current / reference) * 100);
 
-  const formatNumber = (num: number, unit: string, lbl: string) => {
-    if (num === null || num === undefined || Number.isNaN(num)) return "-";
-
-    const lowerUnit = unit.toLowerCase();
-    const lowerLabel = lbl.toLowerCase();
-
-    // Treat calories specially: no decimal places
-    const isCalories =
-      lowerUnit.includes("kcal") ||
-      lowerLabel.includes("kcal") ||
-      lowerLabel.includes("kalorien");
-
-    if (isCalories) {
-      return Math.round(num).toString();
-    }
-
-    // Other nutrients: max 1 decimal place
-    const rounded = Math.round(num * 10) / 10;
-    return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1);
-  };
-
   return (
     <View style={styles.valueRowOuterContainer}>
       <View style={styles.valueRowInnerContainer}>
@@ -58,8 +37,7 @@ const ValueRowContainer = ({ value }: ValueRowContainerProps) => {
         </View>
         <View style={styles.valueRowRightContainer}>
           <Text style={styles.valueRowWhiteText}>
-            {formatNumber(current, measuringUnit, label)} /{" "}
-            {formatNumber(reference, measuringUnit, label)} {measuringUnit}
+            {current} / {reference} {measuringUnit}
           </Text>
           <Text style={styles.valueRowGreyText}>{percentage}%</Text>
         </View>
@@ -224,8 +202,8 @@ function DetailsNaehrstoffprofilComponent({
     ...row,
     values: row.values.map(value => ({
       ...value,
-      // Scale to requested portion; formatting is handled in the row component
-      current: value.current * factor,
+      // Scale to requested portion, keep a reasonable number of decimals
+      current: Number((value.current * factor).toFixed(2)),
     })),
   }));
 

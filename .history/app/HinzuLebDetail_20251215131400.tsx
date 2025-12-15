@@ -68,11 +68,7 @@ export default function HinzuLebDetailScreen() {
         <LebDetailTopComponent
           navbarTitle="Hinzufügen"
           name={food?.name}
-          calories={
-            food?.calories != null
-              ? Math.round(food.calories * factor)
-              : undefined
-          }
+          calories={food?.calories != null ? food.calories * factor : undefined}
           protein={food?.protein != null ? food.protein * factor : undefined}
           carbohydrates={
             food?.carbohydrates != null

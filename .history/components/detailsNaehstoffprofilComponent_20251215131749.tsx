@@ -224,8 +224,8 @@ function DetailsNaehrstoffprofilComponent({
     ...row,
     values: row.values.map(value => ({
       ...value,
-      // Scale to requested portion; formatting is handled in the row component
-      current: value.current * factor,
+      // Scale to requested portion, keep a reasonable number of decimals
+      current: Number((value.current * factor).toFixed(2)),
     })),
   }));
 

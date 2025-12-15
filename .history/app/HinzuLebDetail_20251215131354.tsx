@@ -69,11 +69,11 @@ export default function HinzuLebDetailScreen() {
           navbarTitle="Hinzufügen"
           name={food?.name}
           calories={
-            food?.calories != null
-              ? Math.round(food.calories * factor)
-              : undefined
+            food?.calories != null ? food.calories * factor : undefined
           }
-          protein={food?.protein != null ? food.protein * factor : undefined}
+          protein={
+            food?.protein != null ? food.protein * factor : undefined
+          }
           carbohydrates={
             food?.carbohydrates != null
               ? food.carbohydrates * factor

@@ -25,7 +25,7 @@ type HinzuLebAmountInputProps = {
 const HinzuLebAmountInput = ({
   initialValue = 1,
   min = 0,
-  max = 99999,
+  max = 99,
   onChange,
   onUnitChange,
 }: HinzuLebAmountInputProps) => {

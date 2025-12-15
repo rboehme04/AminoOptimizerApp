@@ -12,22 +12,23 @@ import { ChevronDownIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import DropDown from "../dropDown";
 
-const dropdownItems = ["g", "kg"];
+const dropdownItems = [
+  "g",
+  "kg",
+];
 
 type HinzuLebAmountInputProps = {
   initialValue?: number;
   min?: number;
   max?: number;
   onChange?: (value: number) => void;
-  onUnitChange?: (unit: "g" | "kg") => void;
 };
 
 const HinzuLebAmountInput = ({
   initialValue = 1,
   min = 0,
-  max = 99999,
+  max = 99,
   onChange,
-  onUnitChange,
 }: HinzuLebAmountInputProps) => {
   const [value, setValue] = React.useState(initialValue.toString());
   const [isFocused, setIsFocused] = React.useState(false);
@@ -115,10 +116,6 @@ const HinzuLebAmountInput = ({
     }
   }, [isDropdownOpen, measureDropdownPosition]);
 
-  React.useEffect(() => {
-    onUnitChange?.(selectedLabel as "g" | "kg");
-  }, [selectedLabel, onUnitChange]);
-
   return (
     <View ref={containerRef} style={styles.container}>
       <View style={styles.leftContainer}>
@@ -178,7 +175,6 @@ const HinzuLebAmountInput = ({
                 items={dropdownItems}
                 onSelect={selectedValue => {
                   setSelectedLabel(selectedValue);
-                  onUnitChange?.(selectedValue as "g" | "kg");
                   setIsDropdownOpen(false);
                 }}
               />
