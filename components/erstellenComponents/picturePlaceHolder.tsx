@@ -1,13 +1,16 @@
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 type PicturePlaceHolderProps = {
   onPress?: () => void;
+  imageUri?: string | null;
 };
 
-const PicturePlaceHolder = ({ onPress }: PicturePlaceHolderProps) => {
+const PicturePlaceHolder = ({ onPress, imageUri }: PicturePlaceHolderProps) => {
+  const hasImage = Boolean(imageUri);
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -16,17 +19,30 @@ const PicturePlaceHolder = ({ onPress }: PicturePlaceHolderProps) => {
       ]}
       onPress={onPress}
     >
-      <View style={styles.pictureInnerContainer}>
-        <MaterialIcons
-          name="add-a-photo"
-          size={36}
-          color={Color.neutralTextOrTabGrey}
-          style={styles.iconDimensions}
-        />
-        <View>
-          <Text style={styles.bildText}>Bild</Text>
+      {hasImage ? (
+        <View style={styles.imageWrapper}>
+          <Image source={{ uri: imageUri as string }} style={styles.image} />
+          <View style={styles.editBadge}>
+            <MaterialIcons
+              name="edit"
+              size={18}
+              color={Color.neutralWhite}
+            />
+          </View>
         </View>
-      </View>
+      ) : (
+        <View style={styles.pictureInnerContainer}>
+          <MaterialIcons
+            name="add-a-photo"
+            size={36}
+            color={Color.neutralTextOrTabGrey}
+            style={styles.iconDimensions}
+          />
+          <View>
+            <Text style={styles.bildText}>Bild</Text>
+          </View>
+        </View>
+      )}
     </Pressable>
   );
 };
@@ -56,6 +72,23 @@ const styles = StyleSheet.create({
   bildText: {
     ...Typography.subheadlineRegular,
     color: Color.neutralTextOrTabGrey,
+  },
+  imageWrapper: {
+    flex: 1,
+  },
+  image: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  editBadge: {
+    position: "absolute",
+    right: 8,
+    bottom: 8,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderRadius: 999,
+    padding: 4,
   },
 });
 

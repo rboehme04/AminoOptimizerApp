@@ -43,6 +43,19 @@ export const initDatabase = async (): Promise<void> => {
       is_optimized INTEGER NOT NULL DEFAULT 0
     );
   `);
+
+  // Migration for existing databases that were created without image_uri
+  try {
+    const columns = await db.getAllAsync<{ name: string }>(
+      "PRAGMA table_info(recipes);"
+    );
+    const hasImageUri = columns.some(column => column.name === "image_uri");
+    if (!hasImageUri) {
+      await db.execAsync("ALTER TABLE recipes ADD COLUMN image_uri TEXT;");
+    }
+  } catch {
+    // Best-effort migration; ignore errors to avoid breaking the app
+  }
 };
 
 export const insertRecipe = async (

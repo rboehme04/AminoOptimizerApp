@@ -32,7 +32,7 @@ import {
 import { getRecipeById, initDatabase } from "@/utils/sqlite";
 
 export default function HinzuRezDetailScreen() {
-  const params = useLocalSearchParams<{ id?: string; portion?: string }>();
+  const params = useLocalSearchParams<{ id?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { showDeletePopup, DeletePopupComponent } = useDeleteRecipePopup(() => {
@@ -51,15 +51,7 @@ export default function HinzuRezDetailScreen() {
       }
     | undefined
   >(undefined);
-  const initialPortion = useMemo(() => {
-    if (!params.portion) return 1;
-    const match = params.portion.match(/(\d+(?:[\.,]\d+)?)/);
-    if (!match) return 1;
-    const numeric = Number(match[1].replace(",", "."));
-    return Number.isFinite(numeric) && numeric > 0 ? numeric : 1;
-  }, [params.portion]);
-
-  const [portion, setPortion] = useState<number>(initialPortion);
+  const [portion, setPortion] = useState<number>(1);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [nutritionRows, setNutritionRows] = useState<
     ReturnType<typeof nutritionToRows> | undefined

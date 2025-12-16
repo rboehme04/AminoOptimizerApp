@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Platform,
@@ -21,7 +21,6 @@ import ZubereitungDropDown from "@/components/zubereitungDropDown";
 import ZutatenDropDown, { type Ingredient } from "@/components/zutatenDropDown";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { useDeleteRecipePopup } from "@/hooks/useDeleteRecipePopup";
-import { useRecipeDraft, useRecipeDraftActions } from "@/hooks/useRecipeDraft";
 import { parseAmount } from "@/utils/parseAmount";
 import {
   calculateRecipeNutrition,
@@ -32,14 +31,11 @@ import {
 import { getRecipeById, initDatabase } from "@/utils/sqlite";
 
 export default function HinzuRezDetailScreen() {
-  const params = useLocalSearchParams<{ id?: string; portion?: string }>();
-  const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string }>();
   const insets = useSafeAreaInsets();
   const { showDeletePopup, DeletePopupComponent } = useDeleteRecipePopup(() => {
     // TODO: Implement delete functionality
   });
-  const { ingredients: draftIngredients } = useRecipeDraft();
-  const { addIngredient, updateIngredient } = useRecipeDraftActions();
 
   const [title, setTitle] = useState<string>("");
   const [calories, setCalories] = useState<number | undefined>(undefined);
@@ -51,15 +47,7 @@ export default function HinzuRezDetailScreen() {
       }
     | undefined
   >(undefined);
-  const initialPortion = useMemo(() => {
-    if (!params.portion) return 1;
-    const match = params.portion.match(/(\d+(?:[\.,]\d+)?)/);
-    if (!match) return 1;
-    const numeric = Number(match[1].replace(",", "."));
-    return Number.isFinite(numeric) && numeric > 0 ? numeric : 1;
-  }, [params.portion]);
-
-  const [portion, setPortion] = useState<number>(initialPortion);
+  const [portion, setPortion] = useState<number>(1);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [nutritionRows, setNutritionRows] = useState<
     ReturnType<typeof nutritionToRows> | undefined
@@ -202,45 +190,6 @@ export default function HinzuRezDetailScreen() {
     [nutritionRows, portionFactor]
   );
 
-  const handleAddPress = () => {
-    if (!params.id || !title) return;
-
-    const draftId = `recipe:${params.id}`;
-    const portionNumeric = Math.max(0, Math.round(portionFactor * 100) / 100);
-    if (!Number.isFinite(portionNumeric) || portionNumeric <= 0) return;
-
-    const portionLabel =
-      portionNumeric === 1 ? "1 Portion" : `${portionNumeric} Portionen`;
-
-    const caloriesText =
-      typeof scaledCalories === "number" ? `${scaledCalories} kcal` : undefined;
-
-    const ingredient = {
-      id: draftId,
-      title,
-      portion: portionLabel,
-      calories: caloriesText,
-    };
-
-    const alreadyAdded = draftIngredients.some(
-      existing => existing.id === draftId
-    );
-
-    if (alreadyAdded) {
-      updateIngredient(ingredient);
-    } else {
-      addIngredient(ingredient);
-    }
-
-    router.back();
-  };
-
-  const isAddDisabled =
-    !params.id ||
-    !title ||
-    !Number.isFinite(portionFactor) ||
-    portionFactor <= 0;
-
   return (
     <SafeAreaView style={styles.container} edges={["left", "right"]}>
       <ScrollView
@@ -265,7 +214,7 @@ export default function HinzuRezDetailScreen() {
             onChange={setPortion}
             min={0}
           />
-          <HinzufügenButton onPress={handleAddPress} disabled={isAddDisabled} />
+          <HinzufügenButton />
           <View style={styles.dropDownsContainer}>
             <ZutatenDropDown ingredients={scaledIngredients} />
             <ZubereitungDropDown isExpanded={false} />

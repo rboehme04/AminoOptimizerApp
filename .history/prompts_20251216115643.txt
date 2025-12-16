@@ -12,3 +12,4 @@ Todos:
             - fix nutrition calculation of recipes that contain other recipes
                 --> right now only Lebensmittel are summed up, recipes not
                     for Makros in RezDetailTopComponent and detailNaehrstoffprofil
+

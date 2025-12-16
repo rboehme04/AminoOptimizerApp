@@ -17,11 +17,13 @@ type RecipeDraftState = {
   title: string;
   instructions: string;
   ingredients: DraftIngredient[];
+  imageUri: string | null;
 };
 
 type RecipeDraftActions = {
   setTitle: (value: string) => void;
   setInstructions: (value: string) => void;
+  setImageUri: (value: string | null) => void;
   addIngredient: (ingredient: DraftIngredient) => void;
   updateIngredient: (ingredient: DraftIngredient) => void;
   removeIngredient: (ingredientId: string) => void;
@@ -32,6 +34,7 @@ const defaultState: RecipeDraftState = {
   title: "",
   instructions: "",
   ingredients: [],
+  imageUri: null,
 };
 
 const RecipeDraftStateContext = createContext<RecipeDraftState | undefined>(
@@ -55,6 +58,11 @@ export const RecipeDraftProvider = ({ children }: PropsWithChildren) => {
         setState(prev => ({
           ...prev,
           instructions: value,
+        })),
+      setImageUri: value =>
+        setState(prev => ({
+          ...prev,
+          imageUri: value,
         })),
       addIngredient: ingredient =>
         setState(prev => ({

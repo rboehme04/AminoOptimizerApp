@@ -1,5 +1,6 @@
 import { CloseXIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
+import { navigateToDetailWithPortion } from "@/utils/navigation";
 import { useRouter } from "expo-router";
 import * as React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -59,27 +60,10 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   const router = useRouter();
 
   const handlePress = () => {
-    const isRecipeIngredient = ingredient.id.startsWith("recipe:");
-    const rawId = isRecipeIngredient
-      ? ingredient.id.replace("recipe:", "")
-      : ingredient.id;
-
-    if (isRecipeIngredient) {
-      router.push({
-        pathname: "/HinzuRezDetail",
-        params: {
-          id: rawId,
-        },
-      });
-    } else {
-      router.push({
-        pathname: "/HinzuLebDetail",
-        params: {
-          id: rawId,
-          portion: ingredient.amount,
-        },
-      });
-    }
+    navigateToDetailWithPortion(router, {
+      id: ingredient.id,
+      portionText: ingredient.amount,
+    });
   };
 
   return (

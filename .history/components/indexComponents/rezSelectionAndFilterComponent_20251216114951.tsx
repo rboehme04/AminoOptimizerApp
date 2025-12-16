@@ -268,6 +268,9 @@ const RecipeRowWithMacros = ({
   onAddRecipe?: (item: RecipeItem) => void;
 }) => {
   const router = useRouter();
+  const [caloriesDisplay, setCaloriesDisplay] = useState<string | undefined>(
+    recipe.calories
+  );
   const [macros, setMacros] = useState<{
     protein: number;
     carbs: number;
@@ -289,6 +292,9 @@ const RecipeRowWithMacros = ({
             >;
             const keyMacros = getKeyMacros(nutrition);
             setMacros(keyMacros);
+            if (typeof nutrition.calories === "number") {
+              setCaloriesDisplay(`${Math.round(nutrition.calories)} kcal`);
+            }
             return;
           } catch (error) {
             console.error("Error parsing stored nutrition", error);
@@ -303,6 +309,9 @@ const RecipeRowWithMacros = ({
         const nutrition = await calculateRecipeNutrition(parsedIngredients);
         const keyMacros = getKeyMacros(nutrition);
         setMacros(keyMacros);
+        if (typeof nutrition.calories === "number") {
+          setCaloriesDisplay(`${Math.round(nutrition.calories)} kcal`);
+        }
 
         // Store calculated nutrition for future use
         const { updateRecipeNutrition } = await import("@/utils/sqlite");
@@ -321,7 +330,7 @@ const RecipeRowWithMacros = ({
         recipeId={recipe.id}
         title={recipe.title}
         ingredients={recipe.ingredients}
-        calories={recipe.calories}
+        calories={caloriesDisplay}
         isOptimized={recipe.isOptimized}
         macros={macros}
       />
@@ -333,7 +342,7 @@ const RecipeRowWithMacros = ({
       recipeId={recipe.id}
       title={recipe.title}
       ingredients={recipe.ingredients}
-      calories={recipe.calories}
+      calories={caloriesDisplay ?? recipe.calories}
       isOptimized={recipe.isOptimized}
       macros={macros}
       onPress={() =>

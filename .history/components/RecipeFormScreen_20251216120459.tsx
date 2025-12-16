@@ -49,7 +49,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(isEditMode);
-  const [isOpeningImagePicker, setIsOpeningImagePicker] = useState(false);
   const { title, instructions, ingredients, imageUri } = useRecipeDraft();
   const {
     setTitle,
@@ -79,18 +78,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
 
   useEffect(() => {
     initDatabase().catch(console.error);
-  }, []);
-
-  // Request media library permissions early so the first tap on the picture
-  // placeholder feels faster.
-  useEffect(() => {
-    (async () => {
-      try {
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      } catch (error) {
-        console.error("Error pre-requesting media library permissions", error);
-      }
-    })();
   }, []);
 
   useEffect(() => {
@@ -162,8 +149,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
 
   const handleSelectImage = async () => {
     try {
-      setIsOpeningImagePicker(true);
-
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -176,10 +161,8 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        // NOTE: MediaTypeOptions is marked deprecated in logs, but MediaType is
-        // not available in the current expo-image-picker version being used.
-        // Using MediaTypeOptions.Images here keeps the picker working.
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        // MediaTypeOptions is deprecated; use MediaType
+        mediaTypes: [ImagePicker.MediaType.IMAGE],
         quality: 0.8,
         allowsEditing: true,
         aspect: [4, 3],
@@ -199,8 +182,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
         "Fehler",
         "Beim Auswählen des Bildes ist ein Fehler aufgetreten."
       );
-    } finally {
-      setIsOpeningImagePicker(false);
     }
   };
 

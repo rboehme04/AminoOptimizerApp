@@ -11,4 +11,5 @@ Todos:
             - add functionality to navbar in HinzuRezDetail (Favorite funktioniert schon)
             - fix nutrition calculation of recipes that contain other recipes
                 --> right now only Lebensmittel are summed up, recipes not
-                    for Makros in RezDetailTopComponent and detailNaehrstoffprofil
+                    
+
