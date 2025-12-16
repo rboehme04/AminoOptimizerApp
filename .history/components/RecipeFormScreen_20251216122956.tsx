@@ -78,7 +78,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
         await initDatabase();
         await deleteRecipe(recipeId);
         reset();
-        setOriginalRecipe(null);
         // Navigate back to root (index) with back animation
         navigation.dispatch(StackActions.popToTop());
       } catch (error) {
@@ -230,61 +229,11 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
     }
   };
 
-  const hasChanges = (): boolean => {
-    if (!originalRecipe) return true; // If no original recipe, consider it changed
-
-    // Compare title
-    if (title.trim() !== originalRecipe.title.trim()) {
-      return true;
-    }
-
-    // Compare instructions
-    if (instructions.trim() !== originalRecipe.instructions.trim()) {
-      return true;
-    }
-
-    // Compare imageUri
-    if (imageUri !== originalRecipe.imageUri) {
-      return true;
-    }
-
-    // Compare ingredients
-    if (ingredients.length !== originalRecipe.ingredients.length) {
-      return true;
-    }
-
-    // Deep compare ingredients
-    for (let i = 0; i < ingredients.length; i++) {
-      const current = ingredients[i];
-      const original = originalRecipe.ingredients[i];
-      if (
-        current.id !== original.id ||
-        current.title.trim() !== original.title.trim() ||
-        current.portion.trim() !== original.portion.trim() ||
-        (current.calories || "").trim() !== (original.calories || "").trim()
-      ) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
   const handleSave = async () => {
     if (!title.trim()) {
       setErrorMessage("Bitte gib einen Rezeptnamen an.");
       return;
     }
-
-    // Check if there are changes in edit mode
-    if (isEditMode && !hasChanges()) {
-      // No changes, just go back
-      reset();
-      setOriginalRecipe(null);
-      router.back();
-      return;
-    }
-
     setErrorMessage(null);
     setIsSaving(true);
 
@@ -317,7 +266,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
           nutrition
         );
         reset();
-        setOriginalRecipe(null);
       } else {
         // Create new recipe
         const keyMacros = getKeyMacros(nutrition);
@@ -361,7 +309,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
           console.error("Error adding recent recipe item", error)
         );
         reset();
-        setOriginalRecipe(null);
       }
 
       router.back();
@@ -378,7 +325,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
   const handleBackPress = () => {
     // Clear form when closing (both create and edit mode)
     reset();
-    setOriginalRecipe(null);
     router.back();
   };
 

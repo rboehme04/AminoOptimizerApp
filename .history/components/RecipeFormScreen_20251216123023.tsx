@@ -78,7 +78,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
         await initDatabase();
         await deleteRecipe(recipeId);
         reset();
-        setOriginalRecipe(null);
         // Navigate back to root (index) with back animation
         navigation.dispatch(StackActions.popToTop());
       } catch (error) {

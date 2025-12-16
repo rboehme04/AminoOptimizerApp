@@ -78,7 +78,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
         await initDatabase();
         await deleteRecipe(recipeId);
         reset();
-        setOriginalRecipe(null);
         // Navigate back to root (index) with back animation
         navigation.dispatch(StackActions.popToTop());
       } catch (error) {
@@ -317,7 +316,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
           nutrition
         );
         reset();
-        setOriginalRecipe(null);
       } else {
         // Create new recipe
         const keyMacros = getKeyMacros(nutrition);
@@ -361,7 +359,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
           console.error("Error adding recent recipe item", error)
         );
         reset();
-        setOriginalRecipe(null);
       }
 
       router.back();
@@ -378,7 +375,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
   const handleBackPress = () => {
     // Clear form when closing (both create and edit mode)
     reset();
-    setOriginalRecipe(null);
     router.back();
   };
 

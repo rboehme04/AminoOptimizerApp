@@ -78,7 +78,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
         await initDatabase();
         await deleteRecipe(recipeId);
         reset();
-        setOriginalRecipe(null);
         // Navigate back to root (index) with back animation
         navigation.dispatch(StackActions.popToTop());
       } catch (error) {
@@ -378,7 +377,6 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
   const handleBackPress = () => {
     // Clear form when closing (both create and edit mode)
     reset();
-    setOriginalRecipe(null);
     router.back();
   };
 
