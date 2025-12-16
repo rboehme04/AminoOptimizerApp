@@ -59,13 +59,27 @@ const IngredientRow = ({ ingredient, onPress }: IngredientRowProps) => {
   const router = useRouter();
 
   const handlePress = () => {
-    router.push({
-      pathname: "/HinzuLebDetail",
-      params: {
-        id: ingredient.id,
-        portion: ingredient.amount,
-      },
-    });
+    const isRecipeIngredient = ingredient.id.startsWith("recipe:");
+    const rawId = isRecipeIngredient
+      ? ingredient.id.replace("recipe:", "")
+      : ingredient.id;
+
+    if (isRecipeIngredient) {
+      router.push({
+        pathname: "/HinzuRezDetail",
+        params: {
+          id: rawId,
+        },
+      });
+    } else {
+      router.push({
+        pathname: "/HinzuLebDetail",
+        params: {
+          id: rawId,
+          portion: ingredient.amount,
+        },
+      });
+    }
   };
 
   return (

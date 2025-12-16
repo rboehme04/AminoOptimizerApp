@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { getRecipeById } from "@/utils/sqlite";
+
 const RECENT_RECIPES_KEY = "recent_recipes_v1";
 const RECENT_LEBENS_KEY = "recent_lebensmittel_v1";
 const MAX_RECENT_ITEMS = 10;
@@ -61,7 +63,28 @@ export async function addRecentLebensmittel(
 }
 
 export async function getRecentRecipes(): Promise<RecentRecipeItem[]> {
-  return loadList<RecentRecipeItem>(RECENT_RECIPES_KEY);
+  const items = await loadList<RecentRecipeItem>(RECENT_RECIPES_KEY);
+
+  if (items.length === 0) {
+    return items;
+  }
+
+  // Drop recipes that have been deleted from the database
+  const existingItems = (
+    await Promise.all(
+      items.map(async item => {
+        const exists = await getRecipeById(Number(item.id));
+        return exists ? item : null;
+      })
+    )
+  ).filter(Boolean) as RecentRecipeItem[];
+
+  if (existingItems.length !== items.length) {
+    // Persist the cleaned list so deleted recipes do not reappear
+    await saveList<RecentRecipeItem>(RECENT_RECIPES_KEY, existingItems);
+  }
+
+  return existingItems;
 }
 
 export async function getRecentLebensmittel(): Promise<RecentLebensmittelItem[]> {

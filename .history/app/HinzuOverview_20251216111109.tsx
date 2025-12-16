@@ -145,7 +145,7 @@ export default function HinzuOverviewScreen() {
   };
 
   const handleAddRecipe = (item: RecipeItem) => {
-    const itemId = `recipe:${item.id}`;
+    const itemId = String(item.id);
     const alreadyAdded = ingredients.some(existing => existing.id === itemId);
     if (alreadyAdded) return;
 
@@ -162,7 +162,9 @@ export default function HinzuOverviewScreen() {
       ingredients: item.ingredients,
       calories: item.calories,
       isOptimized: item.isOptimized,
-    }).catch(error => console.error("Error adding recent recipe item", error));
+    }).catch(error =>
+      console.error("Error adding recent recipe item", error)
+    );
   };
 
   return (

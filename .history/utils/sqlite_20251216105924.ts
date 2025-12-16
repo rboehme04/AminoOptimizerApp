@@ -40,6 +40,20 @@ export const initDatabase = async (): Promise<void> => {
       is_optimized INTEGER NOT NULL DEFAULT 0
     );
   `);
+
+  // Ensure the is_optimized column exists for users with an older schema
+  try {
+    const columns = await db.getAllAsync<{ name: string }>("PRAGMA table_info(recipes);");
+    const hasOptimizedColumn = columns.some(column => column.name === "is_optimized");
+
+    if (!hasOptimizedColumn) {
+      await db.execAsync(
+        "ALTER TABLE recipes ADD COLUMN is_optimized INTEGER NOT NULL DEFAULT 0;"
+      );
+    }
+  } catch (error) {
+    console.warn("Failed to ensure is_optimized column exists:", error);
+  }
 };
 
 export const insertRecipe = async (
@@ -135,7 +149,7 @@ export const deleteRecipe = async (id: number): Promise<void> => {
 export const getFavoriteRecipes = async (): Promise<RecipeRow[]> => {
   const db = await dbPromise;
   const rows = await db.getAllAsync<RecipeRow>(
-    "SELECT id, title, instructions, ingredients_json, nutrition_json, created_at, is_favorite, is_optimized FROM recipes WHERE is_favorite = 1 ORDER BY created_at DESC;"
+    "SELECT id, title, instructions, ingredients_json, nutrition_json, created_at, is_favorite FROM recipes WHERE is_favorite = 1 ORDER BY created_at DESC;"
   );
   return rows;
 };

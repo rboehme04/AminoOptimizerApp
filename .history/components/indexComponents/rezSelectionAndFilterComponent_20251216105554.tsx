@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -12,8 +12,8 @@ import {
   getRecentLebensmittel,
   getRecentRecipes,
   RecentLebensmittelItem,
+  RecentRecipeItem,
 } from "@/utils/recentItems";
-import { mapRecipeRowToItem, type RecipeItem } from "@/utils/recipeHelpers";
 import {
   calculateRecipeNutrition,
   getKeyMacros,
@@ -22,7 +22,9 @@ import {
 import {
   getAllRecipesOrderedByCreatedDesc,
   getRecipeById,
+  RecipeRow,
 } from "@/utils/sqlite";
+import { mapRecipeRowToItem, type RecipeItem } from "@/utils/recipeHelpers";
 
 // RecipeItem is now imported from recipeHelpers
 type LebensmittelItem = RecentLebensmittelItem;
@@ -33,14 +35,12 @@ type RezSelectionAndFilterComponentProps =
       activeSide?: "Rezept" | "Lebensmittel";
       searchResults?: LebensmittelItem[];
       onAddIngredient?: (item: LebensmittelItem) => void;
-      onAddRecipe?: (item: RecipeItem) => void;
     }
   | {
       isOptimizerHome?: false;
       activeSide: "Rezept" | "Lebensmittel";
       searchResults?: LebensmittelItem[];
       onAddIngredient?: (item: LebensmittelItem) => void;
-      onAddRecipe?: (item: RecipeItem) => void;
     };
 
 const RezSelectionAndFilterComponent = (
@@ -52,7 +52,6 @@ const RezSelectionAndFilterComponent = (
     : props.activeSide ?? "Rezept";
   const searchResults = props.searchResults;
   const onAddIngredient = props.onAddIngredient;
-  const onAddRecipe = props.onAddRecipe;
 
   const [selection, setSelection] = useState<"letzte" | "favoriten">("letzte");
   const showingFavorites = selection === "favoriten";
@@ -100,7 +99,6 @@ const RezSelectionAndFilterComponent = (
           isOptimizerHome={isOptimizerHome}
           items={displayedItems}
           onAddIngredient={onAddIngredient}
-          onAddRecipe={onAddRecipe}
         />
       )}
     </View>
@@ -180,13 +178,11 @@ const ItemList = ({
   isOptimizerHome,
   items,
   onAddIngredient,
-  onAddRecipe,
 }: {
   activeSide: "Rezept" | "Lebensmittel";
   isOptimizerHome: boolean;
   items: RecipeItem[] | LebensmittelItem[];
   onAddIngredient?: (item: LebensmittelItem) => void;
-  onAddRecipe?: (item: RecipeItem) => void;
 }) => {
   if (activeSide === "Rezept") {
     return (
@@ -196,7 +192,6 @@ const ItemList = ({
             key={recipe.id}
             recipe={recipe}
             isOptimizerHome={isOptimizerHome}
-            onAddRecipe={onAddRecipe}
           />
         ))}
       </View>
@@ -256,17 +251,15 @@ const useRecentItems = (activeSide: "Rezept" | "Lebensmittel") => {
   return items;
 };
 
+
 // Component to load and display macros for a recipe row
 const RecipeRowWithMacros = ({
   recipe,
   isOptimizerHome,
-  onAddRecipe,
 }: {
   recipe: RecipeItem;
   isOptimizerHome: boolean;
-  onAddRecipe?: (item: RecipeItem) => void;
 }) => {
-  const router = useRouter();
   const [macros, setMacros] = useState<{
     protein: number;
     carbs: number;
@@ -335,13 +328,6 @@ const RecipeRowWithMacros = ({
       calories={recipe.calories}
       isOptimized={recipe.isOptimized}
       macros={macros}
-      onPress={() =>
-        router.push({
-          pathname: "/HinzuRezDetail",
-          params: { id: recipe.id.toString() },
-        })
-      }
-      onAddPress={onAddRecipe ? () => onAddRecipe(recipe) : undefined}
     />
   );
 };
@@ -458,7 +444,7 @@ const styles = StyleSheet.create({
     gap: Gap.gap_8,
   },
   badgeSelected: {
-    backgroundColor: Color.brand40LetzteButtonOrBlueText,
+    backgroundColor: Color.brand40,
   },
   badgeUnselected: {
     backgroundColor: Color.neutralInputOnDark,

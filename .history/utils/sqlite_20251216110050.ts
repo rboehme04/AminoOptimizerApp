@@ -40,6 +40,20 @@ export const initDatabase = async (): Promise<void> => {
       is_optimized INTEGER NOT NULL DEFAULT 0
     );
   `);
+
+  // // Ensure the is_optimized column exists for users with an older schema
+  // try {
+  //   const columns = await db.getAllAsync<{ name: string }>("PRAGMA table_info(recipes);");
+  //   const hasOptimizedColumn = columns.some(column => column.name === "is_optimized");
+
+  //   if (!hasOptimizedColumn) {
+  //     await db.execAsync(
+  //       "ALTER TABLE recipes ADD COLUMN is_optimized INTEGER NOT NULL DEFAULT 0;"
+  //     );
+  //   }
+  // } catch (error) {
+  //   console.warn("Failed to ensure is_optimized column exists:", error);
+  // }
 };
 
 export const insertRecipe = async (

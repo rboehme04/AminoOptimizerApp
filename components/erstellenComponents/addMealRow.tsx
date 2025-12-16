@@ -44,14 +44,15 @@ const AddMealRow = ({
   const handlePress = () => {
     if (onPress) {
       onPress();
-    } else if (recipeId !== undefined) {
-      router.push({
-        pathname: "/RezDetail",
-        params: { id: recipeId.toString() },
-      });
-    } else {
-      router.push("/HinzuRezDetail");
+      return;
     }
+
+    router.push({
+      pathname: "/HinzuRezDetail",
+      params: {
+        id: recipeId?.toString() ?? "",
+      },
+    });
   };
 
   return (

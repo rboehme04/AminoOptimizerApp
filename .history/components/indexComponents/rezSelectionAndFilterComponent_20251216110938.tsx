@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -266,7 +266,6 @@ const RecipeRowWithMacros = ({
   isOptimizerHome: boolean;
   onAddRecipe?: (item: RecipeItem) => void;
 }) => {
-  const router = useRouter();
   const [macros, setMacros] = useState<{
     protein: number;
     carbs: number;
@@ -335,12 +334,6 @@ const RecipeRowWithMacros = ({
       calories={recipe.calories}
       isOptimized={recipe.isOptimized}
       macros={macros}
-      onPress={() =>
-        router.push({
-          pathname: "/HinzuRezDetail",
-          params: { id: recipe.id.toString() },
-        })
-      }
       onAddPress={onAddRecipe ? () => onAddRecipe(recipe) : undefined}
     />
   );

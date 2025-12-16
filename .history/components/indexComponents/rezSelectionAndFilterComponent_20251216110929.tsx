@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -12,8 +12,8 @@ import {
   getRecentLebensmittel,
   getRecentRecipes,
   RecentLebensmittelItem,
+  RecentRecipeItem,
 } from "@/utils/recentItems";
-import { mapRecipeRowToItem, type RecipeItem } from "@/utils/recipeHelpers";
 import {
   calculateRecipeNutrition,
   getKeyMacros,
@@ -22,7 +22,9 @@ import {
 import {
   getAllRecipesOrderedByCreatedDesc,
   getRecipeById,
+  RecipeRow,
 } from "@/utils/sqlite";
+import { mapRecipeRowToItem, type RecipeItem } from "@/utils/recipeHelpers";
 
 // RecipeItem is now imported from recipeHelpers
 type LebensmittelItem = RecentLebensmittelItem;
@@ -256,17 +258,15 @@ const useRecentItems = (activeSide: "Rezept" | "Lebensmittel") => {
   return items;
 };
 
+
 // Component to load and display macros for a recipe row
 const RecipeRowWithMacros = ({
   recipe,
   isOptimizerHome,
-  onAddRecipe,
 }: {
   recipe: RecipeItem;
   isOptimizerHome: boolean;
-  onAddRecipe?: (item: RecipeItem) => void;
 }) => {
-  const router = useRouter();
   const [macros, setMacros] = useState<{
     protein: number;
     carbs: number;
@@ -335,13 +335,6 @@ const RecipeRowWithMacros = ({
       calories={recipe.calories}
       isOptimized={recipe.isOptimized}
       macros={macros}
-      onPress={() =>
-        router.push({
-          pathname: "/HinzuRezDetail",
-          params: { id: recipe.id.toString() },
-        })
-      }
-      onAddPress={onAddRecipe ? () => onAddRecipe(recipe) : undefined}
     />
   );
 };

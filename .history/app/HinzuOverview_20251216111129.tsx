@@ -145,7 +145,7 @@ export default function HinzuOverviewScreen() {
   };
 
   const handleAddRecipe = (item: RecipeItem) => {
-    const itemId = `recipe:${item.id}`;
+    const itemId = String(item.id);
     const alreadyAdded = ingredients.some(existing => existing.id === itemId);
     if (alreadyAdded) return;
 

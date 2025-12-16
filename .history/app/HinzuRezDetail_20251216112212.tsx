@@ -11,7 +11,6 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
 
 import DetailsNaehstoffprofilComponent from "@/components/detailsNaehstoffprofilComponent";
 import HinzuRezAmountInput from "@/components/erstellenComponents/hinzuRezAmountInput";
