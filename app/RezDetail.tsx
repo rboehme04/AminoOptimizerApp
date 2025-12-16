@@ -1,5 +1,5 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -67,99 +67,102 @@ export default function RezDetailScreen() {
     initDatabase().catch(console.error);
   }, []);
 
-  useEffect(() => {
-    const loadRecipe = async () => {
-      if (!params.id) return;
+  const loadRecipe = useCallback(async () => {
+    if (!params.id) return;
 
-      const recipeId = parseInt(params.id, 10);
-      if (isNaN(recipeId)) return;
+    const recipeId = parseInt(params.id, 10);
+    if (isNaN(recipeId)) return;
 
+    try {
+      await initDatabase();
+      const loadedRecipe = await getRecipeById(recipeId);
+      if (!loadedRecipe) return;
+
+      setRecipe(loadedRecipe);
+
+      // Parse ingredients
       try {
-        await initDatabase();
-        const loadedRecipe = await getRecipeById(recipeId);
-        if (!loadedRecipe) return;
+        const parsedIngredients = JSON.parse(
+          loadedRecipe.ingredients_json
+        ) as Array<{
+          id: string;
+          title: string;
+          portion: string;
+          calories?: string;
+        }>;
 
-        setRecipe(loadedRecipe);
+        const mappedIngredients: Ingredient[] = parsedIngredients.map(
+          ing => ({
+            id: ing.id,
+            name: ing.title,
+            amount: ing.portion,
+            calories: ing.calories || "0 kcal",
+          })
+        );
+        setIngredients(mappedIngredients);
 
-        // Parse ingredients
-        try {
-          const parsedIngredients = JSON.parse(
-            loadedRecipe.ingredients_json
-          ) as Array<{
-            id: string;
-            title: string;
-            portion: string;
-            calories?: string;
-          }>;
-
-          const mappedIngredients: Ingredient[] = parsedIngredients.map(
-            ing => ({
-              id: ing.id,
-              name: ing.title,
-              amount: ing.portion,
-              calories: ing.calories || "0 kcal",
-            })
-          );
-          setIngredients(mappedIngredients);
-
-          // Calculate total calories
-          let calories = 0;
-          parsedIngredients.forEach(ing => {
-            if (ing.calories) {
-              const caloriesStr = ing.calories.trim();
-              const match = caloriesStr.match(/^(\d+(?:\.\d+)?)/);
-              if (match) {
-                const caloriesValue = parseFloat(match[1]);
-                if (!isNaN(caloriesValue)) {
-                  calories += caloriesValue;
-                }
+        // Calculate total calories
+        let calories = 0;
+        parsedIngredients.forEach(ing => {
+          if (ing.calories) {
+            const caloriesStr = ing.calories.trim();
+            const match = caloriesStr.match(/^(\d+(?:\.\d+)?)/);
+            if (match) {
+              const caloriesValue = parseFloat(match[1]);
+              if (!isNaN(caloriesValue)) {
+                calories += caloriesValue;
               }
             }
-          });
-          setTotalCalories(Math.round(calories));
+          }
+        });
+        setTotalCalories(Math.round(calories));
 
-          // Load nutrition from database or calculate if missing
-          let nutrition: Record<string, number>;
-          if (loadedRecipe.nutrition_json) {
-            try {
-              nutrition = JSON.parse(loadedRecipe.nutrition_json);
-            } catch (error) {
-              console.error("Error parsing stored nutrition", error);
-              // Fallback to calculation
-              const recipeIngredients: RecipeIngredient[] = parsedIngredients;
-              nutrition = await calculateRecipeNutrition(recipeIngredients);
-              // Update database with calculated nutrition
-              const { updateRecipeNutrition } = await import("@/utils/sqlite");
-              updateRecipeNutrition(loadedRecipe.id, nutrition).catch(
-                console.error
-              );
-            }
-          } else {
-            // Calculate and store nutrition if missing
+        // Load nutrition from database or calculate if missing
+        let nutrition: Record<string, number>;
+        if (loadedRecipe.nutrition_json) {
+          try {
+            nutrition = JSON.parse(loadedRecipe.nutrition_json);
+          } catch (error) {
+            console.error("Error parsing stored nutrition", error);
+            // Fallback to calculation
             const recipeIngredients: RecipeIngredient[] = parsedIngredients;
             nutrition = await calculateRecipeNutrition(recipeIngredients);
+            // Update database with calculated nutrition
             const { updateRecipeNutrition } = await import("@/utils/sqlite");
             updateRecipeNutrition(loadedRecipe.id, nutrition).catch(
               console.error
             );
           }
-
-          const rows = nutritionToRows(nutrition);
-          setNutritionRows(rows);
-
-          // Set macros for top component
-          const keyMacros = getKeyMacros(nutrition);
-          setMacros(keyMacros);
-        } catch (error) {
-          console.error("Error parsing ingredients", error);
+        } else {
+          // Calculate and store nutrition if missing
+          const recipeIngredients: RecipeIngredient[] = parsedIngredients;
+          nutrition = await calculateRecipeNutrition(recipeIngredients);
+          const { updateRecipeNutrition } = await import("@/utils/sqlite");
+          updateRecipeNutrition(loadedRecipe.id, nutrition).catch(
+            console.error
+          );
         }
-      } catch (error) {
-        console.error("Error loading recipe", error);
-      }
-    };
 
-    loadRecipe();
+        const rows = nutritionToRows(nutrition);
+        setNutritionRows(rows);
+
+        // Set macros for top component
+        const keyMacros = getKeyMacros(nutrition);
+        setMacros(keyMacros);
+      } catch (error) {
+        console.error("Error parsing ingredients", error);
+      }
+    } catch (error) {
+      console.error("Error loading recipe", error);
+    }
   }, [params.id]);
+
+  // Reload recipe data when screen comes into focus (e.g., after editing)
+  useFocusEffect(
+    useCallback(() => {
+      loadRecipe();
+    }, [loadRecipe])
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={["left", "right"]}>

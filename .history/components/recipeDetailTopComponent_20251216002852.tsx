@@ -19,6 +19,7 @@ import {
   removeFavoriteRecipe,
   type FavoriteRecipeItem,
 } from "@/utils/favorites";
+import { getRecipeById } from "@/utils/sqlite";
 const breakfastImage = require("@/assets/images/FrühstücksBowlPicture.png");
 
 interface RecipeDetailTopComponentProps {
@@ -63,13 +64,61 @@ const RecipeDetailTopComponent = ({
         await removeFavoriteRecipe(recipeId);
         setIsFavorite(false);
       } else {
-        // Add favorite - SQLite stores the favorite status, no need for full recipe data
+        // Fetch recipe to get ingredients summary
+        let ingredientsSummary = "";
+        let recipeCalories =
+          calories !== undefined ? `${calories} kcal` : "0 kcal";
+
+        try {
+          const recipe = await getRecipeById(recipeId);
+          if (recipe) {
+            // Extract ingredients summary from ingredients_json
+            try {
+              const parsedIngredients = JSON.parse(
+                recipe.ingredients_json
+              ) as Array<{
+                title?: string;
+                calories?: string;
+              }>;
+              if (Array.isArray(parsedIngredients)) {
+                ingredientsSummary = parsedIngredients
+                  .map(ingredient => ingredient.title)
+                  .filter(Boolean)
+                  .join(", ");
+              }
+            } catch (error) {
+              console.error(
+                "Error parsing ingredients_json for favorite",
+                error
+              );
+            }
+
+            // Try to get calories from stored nutrition if available
+            if (recipe.nutrition_json) {
+              try {
+                const nutrition = JSON.parse(recipe.nutrition_json) as Record<
+                  string,
+                  number
+                >;
+                if (nutrition.calories !== undefined) {
+                  recipeCalories = `${Math.round(nutrition.calories)} kcal`;
+                }
+              } catch (error) {
+                // Fallback to provided calories
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching recipe for favorite", error);
+        }
+
+        // Create favorite item with available data
         const favoriteItem: FavoriteRecipeItem = {
           id: recipeId,
           title: title,
-          ingredients: "", // Not needed for SQLite storage
-          calories: calories !== undefined ? `${calories} kcal` : "0 kcal", // Not needed for SQLite storage
-          isOptimized: isOptimized || false, // Not needed for SQLite storage
+          ingredients: ingredientsSummary,
+          calories: recipeCalories,
+          isOptimized: isOptimized || false,
         };
         await addFavoriteRecipe(favoriteItem);
         setIsFavorite(true);

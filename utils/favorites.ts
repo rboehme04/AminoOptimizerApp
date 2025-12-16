@@ -1,8 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  getFavoriteRecipes as getFavoriteRecipesFromDB,
+  isRecipeFavorite as isRecipeFavoriteInDB,
+  toggleRecipeFavorite,
+} from "./sqlite";
+import { mapRecipeRowToItem } from "./recipeHelpers";
 
-const FAVORITE_RECIPES_KEY = "favorite_recipes_v1";
 const FAVORITE_LEBENS_KEY = "favorite_lebensmittel_v1";
 
+// Keep this type for backward compatibility with components that expect it
 export type FavoriteRecipeItem = {
   id: number;
   title: string;
@@ -40,7 +46,9 @@ async function saveFavorites<T>(key: string, items: T[]): Promise<void> {
 }
 
 export async function getFavoriteRecipes(): Promise<FavoriteRecipeItem[]> {
-  return loadFavorites<FavoriteRecipeItem>(FAVORITE_RECIPES_KEY);
+  // Get favorite recipes from SQLite (single source of truth)
+  const favoriteRecipeRows = await getFavoriteRecipesFromDB();
+  return favoriteRecipeRows.map(mapRecipeRowToItem);
 }
 
 export async function addFavoriteLebensmittel(
@@ -88,32 +96,21 @@ export async function isLebensmittelFavorite(
 export async function addFavoriteRecipe(
   item: FavoriteRecipeItem
 ): Promise<void> {
-  const current = await loadFavorites<FavoriteRecipeItem>(FAVORITE_RECIPES_KEY);
-  const exists = current.some(
-    existing => String(existing.id) === String(item.id)
-  );
-  if (!exists) {
-    await saveFavorites<FavoriteRecipeItem>(FAVORITE_RECIPES_KEY, [
-      ...current,
-      item,
-    ]);
-  }
+  // Set recipe as favorite in SQLite (single source of truth)
+  await toggleRecipeFavorite(item.id, true);
 }
 
 export async function removeFavoriteRecipe(
   recipeId: number
 ): Promise<void> {
-  const current = await loadFavorites<FavoriteRecipeItem>(FAVORITE_RECIPES_KEY);
-  const filtered = current.filter(
-    item => String(item.id) !== String(recipeId)
-  );
-  await saveFavorites<FavoriteRecipeItem>(FAVORITE_RECIPES_KEY, filtered);
+  // Remove favorite status from SQLite (single source of truth)
+  await toggleRecipeFavorite(recipeId, false);
 }
 
 export async function isRecipeFavorite(
   recipeId: number
 ): Promise<boolean> {
-  const favorites = await getFavoriteRecipes();
-  return favorites.some(item => String(item.id) === String(recipeId));
+  // Check favorite status from SQLite (single source of truth)
+  return await isRecipeFavoriteInDB(recipeId);
 }
 

@@ -18,6 +18,7 @@ interface NavBarProps {
   title?: string;
   rightActions?: NavBarAction[];
   backIcon?: React.ReactNode;
+  onBackPress?: () => void;
 }
 
 // Reusable action button component with blur background
@@ -41,8 +42,17 @@ const NavBar = ({
   title = "Title",
   rightActions = [],
   backIcon = <ChevronLeftIcon size={28} />,
+  onBackPress,
 }: NavBarProps) => {
   const router = useRouter();
+
+  const handleBackPress = () => {
+    if (onBackPress) {
+      onBackPress();
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <SafeAreaView edges={["left", "right"]}>
@@ -51,7 +61,7 @@ const NavBar = ({
           {isBackButton ? (
             <Pressable
               style={[styles.clickContainer, styles.clickContainerFlexBox]}
-              onPress={() => router.back()}
+              onPress={handleBackPress}
             >
               {backIcon}
             </Pressable>

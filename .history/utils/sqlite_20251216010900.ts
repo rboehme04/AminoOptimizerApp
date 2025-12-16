@@ -38,7 +38,25 @@ export const initDatabase = async (): Promise<void> => {
       is_favorite INTEGER NOT NULL DEFAULT 0
     );
   `);
-};
+  
+//   // Add nutrition_json column to existing tables (migration)
+//   try {
+//     await db.execAsync(`
+//       ALTER TABLE recipes ADD COLUMN nutrition_json TEXT;
+//     `);
+//   } catch (error) {
+//     // Column might already exist, ignore error
+//   }
+  
+//   // Add is_favorite column to existing tables (migration)
+//   try {
+//     await db.execAsync(`
+//       ALTER TABLE recipes ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0;
+//     `);
+//   } catch (error) {
+//     // Column might already exist, ignore error
+//   }
+// };
 
 export const insertRecipe = async (
   recipe: RecipeInsert,

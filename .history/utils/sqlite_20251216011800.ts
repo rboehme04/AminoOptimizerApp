@@ -38,6 +38,8 @@ export const initDatabase = async (): Promise<void> => {
       is_favorite INTEGER NOT NULL DEFAULT 0
     );
   `);
+  
+
 };
 
 export const insertRecipe = async (
