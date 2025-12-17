@@ -16,12 +16,7 @@ export interface NutrientReference {
   label: string;
   reference: number;
   measuringUnit: string;
-  /**
-   * Name of the column in the `opennutrition_foods` table.
-   * Can also be an array of column names; in this case their values
-   * will be summed up in `DetailsNaehrstoffprofilComponent`.
-   */
-  column?: string | string[];
+  column?: string;
 }
 
 export interface NutrientReferenceGroup {
@@ -37,7 +32,7 @@ export const nutrientReferences: NutrientReferenceGroup[] = [
     title: "Überblick",
     values: [
       { label: "Energie", reference: 1950, measuringUnit: "kcal", column: "calories" },
-      { label: "Eiweiß", reference: 100, measuringUnit: "g", column: "protein" }, // ~15% kcal
+      { label: "Eiweiß", reference: 75, measuringUnit: "g", column: "protein" }, // ~15% kcal
       { label: "Kohlenhydrate", reference: 245, measuringUnit: "g", column: "carbohydrates" }, // ~50% kcal
       { label: "Fett", reference: 65, measuringUnit: "g", column: "total_fat" }, // ~30% kcal
       { label: "Ballaststoffe", reference: 30, measuringUnit: "g", column: "dietary_fiber" },
@@ -119,12 +114,12 @@ export const nutrientReferences: NutrientReferenceGroup[] = [
       { label: "Histidin", reference: 1.6, measuringUnit: "g", column: "histidine" },
       { label: "Isoleucin", reference: 3.0, measuringUnit: "g", column: "isoleucine" },
       { label: "Leucin", reference: 6.1, measuringUnit: "g", column: "leucine" },
-      { label: "Lysin", reference: 4.8, measuringUnit: "g", column: "lysine" },
-      { label: "Methionin + Cystin", reference: 2.3, measuringUnit: "g", column: ["methionine","cystine"] },
-      { label: "Phenylalanin + Tyrosin", reference: 4.1, measuringUnit: "g", column: ["phenylalanine", "tyrosine"] },
-      { label: "Threonin", reference: 2.5, measuringUnit: "g", column: "threonine" },
-      { label: "Tryptophan", reference: 0.66, measuringUnit: "g", column: "tryptophan" },
-      { label: "Valin", reference: 4.0, measuringUnit: "g", column: "valine" },
+      { label: "Lysin", reference: 2.5, measuringUnit: "g", column: "lysine" },
+      { label: "Methionin + Cystin", reference: 1.0, measuringUnit: "g", column: "methionine" },
+      { label: "Phenylalanin + Tyrosin", reference: 2.0, measuringUnit: "g", column: "phenylalanine" },
+      { label: "Threonin", reference: 1.5, measuringUnit: "g", column: "threonine" },
+      { label: "Tryptophan", reference: 0.25, measuringUnit: "g", column: "tryptophan" },
+      { label: "Valin", reference: 2.0, measuringUnit: "g", column: "valine" },
     ],
     icon: FlexedBiceps3dIcon,
   },
@@ -163,11 +158,7 @@ export interface NutritionalValueConfig {
   current: number;
   reference: number;
   measuringUnit: string;
-  /**
-   * Column (or list of columns) in the `opennutrition_foods` table.
-   * If multiple columns are provided, their values are summed.
-   */
-  column?: string | string[];
+  column: string;
 }
 
 export interface NaehrstoffRowConfig {
@@ -187,8 +178,7 @@ const createValue = (
     current: 0,
     reference: ref?.reference ?? 0,
     measuringUnit: ref?.measuringUnit ?? measuringUnit,
-    // Pass through the column information; may be a string or string[]
-    column: ref?.column,
+    column: ref?.column ?? "",
   };
 };
 

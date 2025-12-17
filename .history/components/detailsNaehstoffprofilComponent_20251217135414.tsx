@@ -33,7 +33,7 @@ const ValueRowContainer = ({ value }: ValueRowContainerProps) => {
     "Leucin",
     "Lysin",
     "Methionin + Cystin",
-    "Phenylalanin + Tyrosin",
+    "Phenylalanin",
     "Threonin",
     "Tryptophan",
     "Valin",
@@ -206,10 +206,8 @@ function DetailsNaehrstoffprofilComponent({
             .flatMap(row =>
               row.values.flatMap(value => {
                 if (!value.column) return [];
-                return Array.isArray(value.column)
-                  ? value.column
-                  : [value.column];
-              })
+                return Array.isArray(value.column) ? value.column : [value.column];
+              }),
             )
             .filter((col): col is string => !!col)
         )

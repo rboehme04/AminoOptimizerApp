@@ -33,7 +33,7 @@ const ValueRowContainer = ({ value }: ValueRowContainerProps) => {
     "Leucin",
     "Lysin",
     "Methionin + Cystin",
-    "Phenylalanin + Tyrosin",
+    "Phenylalanin",
     "Threonin",
     "Tryptophan",
     "Valin",
