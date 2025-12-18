@@ -1,7 +1,8 @@
-import { CloseXIcon } from "@/assets/icons/icons";
+import { CloseXIcon, HelpCircleIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import CheckboxComponent from "./checkBoxComponent";
 
 interface PopUpProps {
   titleText?: string;
@@ -17,7 +18,7 @@ interface PopUpProps {
   children?: ReactNode;
 }
 
-export default function OptimizerPopUp({
+export default function PopUp({
   titleText = "Title",
   descriptionText = "Description text",
   leftButtonText = "Left Button",
@@ -49,11 +50,12 @@ export default function OptimizerPopUp({
       <Pressable style={styles.backdrop} onPress={handleLeftButtonPress} />
       <View style={styles.container}>
         <Pressable style={styles.closeButton} onPress={handleLeftButtonPress}>
-          <CloseXIcon size={20} color={Color.neutralWhite} />
+          <CloseXIcon size={16} color={Color.neutralWhite} />
         </Pressable>
-
-        <Text style={styles.titleText}>{titleText}</Text>
-
+        <View style={styles.innerContainer}>
+          <HelpCircleIcon size={20} color={Color.neutralWhite} />
+          <Text style={styles.titleText}>{titleText}</Text>
+        </View>
         <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
             <Text style={styles.descriptionText}>{descriptionText}</Text>
@@ -118,24 +120,17 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   container: {
-    width: "95%",
+    width: "80%",
     padding: 16,
     backgroundColor: Color.neutralBackgroundDarkElevated,
     borderRadius: 18,
     zIndex: 1001,
     elevation: 1001,
     gap: 10,
-    position: "relative",
   },
-  closeButton: {
-    position: "absolute",
-    top: 2,
-    right: 2,
-    zIndex: 1002,
-    width: 44,
-    height: 44,
-    justifyContent: "center",
-    alignItems: "center",
+  innerContainer: {
+    flexDirection: "row",
+    gap: 12,
   },
   contentContainer: {
     gap: 16,
@@ -144,7 +139,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   titleText: {
-    ...Typography.title3Emphasized,
+    ...Typography.subheadlineEmphasized,
     color: Color.neutralWhite,
   },
   descriptionText: {

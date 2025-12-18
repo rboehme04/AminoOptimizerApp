@@ -82,7 +82,7 @@ export async function calculateRecipeNutrition(
 
       // Scale and add to aggregated values
       columns.forEach(column => {
-        const raw = (data as unknown as Record<string, unknown>)[column];
+        const raw = (data as Record<string, unknown>)[column];
         const numeric =
           typeof raw === "number"
             ? raw
