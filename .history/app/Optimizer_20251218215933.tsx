@@ -6,6 +6,7 @@ import {
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
 import OptimizerPopUp from "@/components/optimizerPopUp";
+import PopUp from "@/components/popUp";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import { nutritionToRows, type RecipeNutrition } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase } from "@/utils/sqlite";

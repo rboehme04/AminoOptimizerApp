@@ -5,7 +5,7 @@ import {
 } from "@/assets/icons/icons";
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
-import OptimizerPopUp from "@/components/optimizerPopUp";
+import PopUp from "@/components/popUp";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import { nutritionToRows, type RecipeNutrition } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase } from "@/utils/sqlite";
@@ -267,21 +267,29 @@ export default function OptimizerScreen() {
         </View>
         <Text style={styles.text}>Aminosäureprofil analysieren</Text>
         {error && <Text style={styles.errorText}>{error}</Text>}
+        {!error && limitingAAs && limitingAAs.length > 0 && (
+          <View style={styles.resultsContainer}>
+            <Text style={styles.resultsTitle}>
+              3 limitierende Aminosäuren (niedrigster Chemical Score):
+            </Text>
+            {limitingAAs.map(item => (
+              <Text key={item.label} style={styles.resultsItem}>
+                {item.label}: {item.cs}%
+              </Text>
+            ))}
+          </View>
+        )}
       </View>
       <NextButton text="Abbrechen" onPress={() => {}} buttonStyle="dark" />
       {showPopup && (
-        <OptimizerPopUp
+        <PopUp
           titleText="Optimierung abgeschlossen"
-          descriptionText={`Die 3 limitierenden Aminosäuren (niedrigster Chemical Score) sind:`}
-          isShowButtons={true}
-          leftButtonText="Überspringen"
-          rightButtonText="Fertig"
-          rightButtonColor={Color.neutralWhite}
-          rightButtonTextColor={Color.neutralBlackText}
+          descriptionText={`Die 3 limitierenden Aminosäuren (niedrigster Chemical Score) sind:\n\n${formatLimitingAAs()}`}
+          leftButtonText="Schließen"
+          rightButtonText=""
+          isShowButtons={false}
           onClose={handleClosePopup}
-        >
-            <Text style={styles.popupText}>{formatLimitingAAs()}</Text>
-        </OptimizerPopUp>
+        />
       )}
     </SafeAreaView>
   );
@@ -311,11 +319,6 @@ const styles = StyleSheet.create({
     ...Typography.subheadlineRegular,
     color: Color.destructive50,
     textAlign: "center",
-    marginTop: 8,
-  },
-  popupText: {
-    ...Typography.subheadlineRegular,
-    color: Color.neutralTextOrTabGrey,
     marginTop: 8,
   },
 });

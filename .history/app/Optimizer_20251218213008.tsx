@@ -5,7 +5,6 @@ import {
 } from "@/assets/icons/icons";
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
-import OptimizerPopUp from "@/components/optimizerPopUp";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import { nutritionToRows, type RecipeNutrition } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase } from "@/utils/sqlite";
@@ -138,7 +137,6 @@ export default function OptimizerScreen() {
     { label: string; cs: number }[] | null
   >(null);
   const [error, setError] = useState<string | null>(null);
-  const [showPopup, setShowPopup] = useState(false);
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -239,25 +237,6 @@ export default function OptimizerScreen() {
     runOptimization();
   }, [params.id]);
 
-  // Show popup 300ms after isFinished becomes true
-  useEffect(() => {
-    if (isFinished && !error && limitingAAs && limitingAAs.length > 0) {
-      const timeoutId = setTimeout(() => {
-        setShowPopup(true);
-      }, 300);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [isFinished, error, limitingAAs]);
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
-
-  const formatLimitingAAs = () => {
-    if (!limitingAAs || limitingAAs.length === 0) return "";
-    return limitingAAs.map(item => `${item.label}: ${item.cs}%`).join("\n");
-  };
-
   return (
     <SafeAreaView style={styles.Content}>
       <NavBar title="Optimizer" isBold={true} isBackButton={true} />
@@ -267,22 +246,20 @@ export default function OptimizerScreen() {
         </View>
         <Text style={styles.text}>Aminosäureprofil analysieren</Text>
         {error && <Text style={styles.errorText}>{error}</Text>}
+        {!error && isFinished && limitingAAs && limitingAAs.length > 0 && (
+          <View style={styles.resultsContainer}>
+            <Text style={styles.resultsTitle}>
+              3 limitierende Aminosäuren (niedrigster Chemical Score):
+            </Text>
+            {limitingAAs.map(item => (
+              <Text key={item.label} style={styles.resultsItem}>
+                {item.label}: {item.cs}%
+              </Text>
+            ))}
+          </View>
+        )}
       </View>
       <NextButton text="Abbrechen" onPress={() => {}} buttonStyle="dark" />
-      {showPopup && (
-        <OptimizerPopUp
-          titleText="Optimierung abgeschlossen"
-          descriptionText={`Die 3 limitierenden Aminosäuren (niedrigster Chemical Score) sind:`}
-          isShowButtons={true}
-          leftButtonText="Überspringen"
-          rightButtonText="Fertig"
-          rightButtonColor={Color.neutralWhite}
-          rightButtonTextColor={Color.neutralBlackText}
-          onClose={handleClosePopup}
-        >
-            <Text style={styles.popupText}>{formatLimitingAAs()}</Text>
-        </OptimizerPopUp>
-      )}
     </SafeAreaView>
   );
 }
@@ -313,9 +290,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
   },
-  popupText: {
+  resultsContainer: {
+    marginTop: 8,
+    alignItems: "center",
+    gap: 4,
+  },
+  resultsTitle: {
     ...Typography.subheadlineRegular,
     color: Color.neutralTextOrTabGrey,
-    marginTop: 8,
+    textAlign: "center",
+  },
+  resultsItem: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralWhite,
   },
 });

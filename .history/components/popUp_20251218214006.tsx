@@ -1,4 +1,4 @@
-import { CloseXIcon, HelpCircleIcon } from "@/assets/icons/icons";
+import { HelpCircleIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -10,7 +10,6 @@ interface PopUpProps {
   leftButtonText?: string;
   rightButtonText?: string;
   rightButtonColor?: string;
-  rightButtonTextColor?: string;
   isNotShowAgain?: boolean;
   isShowButtons?: boolean;
   onClose?: () => void;
@@ -24,7 +23,6 @@ export default function PopUp({
   leftButtonText = "Left Button",
   rightButtonText = "Right Button",
   rightButtonColor = Color.neutralTagColor,
-  rightButtonTextColor = Color.neutralWhite,
   isNotShowAgain = false,
   isShowButtons = false,
   onClose,
@@ -49,61 +47,57 @@ export default function PopUp({
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={handleLeftButtonPress} />
       <View style={styles.container}>
-        <Pressable style={styles.closeButton} onPress={handleLeftButtonPress}>
-          <CloseXIcon size={16} color={Color.neutralWhite} />
-        </Pressable>
         <View style={styles.innerContainer}>
           <HelpCircleIcon size={20} color={Color.neutralWhite} />
-          <Text style={styles.titleText}>{titleText}</Text>
-        </View>
-        <View style={styles.contentContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.descriptionText}>{descriptionText}</Text>
-            {children}
-          </View>
-          {isShowButtons && (
-            <View style={styles.buttonRowContainer}>
-              <Pressable
-                style={[
-                  styles.buttonOuterContainer,
-                  styles.leftButtonContainer,
-                ]}
-                onPress={handleLeftButtonPress}
-              >
-                <View style={styles.button}>
-                  <Text style={styles.buttonText}>{leftButtonText}</Text>
-                </View>
-              </Pressable>
-              <Pressable
-                style={[
-                  styles.buttonOuterContainer,
-                  styles.rightButtonContainer,
-                ]}
-                onPress={handleRightButtonPress}
-              >
-                <View
-                  style={[styles.button, { backgroundColor: rightButtonColor }]}
+          <View style={styles.contentContainer}>
+            <View style={styles.textContainer}>
+              <Text style={styles.titleText}>{titleText}</Text>
+              <Text style={styles.descriptionText}>{descriptionText}</Text>
+              {children}
+            </View>
+            {isShowButtons && (
+              <View style={styles.buttonRowContainer}>
+                <Pressable
+                  style={[
+                    styles.buttonOuterContainer,
+                    styles.leftButtonContainer,
+                  ]}
+                  onPress={handleLeftButtonPress}
                 >
-                  <Text
-                    style={[styles.buttonText, { color: rightButtonTextColor }]}
+                  <View style={styles.button}>
+                    <Text style={styles.buttonText}>{leftButtonText}</Text>
+                  </View>
+                </Pressable>
+                <Pressable
+                  style={[
+                    styles.buttonOuterContainer,
+                    styles.rightButtonContainer,
+                  ]}
+                  onPress={handleRightButtonPress}
+                >
+                  <View
+                    style={[
+                      styles.button,
+                      { backgroundColor: rightButtonColor },
+                    ]}
                   >
-                    {rightButtonText}
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          )}
-          {isNotShowAgain && (
-            <View style={styles.notShowAgainContainer}>
-              <CheckboxComponent
-                checked={isChecked}
-                onPress={() => setIsChecked(!isChecked)}
-              />
-              <Text style={[styles.descriptionText, styles.notShowAgainText]}>
-                diese Meldung nicht mehr anzeigen
-              </Text>
-            </View>
-          )}
+                    <Text style={styles.buttonText}>{rightButtonText}</Text>
+                  </View>
+                </Pressable>
+              </View>
+            )}
+            {isNotShowAgain && (
+              <View style={styles.notShowAgainContainer}>
+                <CheckboxComponent
+                  checked={isChecked}
+                  onPress={() => setIsChecked(!isChecked)}
+                />
+                <Text style={[styles.descriptionText, styles.notShowAgainText]}>
+                  diese Meldung nicht mehr anzeigen
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
     </View>
@@ -137,21 +131,13 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     zIndex: 1001,
     elevation: 1001,
-    gap: 10,
-    position: "relative",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 15,
-    right: 15,
-    zIndex: 1002,
-    padding: 4,
   },
   innerContainer: {
     flexDirection: "row",
     gap: 12,
   },
   contentContainer: {
+    flex: 1,
     gap: 16,
   },
   textContainer: {
@@ -175,12 +161,13 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   leftButtonContainer: {
-    flex: 1,
+    alignItems: "flex-end",
   },
   rightButtonContainer: {
-    flex: 1,
+    alignItems: "flex-start",
   },
   button: {
+    width: 110,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 16,

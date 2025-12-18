@@ -5,7 +5,7 @@ import {
 } from "@/assets/icons/icons";
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
-import OptimizerPopUp from "@/components/optimizerPopUp";
+import PopUp from "@/components/popUp";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import { nutritionToRows, type RecipeNutrition } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase } from "@/utils/sqlite";
@@ -270,18 +270,14 @@ export default function OptimizerScreen() {
       </View>
       <NextButton text="Abbrechen" onPress={() => {}} buttonStyle="dark" />
       {showPopup && (
-        <OptimizerPopUp
+        <PopUp
           titleText="Optimierung abgeschlossen"
           descriptionText={`Die 3 limitierenden Aminosäuren (niedrigster Chemical Score) sind:`}
           isShowButtons={true}
-          leftButtonText="Überspringen"
-          rightButtonText="Fertig"
-          rightButtonColor={Color.neutralWhite}
-          rightButtonTextColor={Color.neutralBlackText}
           onClose={handleClosePopup}
         >
-            <Text style={styles.popupText}>{formatLimitingAAs()}</Text>
-        </OptimizerPopUp>
+            <Text style={styles.pupupText}>{formatLimitingAAs()}</Text>
+        </PopUp>
       )}
     </SafeAreaView>
   );
@@ -313,9 +309,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
   },
-  popupText: {
-    ...Typography.subheadlineRegular,
-    color: Color.neutralTextOrTabGrey,
-    marginTop: 8,
-  },
+  
 });

@@ -49,7 +49,10 @@ export default function PopUp({
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={handleLeftButtonPress} />
       <View style={styles.container}>
-        <Pressable style={styles.closeButton} onPress={handleLeftButtonPress}>
+        <Pressable
+          style={styles.closeButton}
+          onPress={handleLeftButtonPress}
+        >
           <CloseXIcon size={16} color={Color.neutralWhite} />
         </Pressable>
         <View style={styles.innerContainer}>
@@ -142,8 +145,8 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    top: 15,
-    right: 15,
+    top: 16,
+    right: 16,
     zIndex: 1002,
     padding: 4,
   },

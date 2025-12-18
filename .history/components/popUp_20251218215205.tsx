@@ -1,4 +1,4 @@
-import { CloseXIcon, HelpCircleIcon } from "@/assets/icons/icons";
+import { HelpCircleIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -49,9 +49,6 @@ export default function PopUp({
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={handleLeftButtonPress} />
       <View style={styles.container}>
-        <Pressable style={styles.closeButton} onPress={handleLeftButtonPress}>
-          <CloseXIcon size={16} color={Color.neutralWhite} />
-        </Pressable>
         <View style={styles.innerContainer}>
           <HelpCircleIcon size={20} color={Color.neutralWhite} />
           <Text style={styles.titleText}>{titleText}</Text>
@@ -138,14 +135,6 @@ const styles = StyleSheet.create({
     zIndex: 1001,
     elevation: 1001,
     gap: 10,
-    position: "relative",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 15,
-    right: 15,
-    zIndex: 1002,
-    padding: 4,
   },
   innerContainer: {
     flexDirection: "row",
@@ -175,10 +164,10 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   leftButtonContainer: {
-    flex: 1,
+    alignItems: "flex-end",
   },
   rightButtonContainer: {
-    flex: 1,
+    alignItems: "flex-start",
   },
   button: {
     alignItems: "center",
