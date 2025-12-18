@@ -45,8 +45,8 @@ const ValueRowContainer = ({
     "Isoleucin",
     "Leucin",
     "Lysin",
-    "Methionin + Cystin",
-    "Phenylalanin + Tyrosin",
+    "Methionin",
+    "Phenylalanin",
     "Threonin",
     "Tryptophan",
     "Valin",
@@ -244,14 +244,7 @@ function DetailsNaehrstoffprofilComponent({
       const columns = Array.from(
         new Set(
           rows
-            .flatMap(row =>
-              row.values.flatMap(value => {
-                if (!value.column) return [];
-                return Array.isArray(value.column)
-                  ? value.column
-                  : [value.column];
-              })
-            )
+            .flatMap(row => row.values.map(v => v.column))
             .filter((col): col is string => !!col)
         )
       );
@@ -272,34 +265,18 @@ function DetailsNaehrstoffprofilComponent({
         setBaseRows(rows);
         return;
       }
-      // Use a loose type here because the Supabase row shape is dynamic and
-      // depends on the selected columns.
       const rowData = data as unknown as Record<string, number | null>;
 
       const updatedRows: NaehrstoffRowConfig[] = rows.map(row => ({
         ...row,
         values: row.values.map(value => {
-          const parseRaw = (raw: unknown): number => {
-            if (typeof raw === "number") return raw;
-            if (typeof raw === "string") {
-              const n = Number(raw);
-              return Number.isFinite(n) ? n : 0;
-            }
-            return 0;
-          };
-
-          let numeric = 0;
-
-          if (Array.isArray(value.column)) {
-            // Sum values from multiple columns (e.g. "Methionin + Cystin")
-            numeric = value.column.reduce((sum, col) => {
-              const raw = rowData[col];
-              return sum + parseRaw(raw);
-            }, 0);
-          } else if (value.column) {
-            const raw = rowData[value.column];
-            numeric = parseRaw(raw);
-          }
+          const raw = value.column ? rowData[value.column] : null;
+          const numeric =
+            typeof raw === "number"
+              ? raw
+              : typeof raw === "string"
+              ? Number(raw) || 0
+              : 0;
 
           return {
             ...value,
@@ -352,9 +329,7 @@ function DetailsNaehrstoffprofilComponent({
             values={row.values}
             onPress={row.onPress}
             icon={row.icon}
-            proteinPer100g={
-              row.title === "Aminosäuren" ? proteinPer100g : undefined
-            }
+            proteinPer100g={row.title === "Aminosäuren" ? proteinPer100g : undefined}
             showChemicalScore={row.title === "Aminosäuren"}
           />
         ))}

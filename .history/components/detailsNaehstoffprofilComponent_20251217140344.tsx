@@ -22,22 +22,9 @@ import ProgressBar from "./progressBar";
 
 interface ValueRowContainerProps {
   value: NutritionalValueConfig;
-  /**
-   * Protein content per 100 g food (from "Überblick" -> "Eiweiß").
-   * Used to calculate Chemical Score (CS) for amino acids.
-   */
-  proteinPer100g?: number;
-  /**
-   * If true, the percentage is shown as Chemical Score (CS).
-   */
-  showChemicalScore?: boolean;
 }
 
-const ValueRowContainer = ({
-  value,
-  proteinPer100g,
-  showChemicalScore,
-}: ValueRowContainerProps) => {
+const ValueRowContainer = ({ value }: ValueRowContainerProps) => {
   const { current, reference, label, measuringUnit } = value;
 
   // Amino acids that should be displayed in mg (values are stored in g)
@@ -45,8 +32,8 @@ const ValueRowContainer = ({
     "Isoleucin",
     "Leucin",
     "Lysin",
-    "Methionin + Cystin",
-    "Phenylalanin + Tyrosin",
+    "Methionin",
+    "Phenylalanin",
     "Threonin",
     "Tryptophan",
     "Valin",
@@ -55,25 +42,9 @@ const ValueRowContainer = ({
 
   const isAminoAcidMg = AMINO_ACIDS_IN_MG.has(label);
 
-  // Default: simple percentage current / reference
-  let percentage =
+  // Keep internal values in grams for percentage calculation
+  const percentage =
     reference === 0 ? 0 : Math.round((current / reference) * 100);
-
-  // For amino acids, optionally compute Chemical Score (CS)
-  if (
-    showChemicalScore &&
-    isAminoAcidMg &&
-    typeof proteinPer100g === "number" &&
-    proteinPer100g > 0 &&
-    reference > 0
-  ) {
-    // Factor so that total protein is 100 g
-    const proteinFactor = 100 / proteinPer100g;
-    // Current amino acid amount normalized to 100 g protein
-    const currentPer100gProtein = current * proteinFactor;
-    const cs = (currentPer100gProtein / reference) * 100;
-    percentage = Math.round(cs);
-  }
 
   const unitFactor = isAminoAcidMg ? 1000 : 1; // g -> mg for amino acids
   const displayUnit = isAminoAcidMg ? "mg" : measuringUnit;
@@ -112,10 +83,7 @@ const ValueRowContainer = ({
             {formatNumber(displayCurrent, displayUnit, label)} /{" "}
             {formatNumber(displayReference, displayUnit, label)} {displayUnit}
           </Text>
-          <Text style={styles.valueRowGreyText}>
-            {showChemicalScore && isAminoAcidMg ? "CS " : ""}
-            {percentage}%
-          </Text>
+          <Text style={styles.valueRowGreyText}>{percentage}%</Text>
         </View>
       </View>
       <ProgressBar current={current} max={reference} />
@@ -128,8 +96,6 @@ interface NaehrstoffprofilRowProps {
   values: NutritionalValueConfig[];
   onPress?: () => void;
   icon?: React.ComponentType<{ size?: number }>;
-  proteinPer100g?: number;
-  showChemicalScore?: boolean;
 }
 
 const NaehrstoffprofilRow = ({
@@ -137,8 +103,6 @@ const NaehrstoffprofilRow = ({
   values = [],
   onPress,
   icon: Icon = EatSymbolIcon,
-  proteinPer100g,
-  showChemicalScore,
 }: NaehrstoffprofilRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -185,12 +149,7 @@ const NaehrstoffprofilRow = ({
       {isExpanded && values.length > 0 && (
         <View style={styles.valueRowListContainer}>
           {values.map((value, index) => (
-            <ValueRowContainer
-              key={`${value.label}-${index}`}
-              value={value}
-              proteinPer100g={proteinPer100g}
-              showChemicalScore={showChemicalScore}
-            />
+            <ValueRowContainer key={`${value.label}-${index}`} value={value} />
           ))}
         </View>
       )}
@@ -244,14 +203,7 @@ function DetailsNaehrstoffprofilComponent({
       const columns = Array.from(
         new Set(
           rows
-            .flatMap(row =>
-              row.values.flatMap(value => {
-                if (!value.column) return [];
-                return Array.isArray(value.column)
-                  ? value.column
-                  : [value.column];
-              })
-            )
+            .flatMap(row => row.values.map(v => v.column))
             .filter((col): col is string => !!col)
         )
       );
@@ -272,34 +224,18 @@ function DetailsNaehrstoffprofilComponent({
         setBaseRows(rows);
         return;
       }
-      // Use a loose type here because the Supabase row shape is dynamic and
-      // depends on the selected columns.
       const rowData = data as unknown as Record<string, number | null>;
 
       const updatedRows: NaehrstoffRowConfig[] = rows.map(row => ({
         ...row,
         values: row.values.map(value => {
-          const parseRaw = (raw: unknown): number => {
-            if (typeof raw === "number") return raw;
-            if (typeof raw === "string") {
-              const n = Number(raw);
-              return Number.isFinite(n) ? n : 0;
-            }
-            return 0;
-          };
-
-          let numeric = 0;
-
-          if (Array.isArray(value.column)) {
-            // Sum values from multiple columns (e.g. "Methionin + Cystin")
-            numeric = value.column.reduce((sum, col) => {
-              const raw = rowData[col];
-              return sum + parseRaw(raw);
-            }, 0);
-          } else if (value.column) {
-            const raw = rowData[value.column];
-            numeric = parseRaw(raw);
-          }
+          const raw = value.column ? rowData[value.column] : null;
+          const numeric =
+            typeof raw === "number"
+              ? raw
+              : typeof raw === "string"
+              ? Number(raw) || 0
+              : 0;
 
           return {
             ...value,
@@ -313,12 +249,6 @@ function DetailsNaehrstoffprofilComponent({
 
     loadNutrients();
   }, [type, id, rows, recipeNutritionRows]);
-
-  // Protein content per 100 g food from "Überblick" -> "Eiweiß"
-  const proteinPer100g =
-    baseRows
-      .find(row => row.title === "Überblick")
-      ?.values.find(value => value.label === "Eiweiß")?.current ?? undefined;
 
   const factor =
     type === "leb" && typeof portionInGrams === "number"
@@ -352,10 +282,6 @@ function DetailsNaehrstoffprofilComponent({
             values={row.values}
             onPress={row.onPress}
             icon={row.icon}
-            proteinPer100g={
-              row.title === "Aminosäuren" ? proteinPer100g : undefined
-            }
-            showChemicalScore={row.title === "Aminosäuren"}
           />
         ))}
       </View>

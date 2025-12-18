@@ -93,18 +93,12 @@ const styles = StyleSheet.create({
     zIndex: 0,
     overflow: "hidden",
   },
-  buttonDark: {
-    backgroundColor: Color.neutralInputOnDark,
-  },
   buttonDisabled: {
     backgroundColor: Color.neutralButtonInactive,
   },
   text: {
     ...Typography.subheadlineEmphasized,
     color: Color.neutralBlackText,
-  },
-  textDark: {
-    color: Color.neutralWhite,
   },
   textDisabled: {
     color: Color.neutralBackgroundDark,
