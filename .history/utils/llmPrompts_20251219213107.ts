@@ -57,7 +57,7 @@ OUTPUT:
 Return exactly a JSON array with 12 objects. Each object must have this structure:
 
 {
-"variant": "[Food Name]",
+"variant": "Variant X – [Food Name]",
 "reason": "Short reason why this food fits",
 "recipe": {
 "title": "Recipe Title",

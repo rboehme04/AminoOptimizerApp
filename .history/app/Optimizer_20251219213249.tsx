@@ -387,11 +387,11 @@ export default function OptimizerScreen() {
       setLlmResponse(null);
 
       try {
-        // console.log("LLM Prompt:", prompt);
+        console.log("LLM Prompt:", prompt);
         const answer = await askLlama(prompt);
         if (answer) {
           setLlmResponse(answer);
-          console.log("LLM Response:", answer);
+        //   console.log("LLM Response:", answer);
         } else {
           setLlmError("No response from LLM");
         }
