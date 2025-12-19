@@ -1,13 +1,7 @@
 import { CloseXIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
-import {
-  LayoutAnimation,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { LayoutAnimation, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface PopUpProps {
   titleText?: string;
@@ -51,11 +45,6 @@ export default function OptimizerPopUp({
     }
   };
 
-  const toggleDescription = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setIsDescriptionExpanded(!isDescriptionExpanded);
-  };
-
   return (
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={handleLeftButtonPress} />
@@ -68,17 +57,14 @@ export default function OptimizerPopUp({
 
         <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
-            <Pressable onPress={toggleDescription}>
+            <Pressable
+              onPress={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+            >
               <Text
                 style={styles.descriptionText}
                 numberOfLines={isDescriptionExpanded ? undefined : 2}
-                ellipsizeMode="tail"
               >
                 {descriptionText}
-                {!isDescriptionExpanded && " "}
-                {!isDescriptionExpanded && (
-                  <Text style={styles.moreText}>...mehr</Text>
-                )}
               </Text>
             </Pressable>
             {children}
@@ -142,7 +128,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   container: {
-    width: "90%",
+    width: "95%",
     padding: 16,
     backgroundColor: Color.neutralBackgroundDarkElevated,
     borderRadius: 18,
@@ -174,10 +160,6 @@ const styles = StyleSheet.create({
   descriptionText: {
     ...Typography.subheadlineRegular,
     color: Color.neutralTextOrTabGrey,
-  },
-  moreText: {
-    ...Typography.subheadlineRegular,
-    color: Color.neutralWhite,
   },
   buttonRowContainer: {
     flexDirection: "row",

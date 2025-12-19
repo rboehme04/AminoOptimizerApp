@@ -1,5 +1,4 @@
 import {
-  CloseXIcon,
   OptimizerFinishedIcon,
   OptimizerNotStartedIcon,
   OptimizerStartedIcon,
@@ -13,7 +12,7 @@ import { nutritionToRows, type RecipeNutrition } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase } from "@/utils/sqlite";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type OptimizerStatus = "not-started" | "running" | "finished";
@@ -286,34 +285,7 @@ export default function OptimizerScreen() {
             <View style={styles.selectionRow}>
               <CheckboxComponent checked={true} onPress={() => {}} />
               <Text style={styles.rowText}>Sojaflocken</Text>
-              <Pressable style={styles.removeClickContainer} onPress={() => {}}>
-                <View style={styles.closexContainer}>
-                  <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
-                </View>
-              </Pressable>
-            </View>
-            <View style={styles.selectionRow}>
-              <CheckboxComponent checked={true} onPress={() => {}} />
-              <Text style={styles.rowText}>Sojaflocken</Text>
-              <Pressable style={styles.removeClickContainer} onPress={() => {}}>
-                <View style={styles.closexContainer}>
-                  <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
-                </View>
-              </Pressable>
-            </View>
-            <View style={styles.selectionRow}>
-              <CheckboxComponent checked={true} onPress={() => {}} />
-              <Text style={styles.rowText}>Sojaflocken</Text>
-              <Pressable style={styles.removeClickContainer} onPress={() => {}}>
-                <View style={styles.closexContainer}>
-                  <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
-                </View>
-              </Pressable>
-            </View>
-            <View style={styles.selectionRow}>
-              <CheckboxComponent checked={true} onPress={() => {}} />
-              <Text style={styles.rowText}>Sojaflocken</Text>
-              <Pressable style={styles.removeClickContainer} onPress={() => {}}>
+              <Pressable style={styles.removeClickContainer} onPress={onPress}>
                 <View style={styles.closexContainer}>
                   <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
                 </View>
@@ -359,7 +331,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   selectionContainer: {
-    paddingTop: 14,
     gap: 4,
   },
   selectionRow: {
@@ -370,21 +341,5 @@ const styles = StyleSheet.create({
     flex: 1,
     ...Typography.subheadlineRegular,
     color: Color.neutralWhite,
-  },
-  removeClickContainer: {
-    height: 44,
-    width: 44,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  closexContainer: {
-    height: 24,
-    width: 24,
-    borderRadius: 9999,
-    borderStyle: "solid",
-    borderColor: Color.neutralStrokeColor,
-    borderWidth: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

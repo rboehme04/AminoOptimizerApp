@@ -1,13 +1,7 @@
 import { CloseXIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
-import {
-  LayoutAnimation,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { LayoutAnimation, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface PopUpProps {
   titleText?: string;
@@ -72,13 +66,8 @@ export default function OptimizerPopUp({
               <Text
                 style={styles.descriptionText}
                 numberOfLines={isDescriptionExpanded ? undefined : 2}
-                ellipsizeMode="tail"
               >
                 {descriptionText}
-                {!isDescriptionExpanded && " "}
-                {!isDescriptionExpanded && (
-                  <Text style={styles.moreText}>...mehr</Text>
-                )}
               </Text>
             </Pressable>
             {children}
@@ -142,7 +131,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   container: {
-    width: "90%",
+    width: "95%",
     padding: 16,
     backgroundColor: Color.neutralBackgroundDarkElevated,
     borderRadius: 18,
@@ -174,10 +163,6 @@ const styles = StyleSheet.create({
   descriptionText: {
     ...Typography.subheadlineRegular,
     color: Color.neutralTextOrTabGrey,
-  },
-  moreText: {
-    ...Typography.subheadlineRegular,
-    color: Color.neutralWhite,
   },
   buttonRowContainer: {
     flexDirection: "row",

@@ -3,9 +3,11 @@ import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
 import {
   LayoutAnimation,
+  NativeSyntheticEvent,
   Pressable,
   StyleSheet,
   Text,
+  TextLayoutEventData,
   View,
 } from "react-native";
 
@@ -72,12 +74,12 @@ export default function OptimizerPopUp({
               <Text
                 style={styles.descriptionText}
                 numberOfLines={isDescriptionExpanded ? undefined : 2}
-                ellipsizeMode="tail"
+                ellipsizeMode={isDescriptionExpanded ? undefined : "clip"}
+                onTextLayout={handleTextLayout}
               >
                 {descriptionText}
-                {!isDescriptionExpanded && " "}
-                {!isDescriptionExpanded && (
-                  <Text style={styles.moreText}>...mehr</Text>
+                {!isDescriptionExpanded && isTextTruncated && (
+                  <Text style={styles.moreText}>... mehr</Text>
                 )}
               </Text>
             </Pressable>
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   container: {
-    width: "90%",
+    width: "95%",
     padding: 16,
     backgroundColor: Color.neutralBackgroundDarkElevated,
     borderRadius: 18,

@@ -1,13 +1,7 @@
 import { CloseXIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
-import {
-  LayoutAnimation,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 interface PopUpProps {
   titleText?: string;
@@ -37,7 +31,8 @@ export default function OptimizerPopUp({
   children,
 }: PopUpProps) {
   const [isChecked, setIsChecked] = useState(false);
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isTextTruncated, setIsTextTruncated] = useState(false);
 
   const handleLeftButtonPress = () => {
     if (onClose) {
@@ -49,11 +44,6 @@ export default function OptimizerPopUp({
     if (onRightButtonPress) {
       onRightButtonPress();
     }
-  };
-
-  const toggleDescription = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setIsDescriptionExpanded(!isDescriptionExpanded);
   };
 
   return (
@@ -68,19 +58,32 @@ export default function OptimizerPopUp({
 
         <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
-            <Pressable onPress={toggleDescription}>
-              <Text
-                style={styles.descriptionText}
-                numberOfLines={isDescriptionExpanded ? undefined : 2}
-                ellipsizeMode="tail"
+            <Text
+              style={styles.descriptionText}
+              numberOfLines={isExpanded ? undefined : 2}
+              ellipsizeMode="clip"
+              onTextLayout={(event) => {
+                if (!isExpanded) {
+                  const { lines } = event.nativeEvent;
+                  setIsTextTruncated(lines.length >= 2);
+                }
+              }}
+            >
+              {descriptionText}
+              {!isExpanded && isTextTruncated && (
+                <Text onPress={() => setIsExpanded(true)} style={styles.expandTextInline}>
+                  {" "}...mehr
+                </Text>
+              )}
+            </Text>
+            {isExpanded && descriptionText && (
+              <Pressable
+                onPress={() => setIsExpanded(false)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                {descriptionText}
-                {!isDescriptionExpanded && " "}
-                {!isDescriptionExpanded && (
-                  <Text style={styles.moreText}>...mehr</Text>
-                )}
-              </Text>
-            </Pressable>
+                <Text style={styles.expandText}>...weniger</Text>
+              </Pressable>
+            )}
             {children}
           </View>
           {isShowButtons && (
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   container: {
-    width: "90%",
+    width: "95%",
     padding: 16,
     backgroundColor: Color.neutralBackgroundDarkElevated,
     borderRadius: 18,
@@ -175,7 +178,12 @@ const styles = StyleSheet.create({
     ...Typography.subheadlineRegular,
     color: Color.neutralTextOrTabGrey,
   },
-  moreText: {
+  expandText: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralWhite,
+    marginTop: 4,
+  },
+  expandTextInline: {
     ...Typography.subheadlineRegular,
     color: Color.neutralWhite,
   },

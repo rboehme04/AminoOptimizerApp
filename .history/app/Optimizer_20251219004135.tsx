@@ -1,5 +1,4 @@
 import {
-  CloseXIcon,
   OptimizerFinishedIcon,
   OptimizerNotStartedIcon,
   OptimizerStartedIcon,
@@ -292,33 +291,6 @@ export default function OptimizerScreen() {
                 </View>
               </Pressable>
             </View>
-            <View style={styles.selectionRow}>
-              <CheckboxComponent checked={true} onPress={() => {}} />
-              <Text style={styles.rowText}>Sojaflocken</Text>
-              <Pressable style={styles.removeClickContainer} onPress={() => {}}>
-                <View style={styles.closexContainer}>
-                  <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
-                </View>
-              </Pressable>
-            </View>
-            <View style={styles.selectionRow}>
-              <CheckboxComponent checked={true} onPress={() => {}} />
-              <Text style={styles.rowText}>Sojaflocken</Text>
-              <Pressable style={styles.removeClickContainer} onPress={() => {}}>
-                <View style={styles.closexContainer}>
-                  <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
-                </View>
-              </Pressable>
-            </View>
-            <View style={styles.selectionRow}>
-              <CheckboxComponent checked={true} onPress={() => {}} />
-              <Text style={styles.rowText}>Sojaflocken</Text>
-              <Pressable style={styles.removeClickContainer} onPress={() => {}}>
-                <View style={styles.closexContainer}>
-                  <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
-                </View>
-              </Pressable>
-            </View>
           </View>
           <Text style={styles.popupText}>{formatLimitingAAs()}</Text>
         </OptimizerPopUp>
@@ -359,7 +331,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   selectionContainer: {
-    paddingTop: 14,
     gap: 4,
   },
   selectionRow: {

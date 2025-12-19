@@ -1,8 +1,9 @@
 import { CloseXIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import {
-  LayoutAnimation,
+  Animated,
+  LayoutRectangle,
   Pressable,
   StyleSheet,
   Text,
@@ -38,6 +39,20 @@ export default function OptimizerPopUp({
 }: PopUpProps) {
   const [isChecked, setIsChecked] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [collapsedHeight, setCollapsedHeight] = useState<number | null>(null);
+  const [expandedHeight, setExpandedHeight] = useState<number | null>(null);
+  const animatedHeight = useRef(new Animated.Value(0)).current;
+  const textRef = useRef<Text>(null);
+
+  useEffect(() => {
+    if (collapsedHeight !== null && expandedHeight !== null) {
+      Animated.timing(animatedHeight, {
+        toValue: isDescriptionExpanded ? expandedHeight : collapsedHeight,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [isDescriptionExpanded, collapsedHeight, expandedHeight]);
 
   const handleLeftButtonPress = () => {
     if (onClose) {
@@ -51,8 +66,17 @@ export default function OptimizerPopUp({
     }
   };
 
+  const handleTextLayout = (event: { nativeEvent: { layout: LayoutRectangle } }) => {
+    const { height } = event.nativeEvent.layout;
+    if (collapsedHeight === null) {
+      setCollapsedHeight(height);
+      animatedHeight.setValue(height);
+    } else if (expandedHeight === null && height > (collapsedHeight || 0)) {
+      setExpandedHeight(height);
+    }
+  };
+
   const toggleDescription = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setIsDescriptionExpanded(!isDescriptionExpanded);
   };
 
@@ -72,13 +96,8 @@ export default function OptimizerPopUp({
               <Text
                 style={styles.descriptionText}
                 numberOfLines={isDescriptionExpanded ? undefined : 2}
-                ellipsizeMode="tail"
               >
                 {descriptionText}
-                {!isDescriptionExpanded && " "}
-                {!isDescriptionExpanded && (
-                  <Text style={styles.moreText}>...mehr</Text>
-                )}
               </Text>
             </Pressable>
             {children}
@@ -142,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   container: {
-    width: "90%",
+    width: "95%",
     padding: 16,
     backgroundColor: Color.neutralBackgroundDarkElevated,
     borderRadius: 18,
@@ -174,10 +193,6 @@ const styles = StyleSheet.create({
   descriptionText: {
     ...Typography.subheadlineRegular,
     color: Color.neutralTextOrTabGrey,
-  },
-  moreText: {
-    ...Typography.subheadlineRegular,
-    color: Color.neutralWhite,
   },
   buttonRowContainer: {
     flexDirection: "row",
