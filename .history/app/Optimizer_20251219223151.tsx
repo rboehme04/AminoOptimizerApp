@@ -27,10 +27,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// Hyperparameters
-const NUMBER_FOOD_OUTPUT = 4;
-const NUMBER_FOOD_RECOMMENDATIONS = 200;
-
 type OptimizerStatus = "not-started" | "running" | "finished";
 
 type Variant = {
@@ -48,6 +44,9 @@ type Variant = {
 
 type OptimizerStatusIconProps = {
   size?: number;
+  /**
+   * Set to true when your async action (e.g. DB query) has finished.
+   */
   isFinished: boolean;
 };
 
@@ -198,18 +197,14 @@ export default function OptimizerScreen() {
     return createPrompt({
       recommendedLebensmittel: recommendedLebensmittel,
       recipe: recipeForLLM,
-      numberFoodOutput: NUMBER_FOOD_OUTPUT,
     });
   }, [recommendedLebensmittel, recipeForLLM]);
+
   // LLM state
   const [llmResponse, setLlmResponse] = useState<string | null>(null);
   const [llmLoading, setLlmLoading] = useState(false);
   const [llmError, setLlmError] = useState<string | null>(null);
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState<
-    number | null
-  >(null);
-  const lastPromptRef = useRef<string | null>(null);
 
   // Minimum spin duration: 2 rounds * 2000ms per round = 4000ms
   const MIN_SPIN_DURATION_MS = 4000;
@@ -339,11 +334,7 @@ export default function OptimizerScreen() {
                 .select(selectColumns.join(", "))
                 .not(orderColumn, "is", null)
                 .order(orderColumn, { ascending: false })
-                .limit(
-                  needsSum
-                    ? NUMBER_FOOD_RECOMMENDATIONS * 2
-                    : NUMBER_FOOD_RECOMMENDATIONS
-                );
+                .limit(needsSum ? 100 : 50);
 
               const { data, error: queryError } = await query;
 
@@ -374,7 +365,7 @@ export default function OptimizerScreen() {
                       const bSum = (b as FoodItem & { _sum: number })._sum;
                       return bSum - aSum;
                     })
-                    .slice(0, NUMBER_FOOD_RECOMMENDATIONS)
+                    .slice(0, 50)
                     .map(({ _sum, ...rest }) => rest as FoodItem);
                 }
 
@@ -409,10 +400,6 @@ export default function OptimizerScreen() {
   useEffect(() => {
     if (!prompt) return;
 
-    // Prevent duplicate calls if prompt hasn't actually changed
-    if (lastPromptRef.current === prompt) return;
-    lastPromptRef.current = prompt;
-
     const callLLM = async () => {
       setLlmLoading(true);
       setLlmError(null);
@@ -423,7 +410,7 @@ export default function OptimizerScreen() {
         const answer = await askLlama(prompt);
         if (answer) {
           setLlmResponse(answer);
-          //   console.log("LLM Raw Response:", answer);
+          console.log("LLM Raw Response:", answer);
 
           // Parse the LLM response to extract variants
           try {
@@ -450,7 +437,7 @@ export default function OptimizerScreen() {
                     typeof item === "object" &&
                     item !== null &&
                     "variant" in item &&
-                    "id" in item &&
+                    "reason" in item &&
                     "recipe" in item
                 );
               } else if (
@@ -487,7 +474,7 @@ export default function OptimizerScreen() {
                         typeof item === "object" &&
                         item !== null &&
                         "variant" in item &&
-                        "id" in item &&
+                        "reason" in item &&
                         "recipe" in item
                     );
                     console.log(
@@ -530,7 +517,7 @@ export default function OptimizerScreen() {
                             typeof parsed === "object" &&
                             parsed !== null &&
                             "variant" in parsed &&
-                            "id" in parsed &&
+                            "reason" in parsed &&
                             "recipe" in parsed
                           ) {
                             results.push(parsed as Variant);
@@ -633,21 +620,15 @@ export default function OptimizerScreen() {
         >
           <View style={styles.selectionContainer}>
             <ScrollView style={styles.scrollView}>
-              <View style={styles.scrollViewContent}>
-                {variants.map((variant, index) => (
-                  <AltLebSelectRow
-                    key={index}
-                    checked={selectedVariantIndex === index}
-                    text={variant.variant}
-                    onCheckPress={() => {
-                      setSelectedVariantIndex(
-                        selectedVariantIndex === index ? null : index
-                      );
-                    }}
-                    onRemovePress={() => {}}
-                  />
-                ))}
-              </View>
+              {variants.map((variant, index) => (
+                <AltLebSelectRow
+                  key={index}
+                  checked={true}
+                  text={variant.variant}
+                  onCheckPress={() => {}}
+                  onRemovePress={() => {}}
+                />
+              ))}
             </ScrollView>
             <View style={styles.selectionRow}>
               <Pressable
@@ -710,8 +691,7 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     gap: 4,
   },
-  scrollView: {},
-  scrollViewContent: {
+  scrollView: {
     gap: 4,
   },
   selectionRow: {

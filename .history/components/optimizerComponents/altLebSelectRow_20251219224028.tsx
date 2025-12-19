@@ -22,19 +22,17 @@ export default function AltLebSelectRow({
   return (
     <View style={styles.selectionRow}>
       <Pressable
-        style={styles.rowPressable}
+        style={styles.radioContainer}
         onPress={onCheckPress}
         accessibilityRole="radio"
         accessibilityState={{ selected: checked }}
         accessibilityLabel={checked ? "Selected" : "Unselected"}
       >
-        <View style={styles.radioContainer}>
-          <View style={[styles.radio, checked && styles.selectedRadio]}>
-            {checked && <View style={styles.innerCircle} />}
-          </View>
+        <View style={[styles.radio, checked && styles.selectedRadio]}>
+          {checked && <View style={styles.innerCircle} />}
         </View>
-        <Text style={styles.rowText}>{text}</Text>
       </Pressable>
+      <Text style={styles.rowText}>{text}</Text>
       <Pressable style={styles.removeClickContainer} onPress={onRemovePress}>
         <View style={styles.closexContainer}>
           <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
@@ -48,35 +46,6 @@ const styles = StyleSheet.create({
   selectionRow: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  rowPressable: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  radioContainer: {
-    width: CONTAINER_SIZE,
-    height: CONTAINER_SIZE,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  radio: {
-    width: RADIO_SIZE,
-    height: RADIO_SIZE,
-    borderRadius: RADIO_SIZE / 2,
-    borderWidth: 1,
-    borderColor: Color.neutralTextOrTabGrey,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  selectedRadio: {
-    borderColor: Color.neutralWhite,
-  },
-  innerCircle: {
-    width: INNER_CIRCLE_SIZE,
-    height: INNER_CIRCLE_SIZE,
-    borderRadius: INNER_CIRCLE_SIZE / 2,
-    backgroundColor: Color.neutralWhite,
   },
   rowText: {
     flex: 1,

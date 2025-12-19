@@ -230,7 +230,7 @@ export async function askLlama(prompt: string) {
       },
     ],
     max_tokens: 3000,
-    temperature: 0.3,
+    temperature: 0.4,
   });
 
   return response.choices[0].message.content;

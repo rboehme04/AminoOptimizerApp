@@ -51,29 +51,32 @@ export const createPrompt = ({
 
 Rules:
 
-1. Select exactly ${numberFoodOutput} foods from the recommended foods list that fit the flavor, improve or maintain texture, and realistically work in the recipe. **Prefer whole, minimally processed foods over highly processed foods.** Exclude foods that clearly do not fit (e.g., meat/fish in sweet vegan recipes).
-2. For each selected food, create one recipe variant. The food must be **added** to the recipe. Adjust other ingredient quantities as needed to maintain taste, consistency, and balance.
+1. Select exactly ${numberFoodOutput} foods from the recommended foods list that fit the flavor, improve or maintain texture, and realistically work in the recipe. Exclude foods that clearly do not fit (e.g., meat/fish in sweet vegan recipes).
+2. For each selected food, create one recipe variant. The food must be added. Adjust other ingredient quantities to maintain taste, consistency, and balance.
 3. Recipes must be practical, enjoyable, and not overly thick, chalky, or watery. Avoid extreme protein overload.
 
 OUTPUT:
 Return exactly a JSON array with ${numberFoodOutput} objects. Each object must have this structure:
 
 {
-  "variant": "[Food Name from the recommended foods list]",
-  "id": "[Food id from the recommended foods list exactly]",
-  "recipe": {
-    "title": "Recipe Title",
-    "ingredients": [
-      {"name": "Ingredient Name", "grams": 0, "calories": 0}
-    ]
-  }
+"variant": "[Food Name]",
+"id": "[Food id]",
+"recipe": {
+"title": "Recipe Title",
+"ingredients": [
+{"name": "Ingredient Name", "grams": 0, "calories": 0}
+]
 }
 
-Constraints:
-- All ${numberFoodOutput} foods must be unique. Do not include duplicates.
-- The "id" field must match **exactly** the id of a food from the recommended foods list ('RECOMMENDED FOODS'). Do not invent or modify ids.
+**Constraints:**
+- All ${} foods must be unique. Do not include duplicates.
 - Do not include extra text, numbering, or explanations. Only output valid JSON.
-- Prefer whole foods over processed foods wherever possible, but maintain taste and texture.
+
+BASE RECIPE:
+[INSERT BASE RECIPE HERE]
+
+RECOMMENDED FOODS:
+[INSERT RECOMMENDED FOODS LIST HERE]
 
 BASE RECIPE:
 Titel: ${recipe.title}
@@ -84,8 +87,7 @@ ${recipe.instructions ? `\nZubereitung:\n${recipe.instructions}` : ""}
 
 RECOMMENDED FOODS:
 ${lebensmittelList}
-`
-;
+`;
 
   return generatedPrompt;
 };

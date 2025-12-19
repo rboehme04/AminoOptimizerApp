@@ -59,8 +59,8 @@ OUTPUT:
 Return exactly a JSON array with ${numberFoodOutput} objects. Each object must have this structure:
 
 {
-  "variant": "[Food Name from the recommended foods list]",
-  "id": "[Food id from the recommended foods list exactly]",
+  "variant": "[Food Name from the recommended foods list exactly]",
+  "id": "[Food id from the recommended foods list]",
   "recipe": {
     "title": "Recipe Title",
     "ingredients": [

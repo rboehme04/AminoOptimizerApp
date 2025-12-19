@@ -710,8 +710,7 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     gap: 4,
   },
-  scrollView: {},
-  scrollViewContent: {
+  scrollView: {
     gap: 4,
   },
   selectionRow: {

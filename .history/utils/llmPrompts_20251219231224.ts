@@ -59,8 +59,8 @@ OUTPUT:
 Return exactly a JSON array with ${numberFoodOutput} objects. Each object must have this structure:
 
 {
-  "variant": "[Food Name from the recommended foods list]",
-  "id": "[Food id from the recommended foods list exactly]",
+  "variant": "[Food Name from the recommended foods list exactly]",
+  "id": "[Food id from the recommended foods list]",
   "recipe": {
     "title": "Recipe Title",
     "ingredients": [
@@ -71,7 +71,7 @@ Return exactly a JSON array with ${numberFoodOutput} objects. Each object must h
 
 Constraints:
 - All ${numberFoodOutput} foods must be unique. Do not include duplicates.
-- The "id" field must match **exactly** the id of a food from the recommended foods list ('RECOMMENDED FOODS'). Do not invent or modify ids.
+- The "id" field must match **exactly** the id of a food from the recommended foods list ('RECOMMENDED FOODS'). Do not invent or modify names.
 - Do not include extra text, numbering, or explanations. Only output valid JSON.
 - Prefer whole foods over processed foods wherever possible, but maintain taste and texture.
 

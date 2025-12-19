@@ -339,11 +339,7 @@ export default function OptimizerScreen() {
                 .select(selectColumns.join(", "))
                 .not(orderColumn, "is", null)
                 .order(orderColumn, { ascending: false })
-                .limit(
-                  needsSum
-                    ? NUMBER_FOOD_RECOMMENDATIONS * 2
-                    : NUMBER_FOOD_RECOMMENDATIONS
-                );
+                .limit(needsSum ? NUMBER_FOOD_RECOMMENDATIONS*2 : NUMBER_FOOD_RECOMMENDATIONS);
 
               const { data, error: queryError } = await query;
 
@@ -408,7 +404,7 @@ export default function OptimizerScreen() {
   // Call LLM when prompt is ready
   useEffect(() => {
     if (!prompt) return;
-
+    
     // Prevent duplicate calls if prompt hasn't actually changed
     if (lastPromptRef.current === prompt) return;
     lastPromptRef.current = prompt;
@@ -423,7 +419,7 @@ export default function OptimizerScreen() {
         const answer = await askLlama(prompt);
         if (answer) {
           setLlmResponse(answer);
-          //   console.log("LLM Raw Response:", answer);
+        //   console.log("LLM Raw Response:", answer);
 
           // Parse the LLM response to extract variants
           try {
@@ -633,21 +629,19 @@ export default function OptimizerScreen() {
         >
           <View style={styles.selectionContainer}>
             <ScrollView style={styles.scrollView}>
-              <View style={styles.scrollViewContent}>
-                {variants.map((variant, index) => (
-                  <AltLebSelectRow
-                    key={index}
-                    checked={selectedVariantIndex === index}
-                    text={variant.variant}
-                    onCheckPress={() => {
-                      setSelectedVariantIndex(
-                        selectedVariantIndex === index ? null : index
-                      );
-                    }}
-                    onRemovePress={() => {}}
-                  />
-                ))}
-              </View>
+              {variants.map((variant, index) => (
+                <AltLebSelectRow
+                  key={index}
+                  checked={selectedVariantIndex === index}
+                  text={variant.variant}
+                  onCheckPress={() => {
+                    setSelectedVariantIndex(
+                      selectedVariantIndex === index ? null : index
+                    );
+                  }}
+                  onRemovePress={() => {}}
+                />
+              ))}
             </ScrollView>
             <View style={styles.selectionRow}>
               <Pressable
@@ -710,8 +704,7 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     gap: 4,
   },
-  scrollView: {},
-  scrollViewContent: {
+  scrollView: {
     gap: 4,
   },
   selectionRow: {

@@ -633,21 +633,19 @@ export default function OptimizerScreen() {
         >
           <View style={styles.selectionContainer}>
             <ScrollView style={styles.scrollView}>
-              <View style={styles.scrollViewContent}>
-                {variants.map((variant, index) => (
-                  <AltLebSelectRow
-                    key={index}
-                    checked={selectedVariantIndex === index}
-                    text={variant.variant}
-                    onCheckPress={() => {
-                      setSelectedVariantIndex(
-                        selectedVariantIndex === index ? null : index
-                      );
-                    }}
-                    onRemovePress={() => {}}
-                  />
-                ))}
-              </View>
+              {variants.map((variant, index) => (
+                <AltLebSelectRow
+                  key={index}
+                  checked={selectedVariantIndex === index}
+                  text={variant.variant}
+                  onCheckPress={() => {
+                    setSelectedVariantIndex(
+                      selectedVariantIndex === index ? null : index
+                    );
+                  }}
+                  onRemovePress={() => {}}
+                />
+              ))}
             </ScrollView>
             <View style={styles.selectionRow}>
               <Pressable
@@ -710,8 +708,7 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     gap: 4,
   },
-  scrollView: {},
-  scrollViewContent: {
+  scrollView: {
     gap: 4,
   },
   selectionRow: {

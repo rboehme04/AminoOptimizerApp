@@ -49,11 +49,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  rowPressable: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
   radioContainer: {
     width: CONTAINER_SIZE,
     height: CONTAINER_SIZE,

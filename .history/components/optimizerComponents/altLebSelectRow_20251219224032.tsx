@@ -22,19 +22,17 @@ export default function AltLebSelectRow({
   return (
     <View style={styles.selectionRow}>
       <Pressable
-        style={styles.rowPressable}
+        style={styles.radioContainer}
         onPress={onCheckPress}
         accessibilityRole="radio"
         accessibilityState={{ selected: checked }}
         accessibilityLabel={checked ? "Selected" : "Unselected"}
       >
-        <View style={styles.radioContainer}>
-          <View style={[styles.radio, checked && styles.selectedRadio]}>
-            {checked && <View style={styles.innerCircle} />}
-          </View>
+        <View style={[styles.radio, checked && styles.selectedRadio]}>
+          {checked && <View style={styles.innerCircle} />}
         </View>
-        <Text style={styles.rowText}>{text}</Text>
       </Pressable>
+      <Text style={styles.rowText}>{text}</Text>
       <Pressable style={styles.removeClickContainer} onPress={onRemovePress}>
         <View style={styles.closexContainer}>
           <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />
@@ -46,11 +44,6 @@ export default function AltLebSelectRow({
 
 const styles = StyleSheet.create({
   selectionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  rowPressable: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
   },

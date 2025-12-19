@@ -27,15 +27,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// Hyperparameters
-const NUMBER_FOOD_OUTPUT = 4;
-const NUMBER_FOOD_RECOMMENDATIONS = 200;
-
 type OptimizerStatus = "not-started" | "running" | "finished";
 
 type Variant = {
   variant: string;
-  id: string;
+  reason: string;
   recipe: {
     title: string;
     ingredients: Array<{
@@ -48,6 +44,9 @@ type Variant = {
 
 type OptimizerStatusIconProps = {
   size?: number;
+  /**
+   * Set to true when your async action (e.g. DB query) has finished.
+   */
   isFinished: boolean;
 };
 
@@ -198,18 +197,14 @@ export default function OptimizerScreen() {
     return createPrompt({
       recommendedLebensmittel: recommendedLebensmittel,
       recipe: recipeForLLM,
-      numberFoodOutput: NUMBER_FOOD_OUTPUT,
     });
   }, [recommendedLebensmittel, recipeForLLM]);
+
   // LLM state
   const [llmResponse, setLlmResponse] = useState<string | null>(null);
   const [llmLoading, setLlmLoading] = useState(false);
   const [llmError, setLlmError] = useState<string | null>(null);
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [selectedVariantIndex, setSelectedVariantIndex] = useState<
-    number | null
-  >(null);
-  const lastPromptRef = useRef<string | null>(null);
 
   // Minimum spin duration: 2 rounds * 2000ms per round = 4000ms
   const MIN_SPIN_DURATION_MS = 4000;
@@ -234,6 +229,24 @@ export default function OptimizerScreen() {
   };
 
   useEffect(() => {
+    // Minimum spin duration: 2 rounds * 2000ms per round = 4000ms
+    const MIN_SPIN_DURATION_MS = 4000;
+
+    const ensureMinimumSpinDuration = () => {
+      if (!startTimeRef.current) return;
+
+      const elapsed = Date.now() - startTimeRef.current;
+      const remaining = MIN_SPIN_DURATION_MS - elapsed;
+
+      if (remaining > 0) {
+        setTimeout(() => {
+          setIsFinished(true);
+        }, remaining);
+      } else {
+        setIsFinished(true);
+      }
+    };
+
     const runOptimization = async () => {
       // Record start time for minimum spin duration
       startTimeRef.current = Date.now();
@@ -339,11 +352,7 @@ export default function OptimizerScreen() {
                 .select(selectColumns.join(", "))
                 .not(orderColumn, "is", null)
                 .order(orderColumn, { ascending: false })
-                .limit(
-                  needsSum
-                    ? NUMBER_FOOD_RECOMMENDATIONS * 2
-                    : NUMBER_FOOD_RECOMMENDATIONS
-                );
+                .limit(needsSum ? 100 : 50);
 
               const { data, error: queryError } = await query;
 
@@ -374,7 +383,7 @@ export default function OptimizerScreen() {
                       const bSum = (b as FoodItem & { _sum: number })._sum;
                       return bSum - aSum;
                     })
-                    .slice(0, NUMBER_FOOD_RECOMMENDATIONS)
+                    .slice(0, 50)
                     .map(({ _sum, ...rest }) => rest as FoodItem);
                 }
 
@@ -393,8 +402,7 @@ export default function OptimizerScreen() {
           }
         }
 
-        // Don't call ensureMinimumSpinDuration here - wait for LLM to complete
-        // Only call it if there's an error that prevents LLM from running
+        ensureMinimumSpinDuration();
       } catch (e) {
         console.error("Fehler beim Optimieren des Rezepts", e);
         setError("Fehler beim Laden der Rezeptdaten.");
@@ -409,10 +417,6 @@ export default function OptimizerScreen() {
   useEffect(() => {
     if (!prompt) return;
 
-    // Prevent duplicate calls if prompt hasn't actually changed
-    if (lastPromptRef.current === prompt) return;
-    lastPromptRef.current = prompt;
-
     const callLLM = async () => {
       setLlmLoading(true);
       setLlmError(null);
@@ -423,7 +427,7 @@ export default function OptimizerScreen() {
         const answer = await askLlama(prompt);
         if (answer) {
           setLlmResponse(answer);
-          //   console.log("LLM Raw Response:", answer);
+          console.log("LLM Raw Response:", answer);
 
           // Parse the LLM response to extract variants
           try {
@@ -450,7 +454,7 @@ export default function OptimizerScreen() {
                     typeof item === "object" &&
                     item !== null &&
                     "variant" in item &&
-                    "id" in item &&
+                    "reason" in item &&
                     "recipe" in item
                 );
               } else if (
@@ -462,53 +466,35 @@ export default function OptimizerScreen() {
                 parsedVariants = [parsed as Variant];
               }
             } catch (parseError) {
-              console.log(
-                "JSON.parse failed, trying to extract objects. Error:",
-                parseError
-              );
-              // If JSON parsing fails, the response might be a comma-separated list of objects
-              // Try wrapping it in an array first
-              try {
-                // Clean up the response: remove trailing commas and whitespace
-                let wrappedResponse = cleanedResponse.trim();
-                // Remove trailing comma (with optional whitespace)
-                wrappedResponse = wrappedResponse.replace(/,\s*$/, "");
-                // Remove any leading/trailing whitespace again after comma removal
-                wrappedResponse = wrappedResponse.trim();
+              // If JSON parsing fails, try to extract complete variant objects
+              // Look for objects that have "variant", "reason", and "recipe" fields
+              // Use a more sophisticated approach to find complete JSON objects
+              const variantPattern =
+                /\{\s*"variant"\s*:[\s\S]*?\}(?=\s*\{|\s*$)/g;
+              const matches = cleanedResponse.match(variantPattern);
 
-                // Only try wrapping if the response looks like it starts with an object
-                if (wrappedResponse.startsWith("{")) {
-                  // Wrap in array brackets
-                  const arrayWrapped = `[${wrappedResponse}]`;
-                  const parsed = JSON.parse(arrayWrapped);
-                  if (Array.isArray(parsed)) {
-                    parsedVariants = parsed.filter(
-                      (item): item is Variant =>
-                        typeof item === "object" &&
-                        item !== null &&
-                        "variant" in item &&
-                        "id" in item &&
-                        "recipe" in item
-                    );
-                    console.log(
-                      "Successfully parsed as wrapped array, found",
-                      parsedVariants.length,
-                      "variants"
-                    );
-                  }
-                } else {
-                  throw new Error("Response doesn't start with {");
-                }
-              } catch (wrapError) {
-                console.log(
-                  "Wrapping in array failed:",
-                  wrapError instanceof Error ? wrapError.message : wrapError
-                );
-                console.log(
-                  "Response preview (first 200 chars):",
-                  cleanedResponse.substring(0, 200)
-                );
-                console.log("Trying to extract individual objects");
+              if (matches) {
+                parsedVariants = matches
+                  .map(match => {
+                    try {
+                      const parsed = JSON.parse(match);
+                      // Validate it's a variant object
+                      if (
+                        typeof parsed === "object" &&
+                        parsed !== null &&
+                        "variant" in parsed &&
+                        "reason" in parsed &&
+                        "recipe" in parsed
+                      ) {
+                        return parsed as Variant;
+                      }
+                      return null;
+                    } catch {
+                      return null;
+                    }
+                  })
+                  .filter((v): v is Variant => v !== null);
+              } else {
                 // Fallback: try to find complete JSON objects by matching braces
                 // This is more complex - we need to match balanced braces
                 const extractCompleteObjects = (text: string): Variant[] => {
@@ -530,28 +516,18 @@ export default function OptimizerScreen() {
                             typeof parsed === "object" &&
                             parsed !== null &&
                             "variant" in parsed &&
-                            "id" in parsed &&
+                            "reason" in parsed &&
                             "recipe" in parsed
                           ) {
                             results.push(parsed as Variant);
                           }
-                        } catch (parseErr) {
-                          console.log(
-                            "Failed to parse object:",
-                            objStr.substring(0, 100),
-                            parseErr
-                          );
+                        } catch {
                           // Skip invalid JSON
                         }
                         start = -1;
                       }
                     }
                   }
-                  console.log(
-                    "extractCompleteObjects found",
-                    results.length,
-                    "objects"
-                  );
                   return results;
                 };
 
@@ -560,28 +536,23 @@ export default function OptimizerScreen() {
             }
             console.log("Parsed Variants:", parsedVariants);
             setVariants(parsedVariants);
-            // Mark as finished when LLM call completes (with or without variants)
-            // Ensure minimum spin duration is respected
-            // Only mark as finished if we have variants, otherwise keep loading
+            // Mark as finished when variants are successfully parsed
             if (parsedVariants.length > 0) {
-              // Todo: add Timeout error so that is does not load forever
-              ensureMinimumSpinDuration();
+                // Todo: add Timeout error so that is does not load forever
+              setIsFinished(true);
             }
           } catch (parseError) {
             console.error("Error parsing LLM response:", parseError);
             setLlmError("Failed to parse LLM response");
-            // Don't mark as finished if parsing fails - keep trying or show error
           }
         } else {
           setLlmError("No response from LLM");
-          // Don't mark as finished if no response - keep trying or show error
         }
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error occurred";
         setLlmError(errorMessage);
         console.error("Error calling LLM:", error);
-        // Don't mark as finished on error - show error state instead
       } finally {
         setLlmLoading(false);
       }
@@ -633,21 +604,15 @@ export default function OptimizerScreen() {
         >
           <View style={styles.selectionContainer}>
             <ScrollView style={styles.scrollView}>
-              <View style={styles.scrollViewContent}>
-                {variants.map((variant, index) => (
-                  <AltLebSelectRow
-                    key={index}
-                    checked={selectedVariantIndex === index}
-                    text={variant.variant}
-                    onCheckPress={() => {
-                      setSelectedVariantIndex(
-                        selectedVariantIndex === index ? null : index
-                      );
-                    }}
-                    onRemovePress={() => {}}
-                  />
-                ))}
-              </View>
+              {variants.map((variant, index) => (
+                <AltLebSelectRow
+                  key={index}
+                  checked={true}
+                  text={variant.variant}
+                  onCheckPress={() => {}}
+                  onRemovePress={() => {}}
+                />
+              ))}
             </ScrollView>
             <View style={styles.selectionRow}>
               <Pressable
@@ -710,8 +675,7 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     gap: 4,
   },
-  scrollView: {},
-  scrollViewContent: {
+  scrollView: {
     gap: 4,
   },
   selectionRow: {
