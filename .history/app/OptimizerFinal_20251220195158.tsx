@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   buttonRowContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 32,
     paddingVertical: 16,
   },
 });

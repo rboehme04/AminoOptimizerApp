@@ -319,8 +319,4 @@ const styles = StyleSheet.create({
   spacer: {
     paddingTop: 16,
   },
-  buttonRowContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-  },
 });

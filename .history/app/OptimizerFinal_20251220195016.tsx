@@ -11,6 +11,7 @@ import {
 import type { NaehrstoffRowConfig } from "@/assets/datasetConfig";
 import ButtonRow from "@/components/buttonRow";
 import DetailsNaehstoffprofilComponent from "@/components/detailsNaehstoffprofilComponent";
+import NextButton from "@/components/nextButton";
 import VerbesserungenComponent from "@/components/optimizerComponents/verbesserungenComponent";
 import RecipeDetailTopComponent from "@/components/recipeDetailTopComponent";
 import ZubereitungDropDown from "@/components/zubereitungDropDown";
@@ -271,15 +272,16 @@ export default function OptimizerFinalScreen() {
                     deutlich verbessert (Amino Acid Score von 125% auf 134%)."
             />
             <View style={styles.buttonRowContainer}>
-              <ButtonRow
-                leftButtonText="Verwerfen"
-                rightButtonText="Speichern"
-                rightButtonColor={Color.neutralWhite}
-                rightButtonTextColor={Color.neutralBlackText}
-                onLeftButtonPress={handleDiscardRecipe}
-                onRightButtonPress={handleSaveRecipe}
-              />
+                
             </View>
+            <ButtonRow
+              leftButtonText="Verwerfen"
+              rightButtonText="Speichern"
+              rightButtonColor={Color.neutralWhite}
+              rightButtonTextColor={Color.neutralBlackText}
+              onLeftButtonPress={handleDiscardRecipe}
+              onRightButtonPress={handleSaveRecipe}
+            />
             <DetailsNaehstoffprofilComponent
               type="rez"
               recipeNutritionRows={nutritionRows}
@@ -318,9 +320,5 @@ const styles = StyleSheet.create({
   },
   spacer: {
     paddingTop: 16,
-  },
-  buttonRowContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
   },
 });
