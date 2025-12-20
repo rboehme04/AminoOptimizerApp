@@ -188,12 +188,26 @@ export default function RezDetailScreen() {
               value={recipe?.instructions || undefined}
               isExpanded={false}
             />
-            {recipe?.is_optimized ? (
-              <VerbesserungenComponent
-                description="Durch Lysinreiche Sojaflocken hast du die Proteinqualität
-                      deutlich verbessert (Amino Acid Score von 125% auf 134%)."
-              />
-            ) : null}
+            <View style={styles.verbesserungenContainer}>
+              <View style={styles.verbesserungenHeaderContainer}>
+                <OptimizedIcon
+                  size={30}
+                  color={Color.brand50GraphicsOrBrandButton}
+                />
+                <Text style={styles.verbesserungenHeaderText}>
+                  Verbesserungen Aminosäureprofil
+                </Text>
+              </View>
+              <View style={styles.verbesserungenDescriptionContainer}>
+                <Text style={styles.verbesserungenDescriptionText}>
+                  Durch Lysinreiche Sojaflocken hast du die Proteinqualität
+                  deutlich verbessert (Amino Acid Score von 125% auf 134%). Die
+                  Johannisbeeren liefern Vitamin C für bessere Eisenaufnahme.
+                  Weiche Hafer- und Sojaflocken über Nacht ein, um Phytinsäure
+                  zu reduzieren und die Mikronährstoffaufnahme zu maximieren.
+                </Text>
+              </View>
+            </View>
             <DetailsNaehstoffprofilComponent
               type="rez"
               recipeNutritionRows={nutritionRows}
@@ -245,9 +259,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 16,
   },
-  dropDownsContainer: {
-    gap: 16,
-  },
+  dropDownsContainer: {},
   rezLoeschenOuterContainer: {
     paddingTop: 16,
     alignItems: "center",
@@ -264,5 +276,27 @@ const styles = StyleSheet.create({
   rezLoeschenText: {
     ...Typography.subheadlineRegular,
     color: Color.destructive50,
+  },
+  verbesserungenContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 24,
+    backgroundColor: Color.neutralBackgroundDarkElevated,
+  },
+  verbesserungenHeaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  verbesserungenHeaderText: {
+    ...Typography.subheadlineEmphasized,
+    color: Color.neutralWhite,
+  },
+  verbesserungenDescriptionContainer: {
+    paddingVertical: 8,
+  },
+  verbesserungenDescriptionText: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralWhite,
   },
 });

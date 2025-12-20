@@ -202,44 +202,6 @@ export default function OptimizerFinalScreen() {
     }
   };
 
-  const handleDiscardRecipe = async () => {
-    if (!draftData) return;
-
-    try {
-      // Clean up draft data from AsyncStorage
-      const optimizerDraftKey = `optimizer_draft_${draftData.recipeId}`;
-      await AsyncStorage.removeItem(optimizerDraftKey);
-
-      // Navigate back to the index page with a single back animation
-      // Try to pop 2 screens at once (OptimizerFinal -> Optimizer -> Index)
-      // This should create a single back animation
-      const state = navigation.getState();
-      const currentIndex = state?.index ?? 0;
-      const screensToPop = currentIndex; // Pop all screens back to index (which is at index 0)
-
-      if (
-        screensToPop > 0 &&
-        "pop" in navigation &&
-        typeof navigation.pop === "function"
-      ) {
-        (navigation as any).pop(screensToPop);
-      } else {
-        // Fallback: use CommonActions to navigate to index
-        // Note: This may not create a back animation, but will navigate to index
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "index" }],
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Error discarding recipe", error);
-      // Still navigate back even if cleanup fails
-      router.back();
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container} edges={["left", "right"]}>
       <ScrollView
@@ -275,8 +237,8 @@ export default function OptimizerFinalScreen() {
               leftButtonText="Verwerfen"
               rightButtonText="Speichern"
               rightButtonColor={Color.neutralWhite}
-              rightButtonTextColor={Color.neutralBlackText}
-              onLeftButtonPress={handleDiscardRecipe}
+              rightButtonTextColoronLeftButtonPress={() => router.back()}={Color.neutralBlackText}
+              
               onRightButtonPress={handleSaveRecipe}
             />
             <DetailsNaehstoffprofilComponent

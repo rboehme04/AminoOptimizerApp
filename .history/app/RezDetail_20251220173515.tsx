@@ -14,9 +14,9 @@ import {
 } from "react-native-safe-area-context";
 
 import type { NaehrstoffRowConfig } from "@/assets/datasetConfig";
+import { OptimizedIcon } from "@/assets/icons/icons";
 import DetailsNaehstoffprofilComponent from "@/components/detailsNaehstoffprofilComponent";
 import NextButton from "@/components/nextButton";
-import VerbesserungenComponent from "@/components/optimizerComponents/verbesserungenComponent";
 import RecipeDetailTopComponent from "@/components/recipeDetailTopComponent";
 import ZubereitungDropDown from "@/components/zubereitungDropDown";
 import ZutatenDropDown, { Ingredient } from "@/components/zutatenDropDown";
@@ -188,12 +188,6 @@ export default function RezDetailScreen() {
               value={recipe?.instructions || undefined}
               isExpanded={false}
             />
-            {recipe?.is_optimized ? (
-              <VerbesserungenComponent
-                description="Durch Lysinreiche Sojaflocken hast du die Proteinqualität
-                      deutlich verbessert (Amino Acid Score von 125% auf 134%)."
-              />
-            ) : null}
             <DetailsNaehstoffprofilComponent
               type="rez"
               recipeNutritionRows={nutritionRows}
@@ -245,9 +239,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 16,
   },
-  dropDownsContainer: {
-    gap: 16,
-  },
+  dropDownsContainer: {},
   rezLoeschenOuterContainer: {
     paddingTop: 16,
     alignItems: "center",
@@ -264,5 +256,27 @@ const styles = StyleSheet.create({
   rezLoeschenText: {
     ...Typography.subheadlineRegular,
     color: Color.destructive50,
+  },
+  verbesserungenContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 24,
+    backgroundColor: Color.neutralBackgroundDarkElevated,
+  },
+  verbesserungenHeaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  verbesserungenHeaderText: {
+    ...Typography.subheadlineEmphasized,
+    color: Color.neutralWhite,
+  },
+  verbesserungenDescriptionContainer: {
+    paddingVertical: 8,
+  },
+  verbesserungenDescriptionText: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralWhite,
   },
 });

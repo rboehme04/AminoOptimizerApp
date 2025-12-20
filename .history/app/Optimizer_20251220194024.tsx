@@ -821,7 +821,7 @@ export default function OptimizerScreen() {
                 <Text style={styles.mehrLadenText}>Mehr laden</Text>
               </Pressable>
             </View>
-            {/* Todo: only used for debugging, remove later
+            {/*  
             <Text style={styles.popupText}>{formatLimitingAAs()}</Text> */}
           </View>
         </OptimizerPopUp>

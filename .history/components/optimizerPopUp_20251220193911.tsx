@@ -1,5 +1,4 @@
 import { CloseXIcon } from "@/assets/icons/icons";
-import ButtonRow from "@/components/buttonRow";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
 import {
@@ -9,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import ButtonRow from "@/components/buttonRow";
 
 interface PopUpProps {
   titleText?: string;
@@ -156,6 +156,36 @@ const styles = StyleSheet.create({
   },
   moreText: {
     ...Typography.subheadlineRegular,
+    color: Color.neutralWhite,
+  },
+  buttonRowContainer: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  buttonOuterContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingVertical: 2,
+  },
+  buttonPressed: {
+    opacity: 0.7,
+  },
+  leftButtonContainer: {
+    flex: 1,
+  },
+  rightButtonContainer: {
+    flex: 1,
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: Color.neutralTagColor,
+  },
+  buttonText: {
+    ...Typography.subheadlineEmphasized,
     color: Color.neutralWhite,
   },
   notShowAgainContainer: {

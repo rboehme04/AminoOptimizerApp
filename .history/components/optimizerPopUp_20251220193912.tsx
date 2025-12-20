@@ -1,5 +1,4 @@
 import { CloseXIcon } from "@/assets/icons/icons";
-import ButtonRow from "@/components/buttonRow";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
 import {
@@ -9,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import ButtonRow from "@/components/buttonRow";
 
 interface PopUpProps {
   titleText?: string;

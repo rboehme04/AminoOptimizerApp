@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     gap: 8,
-    paddingBottom: 16,
   },
   scrollView: {
     flex: 1,

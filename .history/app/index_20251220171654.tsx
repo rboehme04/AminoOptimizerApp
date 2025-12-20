@@ -18,7 +18,7 @@ export default function TabOneScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.Content} edges={["left", "right"]}>
+    <SafeAreaView style={styles.Content} edges={["left", "right", "bottom"]}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
@@ -62,14 +62,6 @@ const styles = StyleSheet.create({
   Content: {
     flex: 1,
     justifyContent: "flex-start",
-    gap: 8,
-    paddingBottom: 16,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
     gap: 8,
   },
   headerContainer: {

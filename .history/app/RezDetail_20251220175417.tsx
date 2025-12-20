@@ -188,16 +188,15 @@ export default function RezDetailScreen() {
               value={recipe?.instructions || undefined}
               isExpanded={false}
             />
-            {recipe?.is_optimized ? (
-              <VerbesserungenComponent
-                description="Durch Lysinreiche Sojaflocken hast du die Proteinqualität
-                      deutlich verbessert (Amino Acid Score von 125% auf 134%)."
+            {recipe?.is_optimized && (
+              <VerbesserungenComponent description="Durch Lysinreiche Sojaflocken hast du die Proteinqualität deutlich verbessert (Amino Acid Score von 125% auf 134%). Die Johannisbeeren liefern Vitamin C für bessere Eisenaufnahme. Weiche Hafer- und Sojaflocken über Nacht ein, um Phytinsäure zu reduzieren und die Mikronährstoffaufnahme zu maximieren." />
+            )}
+            {nutritionRows && (
+              <DetailsNaehstoffprofilComponent
+                type="rez"
+                recipeNutritionRows={nutritionRows}
               />
-            ) : null}
-            <DetailsNaehstoffprofilComponent
-              type="rez"
-              recipeNutritionRows={nutritionRows}
-            />
+            )}
             <View style={styles.rezLoeschenOuterContainer}>
               <Pressable
                 style={[

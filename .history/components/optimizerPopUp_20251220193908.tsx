@@ -1,5 +1,4 @@
 import { CloseXIcon } from "@/assets/icons/icons";
-import ButtonRow from "@/components/buttonRow";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
 import {
@@ -9,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import ButtonRow from "@/components/buttonRow";
 
 interface PopUpProps {
   titleText?: string;
@@ -85,14 +85,38 @@ export default function OptimizerPopUp({
             {children}
           </View>
           {isShowButtons && (
-            <ButtonRow
-              leftButtonText={leftButtonText}
-              rightButtonText={rightButtonText}
-              rightButtonColor={rightButtonColor}
-              rightButtonTextColor={rightButtonTextColor}
-              onLeftButtonPress={handleLeftButtonPress}
-              onRightButtonPress={handleRightButtonPress}
-            />
+            <View style={styles.buttonRowContainer}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.buttonOuterContainer,
+                  styles.leftButtonContainer,
+                  pressed && styles.buttonPressed,
+                ]}
+                onPress={handleLeftButtonPress}
+              >
+                <View style={styles.button}>
+                  <Text style={styles.buttonText}>{leftButtonText}</Text>
+                </View>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.buttonOuterContainer,
+                  styles.rightButtonContainer,
+                  pressed && styles.buttonPressed,
+                ]}
+                onPress={handleRightButtonPress}
+              >
+                <View
+                  style={[styles.button, { backgroundColor: rightButtonColor }]}
+                >
+                  <Text
+                    style={[styles.buttonText, { color: rightButtonTextColor }]}
+                  >
+                    {rightButtonText}
+                  </Text>
+                </View>
+              </Pressable>
+            </View>
           )}
         </View>
       </View>
@@ -156,6 +180,36 @@ const styles = StyleSheet.create({
   },
   moreText: {
     ...Typography.subheadlineRegular,
+    color: Color.neutralWhite,
+  },
+  buttonRowContainer: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  buttonOuterContainer: {
+    flex: 1,
+    justifyContent: "center",
+    paddingVertical: 2,
+  },
+  buttonPressed: {
+    opacity: 0.7,
+  },
+  leftButtonContainer: {
+    flex: 1,
+  },
+  rightButtonContainer: {
+    flex: 1,
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: Color.neutralTagColor,
+  },
+  buttonText: {
+    ...Typography.subheadlineEmphasized,
     color: Color.neutralWhite,
   },
   notShowAgainContainer: {

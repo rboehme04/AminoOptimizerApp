@@ -189,10 +189,7 @@ export default function RezDetailScreen() {
               isExpanded={false}
             />
             {recipe?.is_optimized ? (
-              <VerbesserungenComponent
-                description="Durch Lysinreiche Sojaflocken hast du die Proteinqualität
-                      deutlich verbessert (Amino Acid Score von 125% auf 134%)."
-              />
+              <VerbesserungenComponent description="Durch Lysinreiche Sojaflocken hast du die Proteinqualität deutlich verbessert (Amino Acid Score von 125% auf 134%)." />
             ) : null}
             <DetailsNaehstoffprofilComponent
               type="rez"

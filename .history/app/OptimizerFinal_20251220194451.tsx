@@ -276,7 +276,7 @@ export default function OptimizerFinalScreen() {
               rightButtonText="Speichern"
               rightButtonColor={Color.neutralWhite}
               rightButtonTextColor={Color.neutralBlackText}
-              onLeftButtonPress={handleDiscardRecipe}
+              onLeftButtonPress={() => router.back()}
               onRightButtonPress={handleSaveRecipe}
             />
             <DetailsNaehstoffprofilComponent

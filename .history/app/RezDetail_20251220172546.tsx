@@ -16,7 +16,6 @@ import {
 import type { NaehrstoffRowConfig } from "@/assets/datasetConfig";
 import DetailsNaehstoffprofilComponent from "@/components/detailsNaehstoffprofilComponent";
 import NextButton from "@/components/nextButton";
-import VerbesserungenComponent from "@/components/optimizerComponents/verbesserungenComponent";
 import RecipeDetailTopComponent from "@/components/recipeDetailTopComponent";
 import ZubereitungDropDown from "@/components/zubereitungDropDown";
 import ZutatenDropDown, { Ingredient } from "@/components/zutatenDropDown";
@@ -188,16 +187,13 @@ export default function RezDetailScreen() {
               value={recipe?.instructions || undefined}
               isExpanded={false}
             />
-            {recipe?.is_optimized ? (
-              <VerbesserungenComponent
-                description="Durch Lysinreiche Sojaflocken hast du die Proteinqualität
-                      deutlich verbessert (Amino Acid Score von 125% auf 134%)."
-              />
-            ) : null}
             <DetailsNaehstoffprofilComponent
               type="rez"
               recipeNutritionRows={nutritionRows}
             />
+            <View style={styles.verbesserungenContainer}>  
+              <Text>Optimieren</Text>
+            </View>
             <View style={styles.rezLoeschenOuterContainer}>
               <Pressable
                 style={[
@@ -245,9 +241,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 16,
   },
-  dropDownsContainer: {
-    gap: 16,
-  },
+  dropDownsContainer: {},
   rezLoeschenOuterContainer: {
     paddingTop: 16,
     alignItems: "center",
@@ -264,5 +258,10 @@ const styles = StyleSheet.create({
   rezLoeschenText: {
     ...Typography.subheadlineRegular,
     color: Color.destructive50,
+  },
+  verbesserungenContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignItems: "center",
   },
 });

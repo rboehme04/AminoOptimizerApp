@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -18,42 +18,36 @@ export default function TabOneScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.Content} edges={["left", "right"]}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}
+    <SafeAreaView style={styles.Content} edges={["left", "right", "bottom"]}>
+      <LinearGradient
+        colors={["#262626", Color.neutralBackgroundDark]}
+        locations={[0, 0.97]}
+        style={[styles.headerContainer, { paddingTop: insets.top }]}
       >
-        <LinearGradient
-          colors={["#262626", Color.neutralBackgroundDark]}
-          locations={[0, 0.97]}
-          style={[styles.headerContainer, { paddingTop: insets.top }]}
-        >
-          <NavBar
-            title="Optimizer"
-            isBold={true}
-            isBackButton={false}
-            rightActions={[
-              {
-                icon: <SettingsIcon size={24} color={Color.neutralWhite} />,
-                onPress: () => router.push("/SettingsScreen"),
-              },
-            ]}
-          />
-          <View style={styles.headerButtonsContainer}>
-            <QuestionButton onPress={() => router.push("/InfoScreen")} />
-            <View style={styles.rezeptErstellenContainer}>
-              <RezeptErstellenButton />
-            </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.oderAuswaehlenText}>oder auswählen:</Text>
-            </View>
+        <NavBar
+          title="Optimizer"
+          isBold={true}
+          isBackButton={false}
+          rightActions={[
+            {
+              icon: <SettingsIcon size={24} color={Color.neutralWhite} />,
+              onPress: () => router.push("/SettingsScreen"),
+            },
+          ]}
+        />
+        <View style={styles.headerButtonsContainer}>
+          <QuestionButton onPress={() => router.push("/InfoScreen")} />
+          <View style={styles.rezeptErstellenContainer}>
+            <RezeptErstellenButton />
           </View>
-        </LinearGradient>
-        <View style={styles.rezepteUndFilterContainer}>
-          <RezSelectionAndFilterComponent isOptimizerHome={true} />
+          <View style={styles.textContainer}>
+            <Text style={styles.oderAuswaehlenText}>oder auswählen:</Text>
+          </View>
         </View>
-      </ScrollView>
+      </LinearGradient>
+      <View style={styles.rezepteUndFilterContainer}>
+        <RezSelectionAndFilterComponent isOptimizerHome={true} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -62,14 +56,6 @@ const styles = StyleSheet.create({
   Content: {
     flex: 1,
     justifyContent: "flex-start",
-    gap: 8,
-    paddingBottom: 16,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
     gap: 8,
   },
   headerContainer: {
