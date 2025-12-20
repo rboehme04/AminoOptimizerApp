@@ -410,16 +410,27 @@ export default function OptimizerDummyVisScreen() {
   }, [recipeData, params.variantIndex]);
 
   const [toggleValue, setToggleValue] = useState<"left" | "right">("left");
+  const [isAutomaticToggle, setIsAutomaticToggle] = useState(false);
 
   // Automatically switch toggle from "Vorher" to "Nachher" after 3000ms
   useEffect(() => {
     if (showContent) {
       const timeoutId = setTimeout(() => {
+        setIsAutomaticToggle(true);
         setToggleValue("right");
+        // Reset the flag after animation completes
+        setTimeout(() => {
+          setIsAutomaticToggle(false);
+        }, 1000);
       }, 3000);
       return () => clearTimeout(timeoutId);
     }
   }, [showContent]);
+
+  const handleToggle = (value: "left" | "right") => {
+    setIsAutomaticToggle(false);
+    setToggleValue(value);
+  };
 
   const limitingASBefore = 96;
   const limitingASAfter = 145;

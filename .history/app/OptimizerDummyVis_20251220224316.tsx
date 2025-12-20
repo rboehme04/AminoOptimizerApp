@@ -475,7 +475,7 @@ export default function OptimizerDummyVisScreen() {
                 leftLabel="Vorher"
                 rightLabel="Nachher"
                 onToggle={setToggleValue}
-                value={toggleValue}
+                initialValue="left"
               />
               <View style={styles.barChartContainer}>
                 <StackedBarChart

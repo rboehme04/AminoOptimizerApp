@@ -410,16 +410,27 @@ export default function OptimizerDummyVisScreen() {
   }, [recipeData, params.variantIndex]);
 
   const [toggleValue, setToggleValue] = useState<"left" | "right">("left");
+  const [isAutomaticToggle, setIsAutomaticToggle] = useState(false);
 
   // Automatically switch toggle from "Vorher" to "Nachher" after 3000ms
   useEffect(() => {
     if (showContent) {
       const timeoutId = setTimeout(() => {
+        setIsAutomaticToggle(true);
         setToggleValue("right");
+        // Reset the flag after animation completes
+        setTimeout(() => {
+          setIsAutomaticToggle(false);
+        }, 1000);
       }, 3000);
       return () => clearTimeout(timeoutId);
     }
   }, [showContent]);
+
+  const handleToggle = (value: "left" | "right") => {
+    setIsAutomaticToggle(false);
+    setToggleValue(value);
+  };
 
   const limitingASBefore = 96;
   const limitingASAfter = 145;
@@ -474,8 +485,9 @@ export default function OptimizerDummyVisScreen() {
               <LeftRightToggle
                 leftLabel="Vorher"
                 rightLabel="Nachher"
-                onToggle={setToggleValue}
+                onToggle={handleToggle}
                 value={toggleValue}
+                animationDuration={isAutomaticToggle ? 1000 : 300}
               />
               <View style={styles.barChartContainer}>
                 <StackedBarChart
@@ -485,6 +497,7 @@ export default function OptimizerDummyVisScreen() {
                   data={toggleValue === "left" ? beforeData : afterData}
                   width={Dimensions.get("window").width - 32}
                   height={200}
+                  animationDuration={1000 : 500}
                 />
               </View>
               <View style={styles.legendContainer}>

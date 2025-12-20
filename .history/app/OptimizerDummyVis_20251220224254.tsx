@@ -475,13 +475,11 @@ export default function OptimizerDummyVisScreen() {
                 leftLabel="Vorher"
                 rightLabel="Nachher"
                 onToggle={setToggleValue}
-                value={toggleValue}
+                initialValue="left"
               />
               <View style={styles.barChartContainer}>
                 <StackedBarChart
-                  limitingAS={
-                    toggleValue === "left" ? limitingASBefore : limitingASAfter
-                  }
+                  limitingAS={toggleValue === "left" ? limitingASBefore : limitingASAfter}
                   data={toggleValue === "left" ? beforeData : afterData}
                   width={Dimensions.get("window").width - 32}
                   height={200}
