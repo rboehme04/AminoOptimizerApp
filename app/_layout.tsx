@@ -44,6 +44,10 @@ function RootLayoutNav() {
           <Stack.Screen name="HinzuOverview" />
           <Stack.Screen name="HinzuRezDetail" />
           <Stack.Screen name="InfoScreen" />
+          <Stack.Screen
+            name="OptimizerDummyVis"
+            options={{ animation: "none" }}
+          />
           <Stack.Screen name="OptimizerFinal" />
           <Stack.Screen name="SettingsScreen" />
           <Stack.Screen name="SettingsCategoryScreen" />
