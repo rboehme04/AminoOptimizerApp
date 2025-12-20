@@ -106,7 +106,7 @@ export default function OptimizerFinalScreen() {
 
         // Process each variant ingredient and fetch calories from database
         const processedIngredients: Ingredient[] = [];
-
+        
         for (const variantIngredient of draft.variant.recipe.ingredients) {
           const ingredientNameLower = variantIngredient.name.toLowerCase();
           const variantNameLower = draft.variant.variant.toLowerCase();
@@ -142,8 +142,7 @@ export default function OptimizerFinalScreen() {
           }
 
           // Use calculated calories or fall back to variant calories
-          const finalCalories =
-            calculatedCalories ?? variantIngredient.calories;
+          const finalCalories = calculatedCalories ?? variantIngredient.calories;
           if (finalCalories) {
             caloriesToUse += finalCalories;
           }
@@ -332,7 +331,6 @@ export default function OptimizerFinalScreen() {
             <ZutatenDropDown ingredients={ingredients} />
             <ZubereitungDropDown
               value={draftData?.instructions || undefined}
-              // TODO: when zubereitung angepasst wird, dann per default true
               isExpanded={false}
             />
             <VerbesserungenComponent

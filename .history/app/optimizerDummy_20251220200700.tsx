@@ -9,7 +9,10 @@ import NextButton from "@/components/nextButton";
 import AltLebSelectRow from "@/components/optimizerComponents/altLebSelectRow";
 import OptimizerPopUp from "@/components/optimizerPopUp";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
-import { calculateRecipeNutrition } from "@/utils/recipeNutrition";
+import {
+  calculateRecipeNutrition,
+  type RecipeNutrition,
+} from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase, type RecipeRow } from "@/utils/sqlite";
 import { supabase } from "@/utils/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -167,17 +170,10 @@ export default function OptimizerDummyScreen() {
   const dummyVariants: Variant[] = [
     {
       variant: "Sojaflocken",
-      id: "new_soy_flakes_100g",
+      id: "dummy-1",
       recipe: {
-        title: "Frühstücks Bowl (1)",
-        ingredients: [
-          { name: "Sojajoghurt natur", grams: 150, calories: 32 },
-          { name: "Banane", grams: 120, calories: 102 },
-          { name: "Haferdrink", grams: 200, calories: 92 },
-          { name: "Haferflocken", grams: 30, calories: 106 },
-          { name: "Heidelbeere, frisch", grams: 50, calories: 21 },
-          { name: "Sojaflocken", grams: 25, calories: 200 },
-        ],
+        title: "Dummy Recipe 1",
+        ingredients: [{ name: "Sojaflocken", grams: 50, calories: 200 }],
       },
     },
     {
@@ -206,37 +202,6 @@ export default function OptimizerDummyScreen() {
     },
   ];
 
-  // Load recipe data
-  useEffect(() => {
-    const loadRecipeData = async () => {
-      if (!params.id) {
-        setError("Kein Rezept gefunden.");
-        return;
-      }
-
-      const recipeId = parseInt(params.id, 10);
-      if (Number.isNaN(recipeId)) {
-        setError("Ungültige Rezept-ID.");
-        return;
-      }
-
-      try {
-        await initDatabase();
-        const recipe = await getRecipeById(recipeId);
-        if (!recipe) {
-          setError("Rezept nicht gefunden.");
-          return;
-        }
-        setRecipeData(recipe);
-      } catch (e) {
-        console.error("Fehler beim Laden des Rezepts", e);
-        setError("Fehler beim Laden der Rezeptdaten.");
-      }
-    };
-
-    loadRecipeData();
-  }, [params.id]);
-
   // Spin for 2 rounds (2 * 2000ms = 4000ms)
   useEffect(() => {
     const SPIN_DURATION_MS = 4000; // 2 rounds * 2000ms per round
@@ -263,145 +228,10 @@ export default function OptimizerDummyScreen() {
     router.back();
   };
 
-  const handleApplyVariant = async () => {
-    // Check if a variant is selected
-    if (
-      selectedVariantIndex === null ||
-      !recipeData ||
-      !dummyVariants[selectedVariantIndex]
-    ) {
-      return;
-    }
-
-    const selectedVariant = dummyVariants[selectedVariantIndex];
-
-    try {
-      // Parse current recipe ingredients
-      const currentIngredients = JSON.parse(
-        recipeData.ingredients_json
-      ) as Array<{
-        id: string;
-        title: string;
-        portion: string;
-        calories?: string;
-      }>;
-
-      // Create a map of existing ingredients by title for quick lookup
-      const ingredientMap = new Map<string, (typeof currentIngredients)[0]>();
-      currentIngredients.forEach(ing => {
-        ingredientMap.set(ing.title.toLowerCase(), ing);
-      });
-
-      // Build updated ingredients array
-      const updatedIngredients: Array<{
-        id: string;
-        title: string;
-        portion: string;
-        calories?: string;
-      }> = [];
-
-      // Track if we've added the new ingredient
-      let newIngredientAdded = false;
-
-      // Process each ingredient from the variant recipe
-      for (const variantIngredient of selectedVariant.recipe.ingredients) {
-        const ingredientNameLower = variantIngredient.name.toLowerCase();
-        const variantNameLower = selectedVariant.variant.toLowerCase();
-        const isNewIngredient = ingredientNameLower === variantNameLower;
-
-        // Fetch calories from database based on ingredient ID
-        let calculatedCalories: number | undefined;
-        try {
-          const ingredientId = isNewIngredient
-            ? selectedVariant.id
-            : ingredientMap.get(ingredientNameLower)?.id;
-
-          if (ingredientId) {
-            const { data } = await supabase
-              .from("opennutrition_foods")
-              .select("calories")
-              .eq("id", ingredientId)
-              .single();
-
-            if (data && typeof data.calories === "number") {
-              // Calculate calories based on grams: calories per 100g * (grams / 100)
-              const caloriesPer100g = data.calories;
-              calculatedCalories =
-                (caloriesPer100g * variantIngredient.grams) / 100;
-            }
-          }
-        } catch (error) {
-          console.warn(
-            `Failed to fetch calories for ingredient: ${variantIngredient.name}`,
-            error
-          );
-        }
-
-        if (isNewIngredient && !newIngredientAdded) {
-          // This is the new ingredient (variant.variant) - add it
-          updatedIngredients.push({
-            id: selectedVariant.id,
-            title: variantIngredient.name,
-            portion: `${Math.round(variantIngredient.grams)} g`,
-            calories: calculatedCalories
-              ? `${Math.round(calculatedCalories)} kcal`
-              : undefined,
-          });
-          newIngredientAdded = true;
-        } else {
-          // This is an existing ingredient - update its amount
-          const existingIngredient = ingredientMap.get(ingredientNameLower);
-          if (existingIngredient) {
-            updatedIngredients.push({
-              ...existingIngredient,
-              portion: `${Math.round(variantIngredient.grams)} g`,
-              calories: calculatedCalories
-                ? `${Math.round(calculatedCalories)} kcal`
-                : existingIngredient.calories,
-            });
-          }
-        }
-      }
-
-      // Add any remaining ingredients from the original recipe that weren't in the variant
-      for (const existingIngredient of currentIngredients) {
-        const alreadyIncluded = updatedIngredients.some(
-          ing =>
-            ing.title.toLowerCase() === existingIngredient.title.toLowerCase()
-        );
-        if (!alreadyIncluded) {
-          updatedIngredients.push(existingIngredient);
-        }
-      }
-
-      // Recalculate nutrition with updated ingredients
-      const updatedNutrition = await calculateRecipeNutrition(
-        updatedIngredients
-      );
-
-      // Store the calculated recipe data temporarily in AsyncStorage
-      const optimizerDraftKey = `optimizer_draft_${recipeData.id}`;
-      const draftData = {
-        recipeId: recipeData.id,
-        title: recipeData.title,
-        instructions: recipeData.instructions || "",
-        ingredients: updatedIngredients,
-        nutrition: updatedNutrition,
-        imageUri: recipeData.image_uri,
-        variant: selectedVariant,
-      };
-      await AsyncStorage.setItem(optimizerDraftKey, JSON.stringify(draftData));
-
-      // Close popup and navigate to OptimizerFinal
-      setShowPopup(false);
-      router.push({
-        pathname: "/OptimizerFinal",
-        params: { id: recipeData.id.toString() },
-      });
-    } catch (error) {
-      console.error("Error applying variant:", error);
-      setError("Fehler beim Aktualisieren des Rezepts.");
-    }
+  const handleApplyVariant = () => {
+    // Dummy function - just close the popup and go back
+    setShowPopup(false);
+    router.back();
   };
 
   return (
@@ -412,7 +242,6 @@ export default function OptimizerDummyScreen() {
           <OptimizerStatusIcon size={48} isFinished={isFinished} />
         </View>
         <Text style={styles.text}>Aminosäureprofil analysieren</Text>
-        {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
       <NextButton
         text="Abbrechen"
@@ -493,12 +322,6 @@ const styles = StyleSheet.create({
   text: {
     ...Typography.bodyRegular,
     color: Color.neutralTextOrTabGrey,
-  },
-  errorText: {
-    ...Typography.subheadlineRegular,
-    color: Color.destructive50,
-    textAlign: "center",
-    marginTop: 8,
   },
   selectionContainer: {
     paddingTop: 14,

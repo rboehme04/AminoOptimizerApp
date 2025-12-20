@@ -176,7 +176,7 @@ export default function OptimizerDummyScreen() {
           { name: "Haferdrink", grams: 200, calories: 92 },
           { name: "Haferflocken", grams: 30, calories: 106 },
           { name: "Heidelbeere, frisch", grams: 50, calories: 21 },
-          { name: "Sojaflocken", grams: 25, calories: 200 },
+          { name: "Sojaflocken", grams: 50, calories: 200 },
         ],
       },
     },

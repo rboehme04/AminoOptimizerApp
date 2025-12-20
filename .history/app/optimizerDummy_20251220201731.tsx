@@ -9,7 +9,10 @@ import NextButton from "@/components/nextButton";
 import AltLebSelectRow from "@/components/optimizerComponents/altLebSelectRow";
 import OptimizerPopUp from "@/components/optimizerPopUp";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
-import { calculateRecipeNutrition } from "@/utils/recipeNutrition";
+import {
+  calculateRecipeNutrition,
+  type RecipeNutrition,
+} from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase, type RecipeRow } from "@/utils/sqlite";
 import { supabase } from "@/utils/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -167,17 +170,10 @@ export default function OptimizerDummyScreen() {
   const dummyVariants: Variant[] = [
     {
       variant: "Sojaflocken",
-      id: "new_soy_flakes_100g",
+      id: "dummy-1",
       recipe: {
-        title: "Frühstücks Bowl (1)",
-        ingredients: [
-          { name: "Sojajoghurt natur", grams: 150, calories: 32 },
-          { name: "Banane", grams: 120, calories: 102 },
-          { name: "Haferdrink", grams: 200, calories: 92 },
-          { name: "Haferflocken", grams: 30, calories: 106 },
-          { name: "Heidelbeere, frisch", grams: 50, calories: 21 },
-          { name: "Sojaflocken", grams: 25, calories: 200 },
-        ],
+        title: "Dummy Recipe 1",
+        ingredients: [{ name: "Sojaflocken", grams: 50, calories: 200 }],
       },
     },
     {

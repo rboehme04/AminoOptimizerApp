@@ -26,3 +26,4 @@ export const navigateToDetailWithPortion = (
   router.push({ pathname, params });
 };
 
+

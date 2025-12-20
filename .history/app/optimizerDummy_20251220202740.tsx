@@ -171,12 +171,12 @@ export default function OptimizerDummyScreen() {
       recipe: {
         title: "Frühstücks Bowl (1)",
         ingredients: [
-          { name: "Sojajoghurt natur", grams: 150, calories: 32 },
-          { name: "Banane", grams: 120, calories: 102 },
-          { name: "Haferdrink", grams: 200, calories: 92 },
+          { name: "Sojajoghurt natur", grams: 120, calories: 32 },
+          { name: "Banane", grams: 90, calories: 102 },
+          { name: "Haferdrink", grams: 180, calories: 92 },
           { name: "Haferflocken", grams: 30, calories: 106 },
-          { name: "Heidelbeere, frisch", grams: 50, calories: 21 },
-          { name: "Sojaflocken", grams: 25, calories: 200 },
+          { name: "Heidelbeere, frisch", grams: 40, calories: 21 },
+          { name: "Sojaflocken", grams: 50, calories: 200 },
         ],
       },
     },
