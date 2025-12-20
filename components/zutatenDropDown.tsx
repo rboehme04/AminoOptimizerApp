@@ -83,8 +83,11 @@ const ZutatenDropDown = ({ ingredients = [], isExpanded = true }: Props) => {
             !expanded && styles.itemsContainerHidden,
           ]}
         >
-          {ingredients.map(ingredient => (
-            <IngredientRow key={ingredient.id} ingredient={ingredient} />
+          {ingredients.map((ingredient, index) => (
+            <IngredientRow
+              key={ingredient.id || `${ingredient.name}-${ingredient.amount}-${index}`}
+              ingredient={ingredient}
+            />
           ))}
         </View>
       )}
