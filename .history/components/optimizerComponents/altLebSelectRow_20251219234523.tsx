@@ -35,6 +35,7 @@ export default function AltLebSelectRow({
         </View>
         <Text style={styles.rowText}>{text}</Text>
       </Pressable>
+      
       <Pressable style={styles.removeClickContainer} onPress={onRemovePress}>
         <View style={styles.closexContainer}>
           <CloseXIcon size={16} color={Color.neutralTextOrTabGrey} />

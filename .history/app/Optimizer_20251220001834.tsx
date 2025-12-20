@@ -692,7 +692,7 @@ export default function OptimizerScreen() {
             title: variantIngredient.name,
             portion: `${Math.round(variantIngredient.grams)} g`,
             calories: calculatedCalories
-              ? `${Math.round(calculatedCalories)} kcal`
+              ? Math.round(calculatedCalories).toString()
               : undefined,
           });
           newIngredientAdded = true;
@@ -704,7 +704,7 @@ export default function OptimizerScreen() {
               ...existingIngredient,
               portion: `${Math.round(variantIngredient.grams)} g`,
               calories: calculatedCalories
-                ? `${Math.round(calculatedCalories)} kcal`
+                ? Math.round(calculatedCalories).toString()
                 : existingIngredient.calories,
             });
           }
@@ -736,7 +736,6 @@ export default function OptimizerScreen() {
         ingredients: updatedIngredients,
         nutrition: updatedNutrition,
         imageUri: recipeData.image_uri,
-        variant: selectedVariant,
       };
       await AsyncStorage.setItem(optimizerDraftKey, JSON.stringify(draftData));
 

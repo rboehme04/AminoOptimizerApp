@@ -674,8 +674,7 @@ export default function OptimizerScreen() {
             if (data && typeof data.calories === "number") {
               // Calculate calories based on grams: calories per 100g * (grams / 100)
               const caloriesPer100g = data.calories;
-              calculatedCalories =
-                (caloriesPer100g * variantIngredient.grams) / 100;
+              calculatedCalories = (caloriesPer100g * variantIngredient.grams) / 100;
             }
           }
         } catch (error) {
@@ -692,7 +691,7 @@ export default function OptimizerScreen() {
             title: variantIngredient.name,
             portion: `${Math.round(variantIngredient.grams)} g`,
             calories: calculatedCalories
-              ? `${Math.round(calculatedCalories)} kcal`
+              ? Math.round(calculatedCalories).toString()
               : undefined,
           });
           newIngredientAdded = true;
@@ -704,7 +703,7 @@ export default function OptimizerScreen() {
               ...existingIngredient,
               portion: `${Math.round(variantIngredient.grams)} g`,
               calories: calculatedCalories
-                ? `${Math.round(calculatedCalories)} kcal`
+                ? Math.round(calculatedCalories).toString()
                 : existingIngredient.calories,
             });
           }
@@ -736,7 +735,6 @@ export default function OptimizerScreen() {
         ingredients: updatedIngredients,
         nutrition: updatedNutrition,
         imageUri: recipeData.image_uri,
-        variant: selectedVariant,
       };
       await AsyncStorage.setItem(optimizerDraftKey, JSON.stringify(draftData));
 

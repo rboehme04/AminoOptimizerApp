@@ -657,42 +657,14 @@ export default function OptimizerScreen() {
         const variantNameLower = selectedVariant.variant.toLowerCase();
         const isNewIngredient = ingredientNameLower === variantNameLower;
 
-        // Fetch calories from database based on ingredient ID
-        let calculatedCalories: number | undefined;
-        try {
-          const ingredientId = isNewIngredient
-            ? selectedVariant.id
-            : ingredientMap.get(ingredientNameLower)?.id;
-
-          if (ingredientId) {
-            const { data } = await supabase
-              .from("opennutrition_foods")
-              .select("calories")
-              .eq("id", ingredientId)
-              .single();
-
-            if (data && typeof data.calories === "number") {
-              // Calculate calories based on grams: calories per 100g * (grams / 100)
-              const caloriesPer100g = data.calories;
-              calculatedCalories =
-                (caloriesPer100g * variantIngredient.grams) / 100;
-            }
-          }
-        } catch (error) {
-          console.warn(
-            `Failed to fetch calories for ingredient: ${variantIngredient.name}`,
-            error
-          );
-        }
-
         if (isNewIngredient && !newIngredientAdded) {
           // This is the new ingredient (variant.variant) - add it
           updatedIngredients.push({
             id: selectedVariant.id,
             title: variantIngredient.name,
             portion: `${Math.round(variantIngredient.grams)} g`,
-            calories: calculatedCalories
-              ? `${Math.round(calculatedCalories)} kcal`
+            calories: variantIngredient.calories
+              ? variantIngredient.calories.toString()
               : undefined,
           });
           newIngredientAdded = true;
@@ -703,8 +675,8 @@ export default function OptimizerScreen() {
             updatedIngredients.push({
               ...existingIngredient,
               portion: `${Math.round(variantIngredient.grams)} g`,
-              calories: calculatedCalories
-                ? `${Math.round(calculatedCalories)} kcal`
+              calories: variantIngredient.calories
+                ? variantIngredient.calories.toString()
                 : existingIngredient.calories,
             });
           }
@@ -736,7 +708,6 @@ export default function OptimizerScreen() {
         ingredients: updatedIngredients,
         nutrition: updatedNutrition,
         imageUri: recipeData.image_uri,
-        variant: selectedVariant,
       };
       await AsyncStorage.setItem(optimizerDraftKey, JSON.stringify(draftData));
 

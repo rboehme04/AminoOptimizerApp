@@ -11,14 +11,9 @@ import OptimizerPopUp from "@/components/optimizerPopUp";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import { askLlama } from "@/utils/huggingface";
 import { createPrompt } from "@/utils/llmPrompts";
-import {
-  calculateRecipeNutrition,
-  nutritionToRows,
-  type RecipeNutrition,
-} from "@/utils/recipeNutrition";
+import { nutritionToRows, type RecipeNutrition } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase, type RecipeRow } from "@/utils/sqlite";
 import { supabase } from "@/utils/supabase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -608,148 +603,7 @@ export default function OptimizerScreen() {
   const handleClosePopup = () => {
     setShowPopup(false);
     router.back();
-    // Todo: Stop LLM call
-  };
-
-  const handleApplyVariant = async () => {
-    // Check if a variant is selected
-    if (
-      selectedVariantIndex === null ||
-      !recipeData ||
-      !variants[selectedVariantIndex]
-    ) {
-      return;
-    }
-
-    const selectedVariant = variants[selectedVariantIndex];
-
-    try {
-      // Parse current recipe ingredients
-      const currentIngredients = JSON.parse(
-        recipeData.ingredients_json
-      ) as Array<{
-        id: string;
-        title: string;
-        portion: string;
-        calories?: string;
-      }>;
-
-      // Create a map of existing ingredients by title for quick lookup
-      const ingredientMap = new Map<string, (typeof currentIngredients)[0]>();
-      currentIngredients.forEach(ing => {
-        ingredientMap.set(ing.title.toLowerCase(), ing);
-      });
-
-      // Build updated ingredients array
-      const updatedIngredients: Array<{
-        id: string;
-        title: string;
-        portion: string;
-        calories?: string;
-      }> = [];
-
-      // Track if we've added the new ingredient
-      let newIngredientAdded = false;
-
-      // Process each ingredient from the variant recipe
-      for (const variantIngredient of selectedVariant.recipe.ingredients) {
-        const ingredientNameLower = variantIngredient.name.toLowerCase();
-        const variantNameLower = selectedVariant.variant.toLowerCase();
-        const isNewIngredient = ingredientNameLower === variantNameLower;
-
-        // Fetch calories from database based on ingredient ID
-        let calculatedCalories: number | undefined;
-        try {
-          const ingredientId = isNewIngredient
-            ? selectedVariant.id
-            : ingredientMap.get(ingredientNameLower)?.id;
-
-          if (ingredientId) {
-            const { data } = await supabase
-              .from("opennutrition_foods")
-              .select("calories")
-              .eq("id", ingredientId)
-              .single();
-
-            if (data && typeof data.calories === "number") {
-              // Calculate calories based on grams: calories per 100g * (grams / 100)
-              const caloriesPer100g = data.calories;
-              calculatedCalories =
-                (caloriesPer100g * variantIngredient.grams) / 100;
-            }
-          }
-        } catch (error) {
-          console.warn(
-            `Failed to fetch calories for ingredient: ${variantIngredient.name}`,
-            error
-          );
-        }
-
-        if (isNewIngredient && !newIngredientAdded) {
-          // This is the new ingredient (variant.variant) - add it
-          updatedIngredients.push({
-            id: selectedVariant.id,
-            title: variantIngredient.name,
-            portion: `${Math.round(variantIngredient.grams)} g`,
-            calories: calculatedCalories
-              ? `${Math.round(calculatedCalories)} kcal`
-              : undefined,
-          });
-          newIngredientAdded = true;
-        } else {
-          // This is an existing ingredient - update its amount
-          const existingIngredient = ingredientMap.get(ingredientNameLower);
-          if (existingIngredient) {
-            updatedIngredients.push({
-              ...existingIngredient,
-              portion: `${Math.round(variantIngredient.grams)} g`,
-              calories: calculatedCalories
-                ? `${Math.round(calculatedCalories)} kcal`
-                : existingIngredient.calories,
-            });
-          }
-        }
-      }
-
-      // Add any remaining ingredients from the original recipe that weren't in the variant
-      for (const existingIngredient of currentIngredients) {
-        const alreadyIncluded = updatedIngredients.some(
-          ing =>
-            ing.title.toLowerCase() === existingIngredient.title.toLowerCase()
-        );
-        if (!alreadyIncluded) {
-          updatedIngredients.push(existingIngredient);
-        }
-      }
-
-      // Recalculate nutrition with updated ingredients
-      const updatedNutrition = await calculateRecipeNutrition(
-        updatedIngredients
-      );
-
-      // Store the calculated recipe data temporarily in AsyncStorage
-      const optimizerDraftKey = `optimizer_draft_${recipeData.id}`;
-      const draftData = {
-        recipeId: recipeData.id,
-        title: recipeData.title,
-        instructions: recipeData.instructions || "",
-        ingredients: updatedIngredients,
-        nutrition: updatedNutrition,
-        imageUri: recipeData.image_uri,
-        variant: selectedVariant,
-      };
-      await AsyncStorage.setItem(optimizerDraftKey, JSON.stringify(draftData));
-
-      // Close popup and navigate to OptimizerFinal
-      setShowPopup(false);
-      router.push({
-        pathname: "/OptimizerFinal",
-        params: { id: recipeData.id.toString() },
-      });
-    } catch (error) {
-      console.error("Error applying variant:", error);
-      setError("Fehler beim Aktualisieren des Rezepts.");
-    }
+    /
   };
 
   const formatLimitingAAs = () => {
@@ -767,11 +621,7 @@ export default function OptimizerScreen() {
         <Text style={styles.text}>Aminosäureprofil analysieren</Text>
         {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
-      <NextButton
-        text="Abbrechen"
-        onPress={handleClosePopup}
-        buttonStyle="dark"
-      />
+      <NextButton text="Abbrechen" onPress={() => {}} buttonStyle="dark" />
       {showPopup && (
         <OptimizerPopUp
           titleText="Nährstoff-Bioverfügbarkeit"
@@ -781,7 +631,6 @@ export default function OptimizerScreen() {
           rightButtonText="Fertig"
           rightButtonColor={Color.neutralWhite}
           rightButtonTextColor={Color.neutralBlackText}
-          onRightButtonPress={handleApplyVariant}
           onClose={handleClosePopup}
         >
           <View style={styles.selectionContainer}>
@@ -797,7 +646,6 @@ export default function OptimizerScreen() {
                         selectedVariantIndex === index ? null : index
                       );
                     }}
-                    // Todo: Implement remove press (Lebensmittel ausschließen)
                     onRemovePress={() => {}}
                   />
                 ))}

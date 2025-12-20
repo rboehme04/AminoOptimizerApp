@@ -28,7 +28,6 @@ interface RecipeDetailTopComponentProps {
   isOptimized?: boolean;
   isPicture?: boolean;
   navbarTitle?: string;
-  isBackButton?: boolean;
   recipeId?: number;
   imageUri?: string | null;
 }
@@ -128,7 +127,7 @@ const RecipeDetailTopComponent = ({
       locations={showImage ? [0, 0.4, 0.66, 0.83, 1] : [0, 1]}
       style={[styles.overlay, { paddingTop: insets.top }]}
     >
-      <NavBar title={navbarTitle} isBackButton={isBackButton} rightActions={rightActions} />
+      <NavBar title={navbarTitle} rightActions={rightActions} />
       <View style={styles.content}>
         <View style={[styles.titleContainer, !showImage && { paddingTop: 32 }]}>
           <Text style={styles.titleText} numberOfLines={3} ellipsizeMode="tail">

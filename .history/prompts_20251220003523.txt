@@ -3,11 +3,10 @@ use constants/GlobalStyles.ts and icons in ./assets/icons/icons.tsx
 
 Todos:
 
+    - heute: implement dummy graphs with fixed values and 
     - check why kcal in optimized calories are missing
-    - heute: implement dummy graphs with fixed values and good animation
     - new recipe is not stored after clicking next button
       --> but there should not be a next button siehe figma.
-    - newly stored recipe should be first in letzte 
     - sometimes error: no draft data found
 
     - Later:

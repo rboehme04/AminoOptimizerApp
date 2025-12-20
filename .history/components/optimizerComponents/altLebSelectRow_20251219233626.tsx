@@ -11,7 +11,7 @@ interface AltLebSelectRowProps {
 
 const RADIO_SIZE = 20;
 const CONTAINER_SIZE = 44;
-const INNER_CIRCLE_SIZE = 14;
+const INNER_CIRCLE_SIZE = 16;
 
 export default function AltLebSelectRow({
   checked,
