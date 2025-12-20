@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   buttonPressed: {
-    opacity: 0.7,
+    opacity: 0.6,
   },
   leftButtonContainer: {
     flex: 1,

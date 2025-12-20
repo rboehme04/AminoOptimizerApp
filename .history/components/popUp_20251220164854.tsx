@@ -1,13 +1,8 @@
-import { CloseXIcon } from "@/assets/icons/icons";
+import { CloseXIcon, HelpCircleIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { ReactNode, useState } from "react";
-import {
-  LayoutAnimation,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import CheckboxComponent from "./checkBoxComponent";
 
 interface PopUpProps {
   titleText?: string;
@@ -23,7 +18,7 @@ interface PopUpProps {
   children?: ReactNode;
 }
 
-export default function OptimizerPopUp({
+export default function PopUp({
   titleText = "Title",
   descriptionText = "Description text",
   leftButtonText = "Left Button",
@@ -37,7 +32,6 @@ export default function OptimizerPopUp({
   children,
 }: PopUpProps) {
   const [isChecked, setIsChecked] = useState(false);
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const handleLeftButtonPress = () => {
     if (onClose) {
@@ -51,11 +45,6 @@ export default function OptimizerPopUp({
     }
   };
 
-  const toggleDescription = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setIsDescriptionExpanded(!isDescriptionExpanded);
-  };
-
   return (
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={handleLeftButtonPress} />
@@ -63,24 +52,13 @@ export default function OptimizerPopUp({
         <Pressable style={styles.closeButton} onPress={handleLeftButtonPress}>
           <CloseXIcon size={20} color={Color.neutralWhite} />
         </Pressable>
-
-        <Text style={styles.titleText}>{titleText}</Text>
-
+        <View style={styles.innerContainer}>
+          <HelpCircleIcon size={20} color={Color.neutralWhite} />
+          <Text style={styles.titleText}>{titleText}</Text>
+        </View>
         <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
-            <Pressable onPress={toggleDescription}>
-              <Text
-                style={styles.descriptionText}
-                numberOfLines={isDescriptionExpanded ? undefined : 2}
-                ellipsizeMode="tail"
-              >
-                {descriptionText}
-                {!isDescriptionExpanded && " "}
-                {!isDescriptionExpanded && (
-                  <Text style={styles.moreText}>...mehr</Text>
-                )}
-              </Text>
-            </Pressable>
+            <Text style={styles.descriptionText}>{descriptionText}</Text>
             {children}
           </View>
           {isShowButtons && (
@@ -117,6 +95,17 @@ export default function OptimizerPopUp({
               </Pressable>
             </View>
           )}
+          {isNotShowAgain && (
+            <View style={styles.notShowAgainContainer}>
+              <CheckboxComponent
+                checked={isChecked}
+                onPress={() => setIsChecked(!isChecked)}
+              />
+              <Text style={[styles.descriptionText, styles.notShowAgainText]}>
+                diese Meldung nicht mehr anzeigen
+              </Text>
+            </View>
+          )}
         </View>
       </View>
     </View>
@@ -144,7 +133,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   container: {
-    width: "90%",
+    width: "80%",
     padding: 16,
     backgroundColor: Color.neutralBackgroundDarkElevated,
     borderRadius: 18,
@@ -155,13 +144,17 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    top: 6,
-    right: 6,
+    top: 4,
+    right: 4,
     zIndex: 1002,
     width: 44,
     height: 44,
     justifyContent: "center",
     alignItems: "center",
+  },
+  innerContainer: {
+    flexDirection: "row",
+    gap: 12,
   },
   contentContainer: {
     gap: 16,
@@ -170,16 +163,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   titleText: {
-    ...Typography.title3Emphasized,
+    ...Typography.subheadlineEmphasized,
     color: Color.neutralWhite,
   },
   descriptionText: {
     ...Typography.subheadlineRegular,
     color: Color.neutralTextOrTabGrey,
-  },
-  moreText: {
-    ...Typography.subheadlineRegular,
-    color: Color.neutralWhite,
   },
   buttonRowContainer: {
     flexDirection: "row",
@@ -189,9 +178,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingVertical: 2,
-  },
-  buttonPressed: {
-    opacity: 0.7,
   },
   leftButtonContainer: {
     flex: 1,

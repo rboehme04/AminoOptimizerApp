@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import { useNavigation, CommonActions } from "@react-navigation/native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
@@ -177,12 +177,8 @@ export default function OptimizerFinalScreen() {
       const state = navigation.getState();
       const currentIndex = state?.index ?? 0;
       const screensToPop = currentIndex; // Pop all screens back to index (which is at index 0)
-
-      if (
-        screensToPop > 0 &&
-        "pop" in navigation &&
-        typeof navigation.pop === "function"
-      ) {
+      
+      if (screensToPop > 0 && 'pop' in navigation && typeof navigation.pop === 'function') {
         (navigation as any).pop(screensToPop);
       } else {
         // Fallback: use CommonActions to navigate to index
@@ -190,7 +186,7 @@ export default function OptimizerFinalScreen() {
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{ name: "index" }],
+            routes: [{ name: 'index' }],
           })
         );
       }

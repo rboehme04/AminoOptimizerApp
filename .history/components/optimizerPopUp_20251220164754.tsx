@@ -190,9 +190,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 2,
   },
-  buttonPressed: {
-    opacity: 0.7,
-  },
   leftButtonContainer: {
     flex: 1,
   },

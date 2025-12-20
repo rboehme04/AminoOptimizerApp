@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CommonActions, useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
@@ -21,7 +20,7 @@ import {
   nutritionToRows,
   type RecipeNutrition,
 } from "@/utils/recipeNutrition";
-import { initDatabase, insertRecipe } from "@/utils/sqlite";
+import { getDatabase, initDatabase, insertRecipe } from "@/utils/sqlite";
 
 type Variant = {
   variant: string;
@@ -54,7 +53,6 @@ type OptimizerDraftData = {
 export default function OptimizerFinalScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const navigation = useNavigation();
   const params = useLocalSearchParams<{ id?: string }>();
   const [draftData, setDraftData] = useState<OptimizerDraftData | null>(null);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -143,7 +141,7 @@ export default function OptimizerFinalScreen() {
     try {
       await initDatabase();
 
-      // Create a new recipe with draftData (set isOptimized to true)
+      // Create a new recipe with draftData
       const insertedId = await insertRecipe(
         {
           title: draftData.title,
@@ -151,9 +149,14 @@ export default function OptimizerFinalScreen() {
           ingredients: draftData.ingredients,
           imageUri: draftData.imageUri,
         },
-        draftData.nutrition,
-        true
+        draftData.nutrition
       );
+
+      // Set is_optimized flag to 1 for this recipe
+      const db = await getDatabase();
+      await db.runAsync("UPDATE recipes SET is_optimized = 1 WHERE id = ?;", [
+        insertedId,
+      ]);
 
       // Add recipe to recent items (letzte) as the first item
       const ingredientsSummary = draftData.ingredients
@@ -171,29 +174,11 @@ export default function OptimizerFinalScreen() {
       const optimizerDraftKey = `optimizer_draft_${draftData.recipeId}`;
       await AsyncStorage.removeItem(optimizerDraftKey);
 
-      // Navigate back to the index page with a single back animation
-      // Try to pop 2 screens at once (OptimizerFinal -> Optimizer -> Index)
-      // This should create a single back animation
-      const state = navigation.getState();
-      const currentIndex = state?.index ?? 0;
-      const screensToPop = currentIndex; // Pop all screens back to index (which is at index 0)
-
-      if (
-        screensToPop > 0 &&
-        "pop" in navigation &&
-        typeof navigation.pop === "function"
-      ) {
-        (navigation as any).pop(screensToPop);
-      } else {
-        // Fallback: use CommonActions to navigate to index
-        // Note: This may not create a back animation, but will navigate to index
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "index" }],
-          })
-        );
-      }
+      // Navigate to the new recipe detail
+      router.push({
+        pathname: "/RezDetail",
+        params: { id: insertedId.toString() },
+      });
     } catch (error) {
       console.error("Error saving recipe", error);
       setIsSaving(false);

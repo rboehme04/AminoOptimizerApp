@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CommonActions, useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import {
@@ -172,27 +172,15 @@ export default function OptimizerFinalScreen() {
       await AsyncStorage.removeItem(optimizerDraftKey);
 
       // Navigate back to the index page with a single back animation
-      // Try to pop 2 screens at once (OptimizerFinal -> Optimizer -> Index)
-      // This should create a single back animation
-      const state = navigation.getState();
-      const currentIndex = state?.index ?? 0;
-      const screensToPop = currentIndex; // Pop all screens back to index (which is at index 0)
-
-      if (
-        screensToPop > 0 &&
-        "pop" in navigation &&
-        typeof navigation.pop === "function"
-      ) {
-        (navigation as any).pop(screensToPop);
+      // Use popToTop to pop all screens except the first one (index) with a single animation
+      if ('popToTop' in navigation && typeof navigation.popToTop === 'function') {
+        navigation.popToTop();
       } else {
-        // Fallback: use CommonActions to navigate to index
-        // Note: This may not create a back animation, but will navigate to index
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "index" }],
-          })
-        );
+        // Fallback: use router to navigate back
+        router.back();
+        setTimeout(() => {
+          router.back();
+        }, 50);
       }
     } catch (error) {
       console.error("Error saving recipe", error);
