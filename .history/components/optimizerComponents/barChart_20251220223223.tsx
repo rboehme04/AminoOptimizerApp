@@ -28,112 +28,116 @@ export default function StackedBarChart({
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
 
-  // Store previous data and animation progress
-  const prevDataRef = useRef<AminoAcidData[]>(data);
-  const animationProgress = useRef(new Animated.Value(0)).current;
-  const [interpolatedData, setInterpolatedData] =
-    useState<AminoAcidData[]>(data);
+  // Store animated values for each bar's usable and unusable amounts
+  const animatedValuesRef = useRef<
+    Map<
+      number,
+      {
+        usable: Animated.Value;
+        unusable: Animated.Value;
+        total: Animated.Value;
+      }
+    >
+  >(new Map());
 
-  // Animate limitingAS position
-  const prevLimitingASRef = useRef<number>(limitingAS);
-  const limitingASAnimation = useRef(new Animated.Value(limitingAS)).current;
-  const [animatedLimitingAS, setAnimatedLimitingAS] = useState(limitingAS);
+  // Store previous data for comparison
+  const prevDataRef = useRef<AminoAcidData[]>([]);
+  const [animatedData, setAnimatedData] = useState<AminoAcidData[]>(data);
 
-  // Animate when data changes
+  // Initialize or update animated values when data changes
   useEffect(() => {
-    // Check if data actually changed
-    const dataChanged =
-      prevDataRef.current.length !== data.length ||
-      prevDataRef.current.some(
-        (prev, i) =>
-          !data[i] ||
-          prev.usable !== data[i].usable ||
-          prev.unusable !== data[i].unusable ||
-          prev.name !== data[i].name
-      );
+    // Initialize animated values for new data items
+    data.forEach((item, index) => {
+      if (!animatedValuesRef.current.has(index)) {
+        const prevItem = prevDataRef.current[index];
+        animatedValuesRef.current.set(index, {
+          usable: new Animated.Value(prevItem?.usable ?? item.usable),
+          unusable: new Animated.Value(prevItem?.unusable ?? item.unusable),
+          total: new Animated.Value(
+            (prevItem?.usable ?? item.usable) +
+              (prevItem?.unusable ?? item.unusable)
+          ),
+        });
+      }
+    });
 
-    if (!dataChanged) {
-      // Ensure interpolated data matches current data
-      setInterpolatedData(data);
-      return;
-    }
+    // Animate to new values
+    const animations = data.map((item, index) => {
+      const animated = animatedValuesRef.current.get(index);
+      if (!animated) return null;
 
-    // Capture previous data snapshot before updating (deep copy)
-    const previousDataSnapshot = prevDataRef.current.map(item => ({
-      ...item,
-    }));
+      const newTotal = item.usable + item.unusable;
+      const prevItem = prevDataRef.current[index];
+      const prevTotal = prevItem?.usable + prevItem?.unusable ?? newTotal;
 
-    // Start from previous data
-    setInterpolatedData(previousDataSnapshot);
+      return Animated.parallel([
+        Animated.timing(animated.usable, {
+          toValue: item.usable,
+          duration: 400,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        }),
+        Animated.timing(animated.unusable, {
+          toValue: item.unusable,
+          duration: 400,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        }),
+        Animated.timing(animated.total, {
+          toValue: newTotal,
+          duration: 400,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        }),
+      ]);
+    });
 
-    // Reset animation and start it
-    animationProgress.setValue(0);
+    // Start all animations
+    Animated.parallel(
+      animations.filter(
+        (anim): anim is Animated.CompositeAnimation => anim !== null
+      )
+    ).start();
 
-    // Update interpolated data during animation
-    const listenerId = animationProgress.addListener(({ value }) => {
-      const interpolated = data.map((item, index) => {
-        const prevItem = previousDataSnapshot[index];
-        if (!prevItem) return item;
+    // Update animated data using listeners
+    const listeners = data.map((item, index) => {
+      const animated = animatedValuesRef.current.get(index);
+      if (!animated) return null;
 
-        return {
-          name: item.name,
-          usable: prevItem.usable + (item.usable - prevItem.usable) * value,
-          unusable:
-            prevItem.unusable + (item.unusable - prevItem.unusable) * value,
-        };
+      const id = animated.usable.addListener(({ value: usable }) => {
+        const unusableValue = animated.unusable._value;
+        setAnimatedData(prev => {
+          const updated = [...prev];
+          updated[index] = {
+            name: item.name,
+            usable: usable,
+            unusable: unusableValue,
+          };
+          return updated;
+        });
       });
-      setInterpolatedData(interpolated);
+
+      return { index, id };
     });
 
-    // Start animation
-    Animated.timing(animationProgress, {
-      toValue: 1,
-      duration: 400,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start(() => {
-      // After animation completes, ensure we're at the target values
-      setInterpolatedData(data);
-      // Update previous data reference for next animation
-      prevDataRef.current = data;
-    });
+    // Store current data as previous for next update
+    prevDataRef.current = data;
 
+    // Cleanup listeners
     return () => {
-      animationProgress.removeListener(listenerId);
+      listeners.forEach(listener => {
+        if (listener) {
+          const animated = animatedValuesRef.current.get(listener.index);
+          if (animated) {
+            animated.usable.removeListener(listener.id);
+          }
+        }
+      });
     };
-  }, [data, animationProgress]);
+  }, [data]);
 
-  // Animate limitingAS position when it changes
-  useEffect(() => {
-    if (prevLimitingASRef.current !== limitingAS) {
-      // Set the animation value to start from the previous value
-      limitingASAnimation.setValue(prevLimitingASRef.current);
-
-      // Update interpolated limitingAS during animation
-      const listenerId = limitingASAnimation.addListener(({ value }) => {
-        setAnimatedLimitingAS(value);
-      });
-
-      // Start animation
-      Animated.timing(limitingASAnimation, {
-        toValue: limitingAS,
-        duration: 400,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: false,
-      }).start(() => {
-        // After animation completes, ensure we're at the target value
-        setAnimatedLimitingAS(limitingAS);
-        prevLimitingASRef.current = limitingAS;
-      });
-
-      return () => {
-        limitingASAnimation.removeListener(listenerId);
-      };
-    }
-  }, [limitingAS, limitingASAnimation]);
-
-  // Use interpolated data for rendering
-  const displayData = interpolatedData;
+  // Use animated data for rendering
+  const displayData = animatedData.length === data.length ? animatedData : data;
 
   // Calculate max value for scaling
   const maxValue = Math.max(...displayData.map(d => d.usable + d.unusable));
@@ -203,8 +207,7 @@ export default function StackedBarChart({
           const usableY = chartHeight - usableHeight;
 
           // Unusable segment is on top of usable segment
-          const unusableHeight =
-            total > 0 ? (d.unusable / total) * barHeight : 0;
+          const unusableHeight = total > 0 ? (d.unusable / total) * barHeight : 0;
           const unusableY = usableY - unusableHeight;
 
           return (
@@ -242,21 +245,21 @@ export default function StackedBarChart({
         {/* Horizontal line at limitingAS */}
         <Line
           x1={10}
-          y1={yScale(animatedLimitingAS)}
+          y1={yScale(limitingAS)}
           x2={chartWidth + 10}
-          y2={yScale(animatedLimitingAS)}
+          y2={yScale(limitingAS)}
           stroke="white"
           strokeWidth={1.5}
         />
         {/* Text label for limitingAS */}
         <SvgText
           x={chartWidth + 15}
-          y={yScale(animatedLimitingAS) + 5}
+          y={yScale(limitingAS) + 5}
           fontSize="15"
           fill="white"
           textAnchor="start"
         >
-          {Math.round(animatedLimitingAS)}%
+          {limitingAS}%
         </SvgText>
       </G>
     </Svg>

@@ -106,9 +106,6 @@ export default function StackedBarChart({
   // Animate limitingAS position when it changes
   useEffect(() => {
     if (prevLimitingASRef.current !== limitingAS) {
-      // Set the animation value to start from the previous value
-      limitingASAnimation.setValue(prevLimitingASRef.current);
-
       // Update interpolated limitingAS during animation
       const listenerId = limitingASAnimation.addListener(({ value }) => {
         setAnimatedLimitingAS(value);
@@ -242,21 +239,21 @@ export default function StackedBarChart({
         {/* Horizontal line at limitingAS */}
         <Line
           x1={10}
-          y1={yScale(animatedLimitingAS)}
+          y1={yScale(limitingAS)}
           x2={chartWidth + 10}
-          y2={yScale(animatedLimitingAS)}
+          y2={yScale(limitingAS)}
           stroke="white"
           strokeWidth={1.5}
         />
         {/* Text label for limitingAS */}
         <SvgText
           x={chartWidth + 15}
-          y={yScale(animatedLimitingAS) + 5}
+          y={yScale(limitingAS) + 5}
           fontSize="15"
           fill="white"
           textAnchor="start"
         >
-          {Math.round(animatedLimitingAS)}%
+          {limitingAS}%
         </SvgText>
       </G>
     </Svg>

@@ -410,10 +410,10 @@ export default function OptimizerDummyVisScreen() {
   }, [recipeData, params.variantIndex]);
 
   const [toggleValue, setToggleValue] = useState<"left" | "right">("left");
-
+  
   const limitingASBefore = 96;
   const limitingASAfter = 145;
-
+  
   // Before data (Vorher) - original recipe
   const beforeData: AminoAcidData[] = [
     { name: "His", usable: limitingASBefore, unusable: 70 },
@@ -469,7 +469,7 @@ export default function OptimizerDummyVisScreen() {
               />
               <View style={styles.barChartContainer}>
                 <StackedBarChart
-                  limitingAS={toggleValue === "left" ? limitingASBefore : limitingASAfter}
+                  limitingAS={96}
                   data={toggleValue === "left" ? beforeData : afterData}
                   width={Dimensions.get("window").width - 32}
                   height={200}

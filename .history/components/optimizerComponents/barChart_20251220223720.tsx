@@ -34,11 +34,6 @@ export default function StackedBarChart({
   const [interpolatedData, setInterpolatedData] =
     useState<AminoAcidData[]>(data);
 
-  // Animate limitingAS position
-  const prevLimitingASRef = useRef<number>(limitingAS);
-  const limitingASAnimation = useRef(new Animated.Value(limitingAS)).current;
-  const [animatedLimitingAS, setAnimatedLimitingAS] = useState(limitingAS);
-
   // Animate when data changes
   useEffect(() => {
     // Check if data actually changed
@@ -102,35 +97,6 @@ export default function StackedBarChart({
       animationProgress.removeListener(listenerId);
     };
   }, [data, animationProgress]);
-
-  // Animate limitingAS position when it changes
-  useEffect(() => {
-    if (prevLimitingASRef.current !== limitingAS) {
-      // Set the animation value to start from the previous value
-      limitingASAnimation.setValue(prevLimitingASRef.current);
-
-      // Update interpolated limitingAS during animation
-      const listenerId = limitingASAnimation.addListener(({ value }) => {
-        setAnimatedLimitingAS(value);
-      });
-
-      // Start animation
-      Animated.timing(limitingASAnimation, {
-        toValue: limitingAS,
-        duration: 400,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: false,
-      }).start(() => {
-        // After animation completes, ensure we're at the target value
-        setAnimatedLimitingAS(limitingAS);
-        prevLimitingASRef.current = limitingAS;
-      });
-
-      return () => {
-        limitingASAnimation.removeListener(listenerId);
-      };
-    }
-  }, [limitingAS, limitingASAnimation]);
 
   // Use interpolated data for rendering
   const displayData = interpolatedData;
@@ -242,21 +208,21 @@ export default function StackedBarChart({
         {/* Horizontal line at limitingAS */}
         <Line
           x1={10}
-          y1={yScale(animatedLimitingAS)}
+          y1={yScale(limitingAS)}
           x2={chartWidth + 10}
-          y2={yScale(animatedLimitingAS)}
+          y2={yScale(limitingAS)}
           stroke="white"
           strokeWidth={1.5}
         />
         {/* Text label for limitingAS */}
         <SvgText
           x={chartWidth + 15}
-          y={yScale(animatedLimitingAS) + 5}
+          y={yScale(limitingAS) + 5}
           fontSize="15"
           fill="white"
           textAnchor="start"
         >
-          {Math.round(animatedLimitingAS)}%
+          {limitingAS}%
         </SvgText>
       </G>
     </Svg>

@@ -410,10 +410,10 @@ export default function OptimizerDummyVisScreen() {
   }, [recipeData, params.variantIndex]);
 
   const [toggleValue, setToggleValue] = useState<"left" | "right">("left");
-
+  
   const limitingASBefore = 96;
   const limitingASAfter = 145;
-
+  
   // Before data (Vorher) - original recipe
   const beforeData: AminoAcidData[] = [
     { name: "His", usable: limitingASBefore, unusable: 70 },
@@ -429,15 +429,15 @@ export default function OptimizerDummyVisScreen() {
 
   // After data (Nachher) - optimized recipe with better values
   const afterData: AminoAcidData[] = [
-    { name: "His", usable: limitingASAfter, unusable: 25 },
-    { name: "Ile", usable: limitingASAfter, unusable: 18 },
-    { name: "Leu", usable: limitingASAfter, unusable: 15 },
-    { name: "Lys", usable: limitingASAfter, unusable: 5 },
-    { name: "Met+Cys", usable: limitingASAfter, unusable: 20 },
-    { name: "Phe+Tyr", usable: limitingASAfter, unusable: 22 },
-    { name: "Thr", usable: limitingASAfter, unusable: 17 },
-    { name: "Trp", usable: limitingASAfter, unusable: 19 },
-    { name: "Val", usable: limitingASAfter, unusable: 16 },
+    { name: "His", usable: 145, unusable: 25 },
+    { name: "Ile", usable: 142, unusable: 18 },
+    { name: "Leu", usable: 138, unusable: 15 },
+    { name: "Lys", usable: 135, unusable: 5 },
+    { name: "Met+Cys", usable: 140, unusable: 20 },
+    { name: "Phe+Tyr", usable: 148, unusable: 22 },
+    { name: "Thr", usable: 143, unusable: 17 },
+    { name: "Trp", usable: 141, unusable: 19 },
+    { name: "Val", usable: 139, unusable: 16 },
   ];
 
   return (
@@ -469,7 +469,7 @@ export default function OptimizerDummyVisScreen() {
               />
               <View style={styles.barChartContainer}>
                 <StackedBarChart
-                  limitingAS={toggleValue === "left" ? limitingASBefore : limitingASAfter}
+                  limitingAS={96}
                   data={toggleValue === "left" ? beforeData : afterData}
                   width={Dimensions.get("window").width - 32}
                   height={200}

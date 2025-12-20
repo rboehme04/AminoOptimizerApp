@@ -124,6 +124,7 @@ export default function StackedBarChart({
         // After animation completes, ensure we're at the target value
         setAnimatedLimitingAS(limitingAS);
         prevLimitingASRef.current = limitingAS;
+        limitingASAnimation.removeListener(listenerId);
       });
 
       return () => {

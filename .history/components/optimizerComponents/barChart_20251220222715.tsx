@@ -1,7 +1,6 @@
 import { Color } from "@/constants/GlobalStyles";
 import { scaleBand, scaleLinear } from "d3-scale";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing } from "react-native";
+import React from "react";
 import Svg, { G, Line, Rect, Text as SvgText } from "react-native-svg";
 
 // Essential amino acids data structure
@@ -28,119 +27,12 @@ export default function StackedBarChart({
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
 
-  // Store previous data and animation progress
-  const prevDataRef = useRef<AminoAcidData[]>(data);
-  const animationProgress = useRef(new Animated.Value(0)).current;
-  const [interpolatedData, setInterpolatedData] =
-    useState<AminoAcidData[]>(data);
-
-  // Animate limitingAS position
-  const prevLimitingASRef = useRef<number>(limitingAS);
-  const limitingASAnimation = useRef(new Animated.Value(limitingAS)).current;
-  const [animatedLimitingAS, setAnimatedLimitingAS] = useState(limitingAS);
-
-  // Animate when data changes
-  useEffect(() => {
-    // Check if data actually changed
-    const dataChanged =
-      prevDataRef.current.length !== data.length ||
-      prevDataRef.current.some(
-        (prev, i) =>
-          !data[i] ||
-          prev.usable !== data[i].usable ||
-          prev.unusable !== data[i].unusable ||
-          prev.name !== data[i].name
-      );
-
-    if (!dataChanged) {
-      // Ensure interpolated data matches current data
-      setInterpolatedData(data);
-      return;
-    }
-
-    // Capture previous data snapshot before updating (deep copy)
-    const previousDataSnapshot = prevDataRef.current.map(item => ({
-      ...item,
-    }));
-
-    // Start from previous data
-    setInterpolatedData(previousDataSnapshot);
-
-    // Reset animation and start it
-    animationProgress.setValue(0);
-
-    // Update interpolated data during animation
-    const listenerId = animationProgress.addListener(({ value }) => {
-      const interpolated = data.map((item, index) => {
-        const prevItem = previousDataSnapshot[index];
-        if (!prevItem) return item;
-
-        return {
-          name: item.name,
-          usable: prevItem.usable + (item.usable - prevItem.usable) * value,
-          unusable:
-            prevItem.unusable + (item.unusable - prevItem.unusable) * value,
-        };
-      });
-      setInterpolatedData(interpolated);
-    });
-
-    // Start animation
-    Animated.timing(animationProgress, {
-      toValue: 1,
-      duration: 400,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
-    }).start(() => {
-      // After animation completes, ensure we're at the target values
-      setInterpolatedData(data);
-      // Update previous data reference for next animation
-      prevDataRef.current = data;
-    });
-
-    return () => {
-      animationProgress.removeListener(listenerId);
-    };
-  }, [data, animationProgress]);
-
-  // Animate limitingAS position when it changes
-  useEffect(() => {
-    if (prevLimitingASRef.current !== limitingAS) {
-      // Set the animation value to start from the previous value
-      limitingASAnimation.setValue(prevLimitingASRef.current);
-
-      // Update interpolated limitingAS during animation
-      const listenerId = limitingASAnimation.addListener(({ value }) => {
-        setAnimatedLimitingAS(value);
-      });
-
-      // Start animation
-      Animated.timing(limitingASAnimation, {
-        toValue: limitingAS,
-        duration: 400,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: false,
-      }).start(() => {
-        // After animation completes, ensure we're at the target value
-        setAnimatedLimitingAS(limitingAS);
-        prevLimitingASRef.current = limitingAS;
-      });
-
-      return () => {
-        limitingASAnimation.removeListener(listenerId);
-      };
-    }
-  }, [limitingAS, limitingASAnimation]);
-
-  // Use interpolated data for rendering
-  const displayData = interpolatedData;
-
   // Calculate max value for scaling
-  const maxValue = Math.max(...displayData.map(d => d.usable + d.unusable));
+  const maxValue = Math.max(...data.map(d => d.usable + d.unusable));
 
   // Create scales
   const xScale = scaleBand()
-    .domain(displayData.map((_, i) => i.toString()))
+    .domain(data.map((_, i) => i.toString()))
     .range([0, chartWidth])
     .padding(0.65);
 
@@ -188,7 +80,7 @@ export default function StackedBarChart({
             />
           );
         })}
-        {displayData.map((d, i) => {
+        {data.map((d, i) => {
           const x = xScale(i.toString()) || 0;
           const total = d.usable + d.unusable;
 
@@ -199,12 +91,11 @@ export default function StackedBarChart({
 
           // Usable segment is at the bottom
           // It goes from (chartHeight - usable portion) to chartHeight
-          const usableHeight = total > 0 ? (d.usable / total) * barHeight : 0;
+          const usableHeight = (d.usable / total) * barHeight;
           const usableY = chartHeight - usableHeight;
 
           // Unusable segment is on top of usable segment
-          const unusableHeight =
-            total > 0 ? (d.unusable / total) * barHeight : 0;
+          const unusableHeight = (d.unusable / total) * barHeight;
           const unusableY = usableY - unusableHeight;
 
           return (
@@ -242,21 +133,21 @@ export default function StackedBarChart({
         {/* Horizontal line at limitingAS */}
         <Line
           x1={10}
-          y1={yScale(animatedLimitingAS)}
+          y1={yScale(limitingAS)}
           x2={chartWidth + 10}
-          y2={yScale(animatedLimitingAS)}
+          y2={yScale(limitingAS)}
           stroke="white"
           strokeWidth={1.5}
         />
         {/* Text label for limitingAS */}
         <SvgText
           x={chartWidth + 15}
-          y={yScale(animatedLimitingAS) + 5}
+          y={yScale(limitingAS) + 5}
           fontSize="15"
           fill="white"
           textAnchor="start"
         >
-          {Math.round(animatedLimitingAS)}%
+          {limitingAS}%
         </SvgText>
       </G>
     </Svg>

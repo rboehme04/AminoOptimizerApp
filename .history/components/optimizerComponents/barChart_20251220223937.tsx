@@ -106,9 +106,6 @@ export default function StackedBarChart({
   // Animate limitingAS position when it changes
   useEffect(() => {
     if (prevLimitingASRef.current !== limitingAS) {
-      // Set the animation value to start from the previous value
-      limitingASAnimation.setValue(prevLimitingASRef.current);
-
       // Update interpolated limitingAS during animation
       const listenerId = limitingASAnimation.addListener(({ value }) => {
         setAnimatedLimitingAS(value);

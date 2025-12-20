@@ -409,35 +409,33 @@ export default function OptimizerDummyVisScreen() {
     applyVariant();
   }, [recipeData, params.variantIndex]);
 
+  const limitingASB = 96;
   const [toggleValue, setToggleValue] = useState<"left" | "right">("left");
-
-  const limitingASBefore = 96;
-  const limitingASAfter = 145;
 
   // Before data (Vorher) - original recipe
   const beforeData: AminoAcidData[] = [
-    { name: "His", usable: limitingASBefore, unusable: 70 },
-    { name: "Ile", usable: limitingASBefore, unusable: 50 },
-    { name: "Leu", usable: limitingASBefore, unusable: 33 },
-    { name: "Lys", usable: limitingASBefore, unusable: 0 },
-    { name: "Met+Cys", usable: limitingASBefore, unusable: 51 },
-    { name: "Phe+Tyr", usable: limitingASBefore, unusable: 120 },
-    { name: "Thr", usable: limitingASBefore, unusable: 54 },
-    { name: "Trp", usable: limitingASBefore, unusable: 117 },
-    { name: "Val", usable: limitingASBefore, unusable: 41 },
+    { name: "His", usable: limitingAS, unusable: 70 },
+    { name: "Ile", usable: limitingAS, unusable: 50 },
+    { name: "Leu", usable: limitingAS, unusable: 33 },
+    { name: "Lys", usable: limitingAS, unusable: 0 },
+    { name: "Met+Cys", usable: limitingAS, unusable: 51 },
+    { name: "Phe+Tyr", usable: limitingAS, unusable: 120 },
+    { name: "Thr", usable: limitingAS, unusable: 54 },
+    { name: "Trp", usable: limitingAS, unusable: 117 },
+    { name: "Val", usable: limitingAS, unusable: 41 },
   ];
 
   // After data (Nachher) - optimized recipe with better values
   const afterData: AminoAcidData[] = [
-    { name: "His", usable: limitingASAfter, unusable: 25 },
-    { name: "Ile", usable: limitingASAfter, unusable: 18 },
-    { name: "Leu", usable: limitingASAfter, unusable: 15 },
-    { name: "Lys", usable: limitingASAfter, unusable: 5 },
-    { name: "Met+Cys", usable: limitingASAfter, unusable: 20 },
-    { name: "Phe+Tyr", usable: limitingASAfter, unusable: 22 },
-    { name: "Thr", usable: limitingASAfter, unusable: 17 },
-    { name: "Trp", usable: limitingASAfter, unusable: 19 },
-    { name: "Val", usable: limitingASAfter, unusable: 16 },
+    { name: "His", usable: 145, unusable: 25 },
+    { name: "Ile", usable: 142, unusable: 18 },
+    { name: "Leu", usable: 138, unusable: 15 },
+    { name: "Lys", usable: 135, unusable: 5 },
+    { name: "Met+Cys", usable: 140, unusable: 20 },
+    { name: "Phe+Tyr", usable: 148, unusable: 22 },
+    { name: "Thr", usable: 143, unusable: 17 },
+    { name: "Trp", usable: 141, unusable: 19 },
+    { name: "Val", usable: 139, unusable: 16 },
   ];
 
   return (
@@ -469,7 +467,7 @@ export default function OptimizerDummyVisScreen() {
               />
               <View style={styles.barChartContainer}>
                 <StackedBarChart
-                  limitingAS={toggleValue === "left" ? limitingASBefore : limitingASAfter}
+                  limitingAS={96}
                   data={toggleValue === "left" ? beforeData : afterData}
                   width={Dimensions.get("window").width - 32}
                   height={200}

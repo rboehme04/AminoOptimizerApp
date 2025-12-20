@@ -6,9 +6,7 @@ import {
 import LeftRightToggle from "@/components/leftRightToggle";
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
-import StackedBarChart, {
-  type AminoAcidData,
-} from "@/components/optimizerComponents/barChart";
+import StackedBarChart from "@/components/optimizerComponents/barChart";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import { calculateRecipeNutrition } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase, type RecipeRow } from "@/utils/sqlite";
@@ -409,37 +407,6 @@ export default function OptimizerDummyVisScreen() {
     applyVariant();
   }, [recipeData, params.variantIndex]);
 
-  const [toggleValue, setToggleValue] = useState<"left" | "right">("left");
-
-  const limitingASBefore = 96;
-  const limitingASAfter = 145;
-
-  // Before data (Vorher) - original recipe
-  const beforeData: AminoAcidData[] = [
-    { name: "His", usable: limitingASBefore, unusable: 70 },
-    { name: "Ile", usable: limitingASBefore, unusable: 50 },
-    { name: "Leu", usable: limitingASBefore, unusable: 33 },
-    { name: "Lys", usable: limitingASBefore, unusable: 0 },
-    { name: "Met+Cys", usable: limitingASBefore, unusable: 51 },
-    { name: "Phe+Tyr", usable: limitingASBefore, unusable: 120 },
-    { name: "Thr", usable: limitingASBefore, unusable: 54 },
-    { name: "Trp", usable: limitingASBefore, unusable: 117 },
-    { name: "Val", usable: limitingASBefore, unusable: 41 },
-  ];
-
-  // After data (Nachher) - optimized recipe with better values
-  const afterData: AminoAcidData[] = [
-    { name: "His", usable: limitingASAfter, unusable: 25 },
-    { name: "Ile", usable: limitingASAfter, unusable: 18 },
-    { name: "Leu", usable: limitingASAfter, unusable: 15 },
-    { name: "Lys", usable: limitingASAfter, unusable: 5 },
-    { name: "Met+Cys", usable: limitingASAfter, unusable: 20 },
-    { name: "Phe+Tyr", usable: limitingASAfter, unusable: 22 },
-    { name: "Thr", usable: limitingASAfter, unusable: 17 },
-    { name: "Trp", usable: limitingASAfter, unusable: 19 },
-    { name: "Val", usable: limitingASAfter, unusable: 16 },
-  ];
-
   return (
     <SafeAreaView style={styles.Content}>
       <NavBar title="Optimizer" isBold={true} isBackButton={true} />
@@ -461,18 +428,23 @@ export default function OptimizerDummyVisScreen() {
                   Protein-Optimierung im Vergleich
                 </Text>
               </View>
-              <LeftRightToggle
-                leftLabel="Vorher"
-                rightLabel="Nachher"
-                onToggle={setToggleValue}
-                initialValue="left"
-              />
+              <LeftRightToggle leftLabel="Vorher" rightLabel="Nachher" />
               <View style={styles.barChartContainer}>
                 <StackedBarChart
-                  limitingAS={toggleValue === "left" ? limitingASBefore : limitingASAfter}
-                  data={toggleValue === "left" ? beforeData : afterData}
-                  width={Dimensions.get("window").width - 32}
-                  height={200}
+                    limitingAS=96
+                  data={[
+                    { name: "Histidin", usable: 1.2, unusable: 0.4 },
+                    { name: "Isoleucin", usable: 2.1, unusable: 0.9 },
+                    { name: "Leucin", usable: 4.5, unusable: 1.6 },
+                    { name: "Lysin", usable: 3.2, unusable: 1.6 },
+                    { name: "Met+Cys", usable: 1.8, unusable: 0.5 },
+                    { name: "Phe+Tyr", usable: 3.1, unusable: 1.0 },
+                    { name: "Threonin", usable: 1.9, unusable: 0.6 },
+                    { name: "Tryptophan", usable: 0.5, unusable: 0.16 },
+                    { name: "Valin", usable: 2.8, unusable: 1.2 },
+                  ]}
+                  width={Dimensions.get("window").width - 100}
+                  height={220}
                 />
               </View>
               <View style={styles.legendContainer}>

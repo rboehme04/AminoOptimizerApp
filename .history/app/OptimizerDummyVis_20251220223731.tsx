@@ -469,7 +469,7 @@ export default function OptimizerDummyVisScreen() {
               />
               <View style={styles.barChartContainer}>
                 <StackedBarChart
-                  limitingAS={toggleValue === "left" ? limitingASBefore : limitingASAfter}
+                  limitingAS={toggleValue === "left" ? beforeData : afterData}
                   data={toggleValue === "left" ? beforeData : afterData}
                   width={Dimensions.get("window").width - 32}
                   height={200}
