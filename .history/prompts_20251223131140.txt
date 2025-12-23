@@ -3,7 +3,7 @@ use constants/GlobalStyles.ts and icons in ./assets/icons/icons.tsx
 
 Todos:
 
-    - berechnung des Amino Acid Scores muss noch mit in Erklärung
+    - berechnung des 
     - nach leb hinzufügen letzte should be shown and keyboard dismiss
     - optimizerFinal --> edit recipe wrong data as placeholder and trashsymbol should not be there
     - sometimes error: no draft data found

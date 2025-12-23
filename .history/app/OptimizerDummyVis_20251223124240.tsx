@@ -497,8 +497,7 @@ export default function OptimizerDummyVisScreen() {
                 onToggle={handleManualToggle}
                 value={toggleValue}
                 animationDuration={animationDuration}
-                // inactiveColor with contrastchecker selected so that the contrast to backgroundDarkElevated is right
-                inactiveColor="#878787" 
+                inactiveColor=
               />
               <View style={styles.barChartContainer}>
                 <StackedBarChart

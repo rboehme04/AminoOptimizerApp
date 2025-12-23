@@ -319,7 +319,7 @@ export default function OptimizerDummyScreen() {
       />
       {showPopup && (
         <OptimizerPopUp
-          titleText="Proteinqualität Optimieren"
+          titleText="Protein"
           descriptionText={`Füge ein lysinreiches Lebensmittel hinzu. Lysin ist die limitierende Aminosäure in Getreide. Durch die Ergänzung gleichst du dieses Defizit aus und erhöhst die Proteinqualität.\n\nDie Empfehlungen basieren auf dem Lysingehalt und sind nach der erwarteten Wirkung auf die Proteinqualität sortiert.`}
           isShowButtons={true}
           leftButtonText="Abbrechen"

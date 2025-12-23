@@ -134,10 +134,7 @@ const HinzuLebAmountInput = ({
           keyboardType="decimal-pad"
           returnKeyType="done"
           onSubmitEditing={() => inputRef.current?.blur()}
-          onFocus={() => {
-            setIsFocused(true);
-            setValue("");
-          }}
+          onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           maxLength={6}
           accessibilityLabel="Portionen eingeben"

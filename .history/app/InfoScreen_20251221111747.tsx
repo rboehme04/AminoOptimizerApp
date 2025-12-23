@@ -22,7 +22,7 @@ const INFO_SECTIONS = [
   {
     title: "Der Amino Acid Score",
     content:
-      "Der Amino Acid Score (WHO-Standard) zeigt, wie gut dein Körper das Protein verwerten kann. Je höher der Wert, desto mehr Protein kann dein Körper verwerten.",
+      "Der Amino Acid Score (WHO-Standard) zeigt, wie gut dein Körper das Protein verwerten kann. Je höher, desto besser.",
   },
 ];
 
