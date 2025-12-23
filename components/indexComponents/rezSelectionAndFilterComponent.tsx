@@ -1,5 +1,5 @@
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { StarFullIcon, StarLineIcon } from "@/assets/icons/icons";
@@ -58,7 +58,7 @@ const RezSelectionAndFilterComponent = (
   const [selection, setSelection] = useState<"letzte" | "favoriten">("letzte");
   const showingFavorites = selection === "favoriten";
 
-  const recentItems = useRecentItems(effectiveActiveSide);
+  const recentItems = useRecentItems(effectiveActiveSide, searchResults);
   const homeRecipes = useHomeRecipes(isOptimizerHome);
   const favoriteItems = useFavoriteItems(effectiveActiveSide);
 
@@ -220,8 +220,12 @@ const ItemList = ({
   );
 };
 
-const useRecentItems = (activeSide: "Rezept" | "Lebensmittel") => {
+const useRecentItems = (
+  activeSide: "Rezept" | "Lebensmittel",
+  searchResults?: LebensmittelItem[]
+) => {
   const [items, setItems] = useState<RecipeItem[] | LebensmittelItem[]>([]);
+  const prevSearchResultsRef = useRef(searchResults);
 
   useEffect(() => {
     let isCancelled = false;
@@ -253,6 +257,62 @@ const useRecentItems = (activeSide: "Rezept" | "Lebensmittel") => {
       isCancelled = true;
     };
   }, [activeSide]);
+
+  // Reload when search results change from truthy to falsy (search cleared)
+  useEffect(() => {
+    const wasSearching = prevSearchResultsRef.current !== undefined;
+    const isSearching = searchResults !== undefined;
+    
+    if (wasSearching && !isSearching) {
+      // Search was cleared, reload recent items
+      const load = async () => {
+        try {
+          if (activeSide === "Rezept") {
+            const recentRecipes = await getRecentRecipes();
+            setItems(recentRecipes);
+          } else {
+            const recentLebensmittel = await getRecentLebensmittel();
+            setItems(recentLebensmittel);
+          }
+        } catch (error) {
+          console.error("Error loading recent items", error);
+          setItems([]);
+        }
+      };
+      
+      // Small delay to ensure AsyncStorage writes are complete
+      const timeoutId = setTimeout(load, 100);
+      return () => clearTimeout(timeoutId);
+    }
+    
+    prevSearchResultsRef.current = searchResults;
+  }, [searchResults, activeSide]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Add a small delay to ensure AsyncStorage writes are complete
+      const timeoutId = setTimeout(() => {
+        const load = async () => {
+          try {
+            if (activeSide === "Rezept") {
+              const recentRecipes = await getRecentRecipes();
+              setItems(recentRecipes);
+            } else {
+              const recentLebensmittel = await getRecentLebensmittel();
+              setItems(recentLebensmittel);
+            }
+          } catch (error) {
+            console.error("Error loading recent items", error);
+            setItems([]);
+          }
+        };
+
+        load();
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    }, [activeSide])
+  );
 
   return items;
 };

@@ -2,7 +2,7 @@ import { EatSymbolIcon, SolidFireIcon } from "@/assets/icons/icons";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { useRouter } from "expo-router";
 import * as React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
 import AddIconButton from "./addIconButton";
 
 type LebensmittelRowProps = {
@@ -25,6 +25,7 @@ const LebensmittelRow = ({
   const router = useRouter();
 
   const handlePress = () => {
+    Keyboard.dismiss();
     if (onPress) {
       onPress();
     } else {

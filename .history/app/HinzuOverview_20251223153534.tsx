@@ -34,6 +34,7 @@ export default function HinzuOverviewScreen() {
   const { addIngredient } = useRecipeDraftActions();
   const isFirstFocus = React.useRef(true);
   const searchQueryRef = React.useRef(searchQuery);
+  const refreshKeyRef = React.useRef(0);
 
   // Keep ref in sync with searchQuery state
   React.useEffect(() => {
@@ -46,6 +47,8 @@ export default function HinzuOverviewScreen() {
       if (!isFirstFocus.current && searchQueryRef.current.trim()) {
         setSearchQuery("");
         setSearchResults([]);
+        // Increment refresh key to force recent items to reload
+        refreshKeyRef.current += 1;
       }
       isFirstFocus.current = false;
     }, [])

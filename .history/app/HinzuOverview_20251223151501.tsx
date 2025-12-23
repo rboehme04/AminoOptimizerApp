@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import * as React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -32,24 +32,6 @@ export default function HinzuOverviewScreen() {
   );
   const { ingredients } = useRecipeDraft();
   const { addIngredient } = useRecipeDraftActions();
-  const isFirstFocus = React.useRef(true);
-  const searchQueryRef = React.useRef(searchQuery);
-
-  // Keep ref in sync with searchQuery state
-  React.useEffect(() => {
-    searchQueryRef.current = searchQuery;
-  }, [searchQuery]);
-
-  // Clear search query when returning from detail screen
-  useFocusEffect(
-    React.useCallback(() => {
-      if (!isFirstFocus.current && searchQueryRef.current.trim()) {
-        setSearchQuery("");
-        setSearchResults([]);
-      }
-      isFirstFocus.current = false;
-    }, [])
-  );
 
   // Search function for Lebensmittel
   React.useEffect(() => {
@@ -187,13 +169,6 @@ export default function HinzuOverviewScreen() {
     <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
       <NavBar title="Hinzufügen" />
       <View style={styles.headerContainer}>
-        <SearchBar
-          placeholder={
-            activeSide === "Rezept" ? "Rezept suchen" : "Lebensmittel suchen"
-          }
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
         <LeftRightToggle
           leftLabel="Rezepte"
           rightLabel="Lebensmittel"

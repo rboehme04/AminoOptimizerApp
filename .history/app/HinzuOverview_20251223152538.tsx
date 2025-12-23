@@ -33,22 +33,16 @@ export default function HinzuOverviewScreen() {
   const { ingredients } = useRecipeDraft();
   const { addIngredient } = useRecipeDraftActions();
   const isFirstFocus = React.useRef(true);
-  const searchQueryRef = React.useRef(searchQuery);
-
-  // Keep ref in sync with searchQuery state
-  React.useEffect(() => {
-    searchQueryRef.current = searchQuery;
-  }, [searchQuery]);
 
   // Clear search query when returning from detail screen
   useFocusEffect(
     React.useCallback(() => {
-      if (!isFirstFocus.current && searchQueryRef.current.trim()) {
+      if (!isFirstFocus.current && searchQuery.trim()) {
         setSearchQuery("");
         setSearchResults([]);
       }
       isFirstFocus.current = false;
-    }, [])
+    }, [searchQuery])
   );
 
   // Search function for Lebensmittel
