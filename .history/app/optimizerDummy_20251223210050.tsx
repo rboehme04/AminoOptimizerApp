@@ -294,7 +294,7 @@ export default function OptimizerDummyScreen() {
     // Close popup immediately and navigate to OptimizerDummyVis
     setShowPopup(false);
     router.push({
-      pathname: "/OptimizerDummyVisRadar",
+      pathname: "/OptimizerDummyVis",
       params: {
         id: recipeData.id.toString(),
         variantIndex: selectedVariantIndex.toString(),

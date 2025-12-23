@@ -45,11 +45,11 @@ function RootLayoutNav() {
           <Stack.Screen name="HinzuRezDetail" />
           <Stack.Screen name="InfoScreen" />
           <Stack.Screen
-            name="OptimizerDummyVisBar"
+            name="OptimizerDummyVis"
             options={{ animation: "none" }}
           />
           <Stack.Screen
-            name="OptimizerDummyVisRadar"
+            name="OptimizerDummyVisBar"
             options={{ animation: "none" }}
           />
           <Stack.Screen name="OptimizerFinal" />

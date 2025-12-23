@@ -77,7 +77,7 @@ const ErstZubereitungComponent = ({ value, onChangeText, onFocus }: Props) => {
             styles.variableInputTextarea,
             textareaFocused && styles.variableInputTextareaFocused,
           ]}
-          placeholder="Beschreibe hier die Zubereitung Schritt für Schritt…"
+          placeholder="Beschreibe hier die Zubereitung Schritt für Schritt …“"
           placeholderTextColor={Color.neutralTextOrTabGrey}
           value={value}
           onChangeText={onChangeText}
