@@ -449,10 +449,7 @@ export default function RecipeFormScreen({ recipeId }: RecipeFormScreenProps) {
                   amount: ingredient.portion,
                   calories: ingredient.calories,
                 }))}
-                onAddPress={() => {
-                  Keyboard.dismiss();
-                  router.push("/HinzuOverview");
-                }}
+                onAddPress={() => router.push("/HinzuOverview")}
                 onRemoveIngredient={removeIngredient}
               />
               <ErstZubereitungComponent

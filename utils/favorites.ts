@@ -61,9 +61,10 @@ export async function addFavoriteLebensmittel(
     existing => String(existing.id) === String(item.id)
   );
   if (!exists) {
+    // Add new item at the front instead of back
     await saveFavorites<FavoriteLebensmittelItem>(FAVORITE_LEBENS_KEY, [
-      ...current,
       item,
+      ...current,
     ]);
   }
 }

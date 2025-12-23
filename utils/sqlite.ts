@@ -22,6 +22,7 @@ export type RecipeRow = {
   created_at: number;
   is_favorite: number; // SQLite stores booleans as 0/1
   is_optimized: number;
+  favorited_at: number | null; // Timestamp when recipe was favorited
 };
 
 const DB_NAME = "aminooptimizer.db";
@@ -40,9 +41,21 @@ export const initDatabase = async (): Promise<void> => {
       image_uri TEXT,
       created_at INTEGER NOT NULL,
       is_favorite INTEGER NOT NULL DEFAULT 0,
-      is_optimized INTEGER NOT NULL DEFAULT 0
+      is_optimized INTEGER NOT NULL DEFAULT 0,
+      favorited_at INTEGER
     );
   `);
+  
+  // Add favorited_at column to existing databases (if it doesn't exist)
+  // This is safe to run multiple times - SQLite will ignore if column already exists
+  try {
+    await db.execAsync(`
+      ALTER TABLE recipes ADD COLUMN favorited_at INTEGER;
+    `);
+  } catch (error) {
+    // Column already exists, ignore error
+    // SQLite doesn't support IF NOT EXISTS for ALTER TABLE ADD COLUMN
+  }
 };
 
 export const insertRecipe = async (
@@ -80,7 +93,7 @@ export const getAllRecipesOrderedByCreatedDesc =
   async (): Promise<RecipeRow[]> => {
     const db = await dbPromise;
     const rows = await db.getAllAsync<RecipeRow>(
-      "SELECT id, title, instructions, ingredients_json, nutrition_json, image_uri, created_at, is_favorite, is_optimized FROM recipes ORDER BY created_at DESC;"
+      "SELECT id, title, instructions, ingredients_json, nutrition_json, image_uri, created_at, is_favorite, is_optimized, favorited_at FROM recipes ORDER BY created_at DESC;"
     );
     return rows;
   };
@@ -88,7 +101,7 @@ export const getAllRecipesOrderedByCreatedDesc =
 export const getRecipeById = async (id: number): Promise<RecipeRow | null> => {
   const db = await dbPromise;
   const rows = await db.getAllAsync<RecipeRow>(
-    "SELECT id, title, instructions, ingredients_json, nutrition_json, image_uri, created_at, is_favorite, is_optimized FROM recipes WHERE id = ?;",
+    "SELECT id, title, instructions, ingredients_json, nutrition_json, image_uri, created_at, is_favorite, is_optimized, favorited_at FROM recipes WHERE id = ?;",
     [id]
   );
   return rows.length > 0 ? rows[0] : null;
@@ -143,12 +156,12 @@ export const deleteRecipe = async (id: number): Promise<void> => {
 };
 
 /**
- * Gets all favorite recipes ordered by creation date (descending)
+ * Gets all favorite recipes ordered by favorited_at date (descending, most recently favorited first)
  */
 export const getFavoriteRecipes = async (): Promise<RecipeRow[]> => {
   const db = await dbPromise;
   const rows = await db.getAllAsync<RecipeRow>(
-    "SELECT id, title, instructions, ingredients_json, nutrition_json, image_uri, created_at, is_favorite, is_optimized FROM recipes WHERE is_favorite = 1 ORDER BY created_at DESC;"
+    "SELECT id, title, instructions, ingredients_json, nutrition_json, image_uri, created_at, is_favorite, is_optimized, favorited_at FROM recipes WHERE is_favorite = 1 ORDER BY favorited_at DESC, created_at DESC;"
   );
   return rows;
 };
@@ -167,16 +180,26 @@ export const isRecipeFavorite = async (id: number): Promise<boolean> => {
 
 /**
  * Toggles the favorite status of a recipe
+ * Sets favorited_at timestamp when favoriting, clears it when unfavoriting
  */
 export const toggleRecipeFavorite = async (
   id: number,
   isFavorite: boolean
 ): Promise<void> => {
   const db = await dbPromise;
-  await db.runAsync("UPDATE recipes SET is_favorite = ? WHERE id = ?;", [
-    isFavorite ? 1 : 0,
-    id,
-  ]);
+  if (isFavorite) {
+    // When favoriting, set the favorited_at timestamp to current time
+    await db.runAsync(
+      "UPDATE recipes SET is_favorite = ?, favorited_at = ? WHERE id = ?;",
+      [1, Date.now(), id]
+    );
+  } else {
+    // When unfavoriting, clear the favorited_at timestamp
+    await db.runAsync(
+      "UPDATE recipes SET is_favorite = ?, favorited_at = NULL WHERE id = ?;",
+      [0, id]
+    );
+  }
 };
 
 /**
