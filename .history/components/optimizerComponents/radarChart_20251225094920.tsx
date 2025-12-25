@@ -32,7 +32,7 @@ export default function RadarChart({
   height = 200,
   animationDuration = 400,
 }: RadarChartProps) {
-  const margin = { top: 30, right: 0, bottom: 0, left: 0 };
+  const margin = { top: 40, right: 0, bottom: 0, left: 30 };
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
   const centerX = chartWidth / 2;
@@ -246,31 +246,34 @@ export default function RadarChart({
           .filter(level => level > 0) // Skip 0% label
           .map((level, index) => {
             const r = rScale(level);
-            // Position label on the left side (angle = π, which is leftmost point)
-            const leftAngle = Math.PI; // 180 degrees, left side
-            const labelPoint = polarToCartesian(leftAngle, r);
-            // Add increasing y offset to prevent overlap (each label gets more offset)
-            const yOffset = -(-10 + index * 15); // Base offset + increasing spacing
-            // Add x offset to bring labels 10px closer to each other (move right for each index)
-            const xOffset = -12 + index * 4; // Move each label 10px closer to center
+            // Position labels vertically along the left side
+            // Distribute them evenly from top to bottom, mapping level to vertical position
+            // Smaller percentages (closer to center) go in the middle, larger go towards edges
+            // We'll position them at vertical positions that correspond to the radius
+            // Map radius to vertical position: centerY - radius at top, centerY + radius at bottom
+            // But we want labels to be evenly distributed, so we'll use a linear mapping
+            const filteredLevels = gridLevels.filter(l => l > 0);
+            const totalLevels = filteredLevels.length;
+            // Distribute evenly from centerY - radius to centerY + radius
+            const minY = centerY - radius;
+            const maxY = centerY + radius;
+            const labelY = minY + ((index + 1) / (totalLevels + 1)) * (maxY - minY);
+            
             return (
               <SvgText
                 key={`grid-label-${level}`}
-                x={
-                  level < 100
-                    ? labelPoint.x + xOffset + 7
-                    : labelPoint.x + xOffset
-                } // Position with decreasing spacing
-                y={labelPoint.y + yOffset} // Increasing vertical offset for spacing
+                x={5} // Fixed position at the left edge
+                y={labelY + 4} // Vertically distributed to avoid overlap
                 fontSize="9"
                 fill={Color.neutralTextOrTabGrey}
                 textAnchor="start"
-                opacity={1}
+                opacity={0.6}
               >
                 {level}%
               </SvgText>
             );
           })}
+
         {/* Unusable segment (gray) - outer layer */}
         <Polygon
           points={pointsToPath(totalPoints)}

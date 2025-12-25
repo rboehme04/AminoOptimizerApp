@@ -1,11 +1,11 @@
 import NavBar from "@/components/navBar";
 import SettingsRowComponent from "@/components/settingsComponents/settingsRowComponent";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { getRecentLebensmittel } from "@/utils/recentItems";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getRecentLebensmittel } from "@/utils/recentItems";
 
 const SETTINGS_ITEMS_1 = [
   "Persönliche Daten",
@@ -27,21 +27,6 @@ const SettingsScreen = () => {
       pathname: "/SettingsCategoryScreen",
       params: { item },
     });
-  };
-
-  const handleResetPrototypeData = async () => {
-    try {
-      const currentList = await getRecentLebensmittel();
-      // Remove the first 5 items
-      const updatedList = currentList.slice(5);
-      // Save the updated list back to AsyncStorage
-      await AsyncStorage.setItem(
-        "recent_lebensmittel_v1",
-        JSON.stringify(updatedList)
-      );
-    } catch (error) {
-      console.error("Error resetting prototype data", error);
-    }
   };
 
   return (
@@ -82,7 +67,7 @@ const SettingsScreen = () => {
           />
           <SettingsRowComponent
             text="Reset Prototype Data"
-            onPress={handleResetPrototypeData}
+            onPress={() => {}}
             isLast={true}
             color={Color.brand40LetzteButtonOrBlueText}
             isChevron={false}

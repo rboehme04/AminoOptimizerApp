@@ -32,7 +32,7 @@ export default function RadarChart({
   height = 200,
   animationDuration = 400,
 }: RadarChartProps) {
-  const margin = { top: 30, right: 0, bottom: 0, left: 0 };
+  const margin = { top: 40, right: 0, bottom: 0, left: 0 };
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
   const centerX = chartWidth / 2;

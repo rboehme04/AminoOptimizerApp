@@ -32,7 +32,7 @@ export default function RadarChart({
   height = 200,
   animationDuration = 400,
 }: RadarChartProps) {
-  const margin = { top: 30, right: 0, bottom: 0, left: 0 };
+  const margin = { top: 40, right: 0, bottom: 0, left: 30 };
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
   const centerX = chartWidth / 2;
@@ -244,33 +244,38 @@ export default function RadarChart({
         {/* Grid line labels on the left side */}
         {gridLevels
           .filter(level => level > 0) // Skip 0% label
-          .map((level, index) => {
+          .map(level => {
             const r = rScale(level);
-            // Position label on the left side (angle = π, which is leftmost point)
-            const leftAngle = Math.PI; // 180 degrees, left side
-            const labelPoint = polarToCartesian(leftAngle, r);
-            // Add increasing y offset to prevent overlap (each label gets more offset)
-            const yOffset = -(-10 + index * 15); // Base offset + increasing spacing
-            // Add x offset to bring labels 10px closer to each other (move right for each index)
-            const xOffset = -12 + index * 4; // Move each label 10px closer to center
+            // Position labels where each grid circle intersects the left edge (x = 0)
+            // For a circle centered at (centerX, centerY) with radius r,
+            // intersection with vertical line x = 0:
+            // (0 - centerX)^2 + (y - centerY)^2 = r^2
+            // y = centerY ± sqrt(r^2 - centerX^2)
+            // Use the top intersection point
+            const discriminant = r * r - centerX * centerX;
+            if (discriminant < 0) {
+              // Circle doesn't reach the left edge, position at center
+              return null;
+            }
+            const offsetY = Math.sqrt(discriminant);
+            const labelY = centerY - offsetY; // Top intersection
+
             return (
               <SvgText
                 key={`grid-label-${level}`}
-                x={
-                  level < 100
-                    ? labelPoint.x + xOffset + 7
-                    : labelPoint.x + xOffset
-                } // Position with decreasing spacing
-                y={labelPoint.y + yOffset} // Increasing vertical offset for spacing
+                x={5} // Fixed position at the left edge
+                y={labelY + 4} // Vertical position at circle intersection
                 fontSize="9"
                 fill={Color.neutralTextOrTabGrey}
                 textAnchor="start"
-                opacity={1}
+                opacity={0.6}
               >
                 {level}%
               </SvgText>
             );
-          })}
+          })
+          .filter(Boolean)}
+
         {/* Unusable segment (gray) - outer layer */}
         <Polygon
           points={pointsToPath(totalPoints)}

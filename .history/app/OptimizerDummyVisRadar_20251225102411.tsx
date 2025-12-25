@@ -6,10 +6,10 @@ import {
 import LeftRightToggle from "@/components/leftRightToggle";
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
-import StackedBarChart from "@/components/optimizerComponents/barChart";
 import RadarChart, {
   type AminoAcidData,
 } from "@/components/optimizerComponents/radarChart";
+import StackedBarChart from "@/components/optimizerComponents/barChart";
 import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import { calculateRecipeNutrition } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase, type RecipeRow } from "@/utils/sqlite";
@@ -21,6 +21,7 @@ import {
   Animated,
   Dimensions,
   Easing,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -414,9 +415,7 @@ export default function OptimizerDummyVisScreen() {
   const [animationDuration, setAnimationDuration] = useState(500); // Default to manual duration
   const [hasUserToggled, setHasUserToggled] = useState(false);
   const hasUserToggledRef = useRef(false);
-  const [visualizationType, setVisualizationType] = useState<"radar" | "bar">(
-    "radar"
-  );
+  const [visualizationType, setVisualizationType] = useState<"radar" | "bar">("radar");
 
   // Automatically switch toggle from "Vorher" to "Nachher" after 3000ms
   // Only if the user hasn't manually toggled
@@ -475,14 +474,14 @@ export default function OptimizerDummyVisScreen() {
   ];
 
   const handleVisualizationToggle = () => {
-    setVisualizationType(prev => (prev === "radar" ? "bar" : "radar"));
+    setVisualizationType(prev => prev === "radar" ? "bar" : "radar");
   };
 
   return (
     <SafeAreaView style={styles.Content}>
-      <NavBar
-        title="Optimizer"
-        isBold={true}
+      <NavBar 
+        title="Optimizer" 
+        isBold={true} 
         isBackButton={true}
         rightActions={[
           {
@@ -519,31 +518,15 @@ export default function OptimizerDummyVisScreen() {
                 inactiveColor="#878787"
               />
               <View style={styles.barChartContainer}>
-                {visualizationType === "radar" ? (
-                  <RadarChart
-                    limitingAS={
-                      toggleValue === "left"
-                        ? limitingASBefore
-                        : limitingASAfter
-                    }
-                    data={toggleValue === "left" ? beforeData : afterData}
-                    width={Dimensions.get("window").width - 32}
-                    height={Dimensions.get("window").width - 32}
-                    animationDuration={animationDuration}
-                  />
-                ) : (
-                  <StackedBarChart
-                    limitingAS={
-                      toggleValue === "left"
-                        ? limitingASBefore
-                        : limitingASAfter
-                    }
-                    data={toggleValue === "left" ? beforeData : afterData}
-                    width={Dimensions.get("window").width - 32}
-                    height={220}
-                    animationDuration={animationDuration}
-                  />
-                )}
+                <RadarChart
+                  limitingAS={
+                    toggleValue === "left" ? limitingASBefore : limitingASAfter
+                  }
+                  data={toggleValue === "left" ? beforeData : afterData}
+                  width={Dimensions.get("window").width - 32}
+                  height={Dimensions.get("window").width - 32}
+                  animationDuration={animationDuration}
+                />
               </View>
               <View style={styles.legendContainer}>
                 <View style={styles.legendeRow}>

@@ -32,7 +32,7 @@ export default function RadarChart({
   height = 200,
   animationDuration = 400,
 }: RadarChartProps) {
-  const margin = { top: 30, right: 0, bottom: 0, left: 0 };
+  const margin = { top: 40, right: 0, bottom: 0, left: 0 };
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
   const centerX = chartWidth / 2;
@@ -256,16 +256,12 @@ export default function RadarChart({
             return (
               <SvgText
                 key={`grid-label-${level}`}
-                x={
-                  level < 100
-                    ? labelPoint.x + xOffset + 7
-                    : labelPoint.x + xOffset
-                } // Position with decreasing spacing
+                x={labelPoint.x + xOffset} // Position with decreasing spacing
                 y={labelPoint.y + yOffset} // Increasing vertical offset for spacing
                 fontSize="9"
                 fill={Color.neutralTextOrTabGrey}
-                textAnchor="start"
-                opacity={1}
+                textAnchor="mi"
+                opacity={0.6}
               >
                 {level}%
               </SvgText>

@@ -6,7 +6,6 @@ import {
 import LeftRightToggle from "@/components/leftRightToggle";
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
-import StackedBarChart from "@/components/optimizerComponents/barChart";
 import RadarChart, {
   type AminoAcidData,
 } from "@/components/optimizerComponents/radarChart";
@@ -414,9 +413,6 @@ export default function OptimizerDummyVisScreen() {
   const [animationDuration, setAnimationDuration] = useState(500); // Default to manual duration
   const [hasUserToggled, setHasUserToggled] = useState(false);
   const hasUserToggledRef = useRef(false);
-  const [visualizationType, setVisualizationType] = useState<"radar" | "bar">(
-    "radar"
-  );
 
   // Automatically switch toggle from "Vorher" to "Nachher" after 3000ms
   // Only if the user hasn't manually toggled
@@ -463,34 +459,20 @@ export default function OptimizerDummyVisScreen() {
 
   // After data (Nachher) - optimized recipe with better values
   const afterData: AminoAcidData[] = [
-    { name: "His", usable: limitingASAfter, unusable: 48 },
-    { name: "Ile", usable: limitingASAfter, unusable: 35 },
-    { name: "Leu", usable: limitingASAfter, unusable: 7 },
+    { name: "His", usable: limitingASAfter, unusable: 0 },
+    { name: "Ile", usable: limitingASAfter, unusable: 0 },
+    { name: "Leu", usable: limitingASAfter, unusable: 0 },
     { name: "Lys", usable: limitingASAfter, unusable: 0 },
-    { name: "Met+\nCys", usable: limitingASAfter, unusable: 13 },
-    { name: "Phe+\nTyr", usable: limitingASAfter, unusable: 90 },
+    { name: "Met+\nCys", usable: limitingASAfter, unusable: 0 },
+    { name: "Phe+\nTyr", usable: limitingASAfter, unusable: 0 },
     { name: "Thr", usable: limitingASAfter, unusable: 39 },
     { name: "Trp", usable: limitingASAfter, unusable: 84 },
     { name: "Val", usable: limitingASAfter, unusable: 13 },
   ];
 
-  const handleVisualizationToggle = () => {
-    setVisualizationType(prev => (prev === "radar" ? "bar" : "radar"));
-  };
-
   return (
     <SafeAreaView style={styles.Content}>
-      <NavBar
-        title="Optimizer"
-        isBold={true}
-        isBackButton={true}
-        rightActions={[
-          {
-            icon: <View style={{ width: 44, height: 44, opacity: 0 }} />,
-            onPress: handleVisualizationToggle,
-          },
-        ]}
-      />
+      <NavBar title="Optimizer" isBold={true} isBackButton={true} />
       {showLoadingSpinner && (
         <View style={styles.centerContainer}>
           <View style={styles.animationContainer}>
@@ -519,31 +501,15 @@ export default function OptimizerDummyVisScreen() {
                 inactiveColor="#878787"
               />
               <View style={styles.barChartContainer}>
-                {visualizationType === "radar" ? (
-                  <RadarChart
-                    limitingAS={
-                      toggleValue === "left"
-                        ? limitingASBefore
-                        : limitingASAfter
-                    }
-                    data={toggleValue === "left" ? beforeData : afterData}
-                    width={Dimensions.get("window").width - 32}
-                    height={Dimensions.get("window").width - 32}
-                    animationDuration={animationDuration}
-                  />
-                ) : (
-                  <StackedBarChart
-                    limitingAS={
-                      toggleValue === "left"
-                        ? limitingASBefore
-                        : limitingASAfter
-                    }
-                    data={toggleValue === "left" ? beforeData : afterData}
-                    width={Dimensions.get("window").width - 32}
-                    height={220}
-                    animationDuration={animationDuration}
-                  />
-                )}
+                <RadarChart
+                  limitingAS={
+                    toggleValue === "left" ? limitingASBefore : limitingASAfter
+                  }
+                  data={toggleValue === "left" ? beforeData : afterData}
+                  width={Dimensions.get("window").width - 32}
+                  height={300}
+                  animationDuration={animationDuration}
+                />
               </View>
               <View style={styles.legendContainer}>
                 <View style={styles.legendeRow}>
@@ -590,7 +556,7 @@ const styles = StyleSheet.create({
   Content: {
     flex: 1,
     justifyContent: "flex-start",
-    paddingBottom: Padding.padding_next_button - 20,
+    paddingBottom: Padding.padding_next_button,
     paddingHorizontal: 16,
     gap: 8,
   },
@@ -598,7 +564,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 44,
     gap: 16,
   },
   animationContainer: {

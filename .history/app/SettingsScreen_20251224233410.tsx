@@ -1,11 +1,11 @@
 import NavBar from "@/components/navBar";
 import SettingsRowComponent from "@/components/settingsComponents/settingsRowComponent";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { getRecentLebensmittel } from "@/utils/recentItems";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getRecentLebensmittel } from "@/utils/recentItems";
 
 const SETTINGS_ITEMS_1 = [
   "Persönliche Daten",

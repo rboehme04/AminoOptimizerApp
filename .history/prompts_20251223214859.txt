@@ -1,6 +1,6 @@
-good prompt for new component:
-    please fix this code 
-    use constants/GlobalStyles.ts and icons in ./assets/icons/icons.tsx
+
+please fix this code 
+use constants/GlobalStyles.ts and icons in ./assets/icons/icons.tsx
 
 Todos:
 
