@@ -252,7 +252,7 @@ export default function RadarChart({
             // Add increasing y offset to prevent overlap (each label gets more offset)
             const yOffset = -(0 + index * 15); // Base offset + increasing spacing
             // Add x offset to bring labels 10px closer to each other (move right for each index)
-            const xOffset = -12 + index * 5; // Move each label 10px closer to center
+            const xOffset = -12 + index * 4; // Move each label 10px closer to center
             return (
               <SvgText
                 key={`grid-label-${level}`}
