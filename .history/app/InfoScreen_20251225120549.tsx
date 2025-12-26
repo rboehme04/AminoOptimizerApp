@@ -32,7 +32,7 @@ const INFO_SECTIONS = [
       "Bei unausgewogenem Aminosäureprofil kann dein Körper viel Protein nicht für Muskelaufbau oder Zellreparatur nutzen. Es wird stattdessen ineffizient zur Energiegewinnung verbrannt.",
     icon: (
       <Image
-        source={require("../assets/images/cell_regeneration_updated_colors.png")}
+        source={require("../assets/images/cell_regeneration.png")}
         style={{ width: 20, height: 20 }}
       />
     ),
@@ -43,8 +43,8 @@ const INFO_SECTIONS = [
       "Der Amino Acid Score zeigt, wie gut dein Körper das Protein verwerten kann. Er vergleicht den Gehalt jeder essenziellen Aminosäure mit WHO-Referenzwerten, wobei die knappste Aminosäure den Score bestimmt. Ab 100% sind alle essenziellen Aminosäuren ausreichend vorhanden. Je höher der Wert, desto hochwertiger das Protein.",
     icon: (
       <Image
-        source={require("../assets/images/statistics.png")}
-        style={{ width: 20, height: 20, paddingBottom: 4 }}
+        source={require("../assets/images/stat.png")}
+        style={{ width: 20, height: 20 }}
       />
     ),
   },

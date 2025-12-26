@@ -1,6 +1,6 @@
 import NavBar from "@/components/navBar";
 import { Color, Typography } from "@/constants/GlobalStyles";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const INFO_SECTIONS = [
@@ -8,45 +8,21 @@ const INFO_SECTIONS = [
     title: "Wie funktioniert es?",
     content:
       "Nicht jedes Protein ist gleich wertvoll. Entscheidend ist, ob alle essentiellen Aminosäuren in der richtigen Menge vorhanden sind. Diese kann dein Körper nicht selbst herstellen.",
-    icon: (
-      <Image
-        source={require("../assets/images/gene.png")}
-        style={{ width: 20, height: 20 }}
-      />
-    ),
   },
   {
     title: "Wie funktioniert die Optimierung?",
     content:
       "Der Optimierer ergänzt dein Rezept gezielt mit Zutaten, die fehlende Aminosäuren ausgleichen. So entsteht ein vollständiges Aminosäureprofil.",
-    icon: (
-      <Image
-        source={require("../assets/images/tetris.png")}
-        style={{ width: 20, height: 20 }}
-      />
-    ),
   },
   {
     title: "Warum ist das wichtig?",
     content:
       "Bei unausgewogenem Aminosäureprofil kann dein Körper viel Protein nicht für Muskelaufbau oder Zellreparatur nutzen. Es wird stattdessen ineffizient zur Energiegewinnung verbrannt.",
-    icon: (
-      <Image
-        source={require("../assets/images/cell_regeneration_updated_colors.png")}
-        style={{ width: 20, height: 20 }}
-      />
-    ),
   },
   {
     title: "Der Amino Acid Score",
     content:
       "Der Amino Acid Score zeigt, wie gut dein Körper das Protein verwerten kann. Er vergleicht den Gehalt jeder essenziellen Aminosäure mit WHO-Referenzwerten, wobei die knappste Aminosäure den Score bestimmt. Ab 100% sind alle essenziellen Aminosäuren ausreichend vorhanden. Je höher der Wert, desto hochwertiger das Protein.",
-    icon: (
-      <Image
-        source={require("../assets/images/statistics.png")}
-        style={{ width: 20, height: 20, paddingBottom: 4 }}
-      />
-    ),
   },
 ];
 
@@ -63,22 +39,17 @@ const InfoScreen = () => {
           <Image
             source={require("../assets/images/protein_structure.jpg")}
             style={{
-              width: "100%",
-              height: 150,
+              width: Dimensions.get("window").width,
+              
               borderRadius: 12,
               resizeMode: "cover",
-              // source: https://www.cio.de/article/3697393/ki-erstellt-dreidimensionale-strukturen-von-proteinen.html
+              marginTop: 10,
             }}
           />
         </View>
         {INFO_SECTIONS.map((section, index) => (
           <View key={index} style={styles.infoParagraphContainer}>
-            <View style={styles.infoTitleContainer}>
-              {section.icon && (
-                <View style={styles.infoIconContainer}>{section.icon}</View>
-              )}
-              <Text style={styles.infoParagraphTitle}>{section.title}</Text>
-            </View>
+            <Text style={styles.infoParagraphTitle}>{section.title}</Text>
             <Text style={styles.infoParagraphText}>{section.content}</Text>
           </View>
         ))}
@@ -100,21 +71,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   infoParagraphContainer: {
-    gap: 8,
-    paddingBottom: 16,
-  },
-  infoTitleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  infoIconContainer: {
-    marginRight: 4,
+    gap: 2,
   },
   infoParagraphTitle: {
-    ...Typography.title3Emphasized,
+    ...Typography.bodyEmphasized,
     color: Color.neutralWhite,
-    flex: 1,
   },
   infoParagraphText: {
     ...Typography.bodyRegular,

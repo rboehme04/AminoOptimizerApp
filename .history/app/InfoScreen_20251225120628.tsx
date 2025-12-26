@@ -32,7 +32,7 @@ const INFO_SECTIONS = [
       "Bei unausgewogenem Aminosäureprofil kann dein Körper viel Protein nicht für Muskelaufbau oder Zellreparatur nutzen. Es wird stattdessen ineffizient zur Energiegewinnung verbrannt.",
     icon: (
       <Image
-        source={require("../assets/images/cell_regeneration_updated_colors.png")}
+        source={require("../assets/images/cell_regeneration.png")}
         style={{ width: 20, height: 20 }}
       />
     ),

@@ -8,12 +8,7 @@ const INFO_SECTIONS = [
     title: "Wie funktioniert es?",
     content:
       "Nicht jedes Protein ist gleich wertvoll. Entscheidend ist, ob alle essentiellen Aminosäuren in der richtigen Menge vorhanden sind. Diese kann dein Körper nicht selbst herstellen.",
-    icon: (
-      <Image
-        source={require("../assets/images/gene.png")}
-        style={{ width: 20, height: 20 }}
-      />
-    ),
+    icon: undefined, // Optional: HelpCircleIcon component
   },
   {
     title: "Wie funktioniert die Optimierung?",
@@ -30,23 +25,18 @@ const INFO_SECTIONS = [
     title: "Warum ist das wichtig?",
     content:
       "Bei unausgewogenem Aminosäureprofil kann dein Körper viel Protein nicht für Muskelaufbau oder Zellreparatur nutzen. Es wird stattdessen ineffizient zur Energiegewinnung verbrannt.",
-    icon: (
-      <Image
-        source={require("../assets/images/cell_regeneration_updated_colors.png")}
-        style={{ width: 20, height: 20 }}
-      />
-    ),
+      icon: (
+        <Image
+          source={require("../assets/images/cell_regeneration")}
+          style={{ width: 20, height: 20 }}
+        />
+      ),
   },
   {
     title: "Der Amino Acid Score",
     content:
       "Der Amino Acid Score zeigt, wie gut dein Körper das Protein verwerten kann. Er vergleicht den Gehalt jeder essenziellen Aminosäure mit WHO-Referenzwerten, wobei die knappste Aminosäure den Score bestimmt. Ab 100% sind alle essenziellen Aminosäuren ausreichend vorhanden. Je höher der Wert, desto hochwertiger das Protein.",
-    icon: (
-      <Image
-        source={require("../assets/images/statistics.png")}
-        style={{ width: 20, height: 20, paddingBottom: 4 }}
-      />
-    ),
+    icon: undefined, // Optional: HelpCircleIcon component
   },
 ];
 
