@@ -224,7 +224,7 @@ export default function RezDetailScreen() {
         onPress={() => {
           if (recipe?.id) {
             router.push({
-              pathname: "/OptimizerDummy",
+              pathname: "/Optimizer",
               params: { id: recipe.id.toString() },
             });
           }

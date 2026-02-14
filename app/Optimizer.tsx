@@ -730,10 +730,10 @@ export default function OptimizerScreen() {
       };
       await AsyncStorage.setItem(optimizerDraftKey, JSON.stringify(draftData));
 
-      // Close popup and navigate to OptimizerFinal
+      // Close popup and navigate to visualization, then user can go to OptimizerFinal via "Weiter"
       setShowPopup(false);
       router.push({
-        pathname: "/OptimizerFinal",
+        pathname: "/OptimizerVisBar",
         params: { id: recipeData.id.toString() },
       });
     } catch (error) {

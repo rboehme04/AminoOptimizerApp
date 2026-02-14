@@ -148,3 +148,75 @@ export function getKeyMacros(nutrition: RecipeNutrition): {
   };
 }
 
+/** Short labels for amino acid chart (order matches Aminosäuren row in datasetConfig) */
+const AMINO_CHART_LABELS: Record<string, string> = {
+  Histidin: "His",
+  Isoleucin: "Ile",
+  Leucin: "Leu",
+  Lysin: "Lys",
+  "Methionin + Cystin": "Met+\nCys",
+  "Phenylalanin + Tyrosin": "Phe+\nTyr",
+  Threonin: "Thr",
+  Tryptophan: "Trp",
+  Valin: "Val",
+};
+
+export type AminoChartData = {
+  limitingAS: number;
+  data: Array<{ name: string; usable: number; unusable: number }>;
+};
+
+/**
+ * Converts recipe nutrition to amino acid chart data (chemical score per amino,
+ * limiting AS = min score; usable = limiting amount, unusable = excess).
+ */
+export function nutritionToAminoChartData(
+  nutrition: RecipeNutrition
+): AminoChartData | null {
+  const rows = nutritionToRows(nutrition);
+  const proteinRow = rows.find(row => row.title === "Überblick");
+  const proteinPer100g = proteinRow?.values.find(
+    v => v.label === "Eiweiß"
+  )?.current;
+
+  if (
+    typeof proteinPer100g !== "number" ||
+    proteinPer100g <= 0
+  ) {
+    return null;
+  }
+
+  const proteinFactor = 100 / proteinPer100g;
+  const aminoRow = rows.find(row => row.title === "Aminosäuren");
+  if (!aminoRow) return null;
+
+  // Use same rounding as DetailsNaehstoffprofilComponent: round each amino's CS first,
+  // then take min. That way the chart's limiting % matches the profile's percentage for that amino.
+  const scores = aminoRow.values
+    .map(value => {
+      const { label, current, reference } = value;
+      if (!reference || reference <= 0) return null;
+      const currentPer100gProtein = current * proteinFactor;
+      const cs = (currentPer100gProtein / reference) * 100;
+      if (!Number.isFinite(cs)) return null;
+      const csRounded = Math.round(cs);
+      return { label, cs, csRounded };
+    })
+    .filter(
+      (item): item is { label: string; cs: number; csRounded: number } =>
+        item !== null
+    );
+
+  if (scores.length === 0) return null;
+
+  const limitingAS = Math.min(...scores.map(s => s.csRounded));
+
+  const data = scores.map(({ label, csRounded }) => ({
+    name: AMINO_CHART_LABELS[label] ?? label,
+    usable: limitingAS,
+    unusable: Math.max(0, csRounded - limitingAS),
+  }));
+
+  return { limitingAS, data };
+}
+

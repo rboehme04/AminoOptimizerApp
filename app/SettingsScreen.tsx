@@ -37,7 +37,7 @@ const SettingsScreen = () => {
       // Save the updated list back to AsyncStorage
       await AsyncStorage.setItem(
         "recent_lebensmittel_v1",
-        JSON.stringify(updatedList)
+        JSON.stringify(updatedList),
       );
     } catch (error) {
       console.error("Error resetting prototype data", error);

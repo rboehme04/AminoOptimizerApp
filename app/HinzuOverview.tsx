@@ -24,11 +24,11 @@ type LebensmittelItem = {
 export default function HinzuOverviewScreen() {
   const router = useRouter();
   const [activeSide, setActiveSide] = React.useState<"Rezept" | "Lebensmittel">(
-    "Lebensmittel"
+    "Lebensmittel",
   );
   const [searchQuery, setSearchQuery] = React.useState("");
   const [searchResults, setSearchResults] = React.useState<LebensmittelItem[]>(
-    []
+    [],
   );
   const { ingredients } = useRecipeDraft();
   const { addIngredient } = useRecipeDraftActions();
@@ -48,7 +48,7 @@ export default function HinzuOverviewScreen() {
         setSearchResults([]);
       }
       isFirstFocus.current = false;
-    }, [])
+    }, []),
   );
 
   // Search function for Lebensmittel
@@ -138,7 +138,7 @@ export default function HinzuOverviewScreen() {
   const handleAddIngredient = (item: LebensmittelItem) => {
     // Avoid duplicates by id where possible
     const alreadyAdded = ingredients.some(
-      existing => existing.id === String(item.id)
+      existing => existing.id === String(item.id),
     );
     if (alreadyAdded) {
       return;
@@ -158,7 +158,7 @@ export default function HinzuOverviewScreen() {
       portion: item.portion,
       calories: item.calories,
     }).catch(error =>
-      console.error("Error adding recent Lebensmittel item", error)
+      console.error("Error adding recent Lebensmittel item", error),
     );
   };
 
