@@ -114,7 +114,7 @@ const ValueRowContainer = ({
             {formatNumber(displayReference, displayUnit, label)} {displayUnit}
           </Text>
           <Text style={styles.valueRowGreyText}>
-            {showChemicalScore && isAminoAcidMg ? "CS " : ""}
+            {showChemicalScore && isAminoAcidMg ? "Ref " : ""}
             {percentage}%
           </Text>
         </View>
@@ -131,6 +131,8 @@ interface NaehrstoffprofilRowProps {
   icon?: React.ComponentType<{ size?: number }>;
   proteinPer100g?: number;
   showChemicalScore?: boolean;
+  /** When set (e.g. from recipe nutrition_json), used for Amino Acid Score row instead of computing from values. */
+  precomputedAminoAcidScore?: number;
 }
 
 const NaehrstoffprofilRow = ({
@@ -140,6 +142,7 @@ const NaehrstoffprofilRow = ({
   icon: Icon = EatSymbolIcon,
   proteinPer100g,
   showChemicalScore,
+  precomputedAminoAcidScore,
 }: NaehrstoffprofilRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -174,6 +177,24 @@ const NaehrstoffprofilRow = ({
     outputRange: ["0deg", "90deg"],
   });
 
+  // Amino Acid Score: use precomputed value when available (e.g. from recipe nutrition_json), else compute from values
+  const aminoAcidScore =
+    isExpanded && values.length > 0 && showChemicalScore
+      ? typeof precomputedAminoAcidScore === "number"
+        ? precomputedAminoAcidScore
+        : typeof proteinPer100g === "number" && proteinPer100g > 0
+          ? (() => {
+              const percentages = values.map(v => {
+                if (!v.reference || v.reference === 0) return 0;
+                const proteinFactor = 100 / proteinPer100g;
+                const currentPer100gProtein = v.current * proteinFactor;
+                return Math.round((currentPer100gProtein / v.reference) * 100);
+              });
+              return Math.min(...percentages);
+            })()
+          : null
+      : null;
+
   return (
     <View style={styles.rowOuterContainer}>
       <Pressable style={styles.rowInnerContainer} onPress={toggleExpanded}>
@@ -185,6 +206,17 @@ const NaehrstoffprofilRow = ({
       </Pressable>
       {isExpanded && values.length > 0 && (
         <View style={styles.valueRowListContainer}>
+          {aminoAcidScore !== null && (
+            <View style={styles.valueRowOuterContainer}>
+              <View style={styles.valueRowInnerContainer}>
+                <View style={styles.valueRowLeftContainer}>
+                  <Text style={styles.valueRowWhiteText}>Amino Acid Score: {aminoAcidScore}%</Text>
+                </View>
+                <View style={styles.valueRowRightContainer}>
+                </View>
+              </View>
+            </View>
+          )}
           {values.map((value, index) => (
             <ValueRowContainer
               key={`${value.label}-${index}`}
@@ -214,6 +246,11 @@ interface DetailsNaehrstoffprofilComponentProps {
    * If provided, these will be used instead of loading from database.
    */
   recipeNutritionRows?: NaehrstoffRowConfig[];
+  /**
+   * Precomputed Amino Acid Score from recipe nutrition_json.
+   * When provided, used for the Aminosäuren row instead of computing from values.
+   */
+  recipeAminoAcidScore?: number;
 }
 
 function DetailsNaehrstoffprofilComponent({
@@ -223,6 +260,7 @@ function DetailsNaehrstoffprofilComponent({
   rows = naehrstoffprofilRows,
   portionInGrams,
   recipeNutritionRows,
+  recipeAminoAcidScore,
 }: DetailsNaehrstoffprofilComponentProps) {
   const insets = useSafeAreaInsets();
   const [baseRows, setBaseRows] = useState<NaehrstoffRowConfig[]>(rows);
@@ -357,6 +395,9 @@ function DetailsNaehrstoffprofilComponent({
               row.title === "Aminosäuren" ? proteinPer100g : undefined
             }
             showChemicalScore={row.title === "Aminosäuren"}
+            precomputedAminoAcidScore={
+              row.title === "Aminosäuren" ? recipeAminoAcidScore : undefined
+            }
           />
         ))}
       </View>

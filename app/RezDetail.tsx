@@ -27,6 +27,7 @@ import {
   getKeyMacros,
   nutritionToRows,
   type RecipeIngredient,
+  type RecipeNutrition,
 } from "@/utils/recipeNutrition";
 import {
   deleteRecipe,
@@ -50,6 +51,7 @@ export default function RezDetailScreen() {
   const [nutritionRows, setNutritionRows] = useState<
     NaehrstoffRowConfig[] | undefined
   >(undefined);
+  const [nutrition, setNutrition] = useState<RecipeNutrition | null>(null);
   const { showDeletePopup, DeletePopupComponent } = useDeleteRecipePopup(
     async () => {
       if (!recipe?.id) return;
@@ -117,10 +119,10 @@ export default function RezDetailScreen() {
         setTotalCalories(Math.round(calories));
 
         // Load nutrition from database or calculate if missing
-        let nutrition: Record<string, number>;
+        let nutrition: RecipeNutrition;
         if (loadedRecipe.nutrition_json) {
           try {
-            nutrition = JSON.parse(loadedRecipe.nutrition_json);
+            nutrition = JSON.parse(loadedRecipe.nutrition_json) as RecipeNutrition;
           } catch (error) {
             console.error("Error parsing stored nutrition", error);
             // Fallback to calculation
@@ -142,6 +144,7 @@ export default function RezDetailScreen() {
           );
         }
 
+        setNutrition(nutrition);
         const rows = nutritionToRows(nutrition);
         setNutritionRows(rows);
 
@@ -197,6 +200,7 @@ export default function RezDetailScreen() {
             <DetailsNaehstoffprofilComponent
               type="rez"
               recipeNutritionRows={nutritionRows}
+              recipeAminoAcidScore={nutrition?.amino_acid_score}
             />
             <View style={styles.rezLoeschenOuterContainer}>
               <Pressable

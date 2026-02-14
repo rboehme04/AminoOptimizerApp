@@ -336,7 +336,7 @@ export default function OptimizerFinalScreen() {
               isExpanded={false}
             />
             <VerbesserungenComponent
-              description="Durch Lysinreiche Sojaflocken hast du die Proteinqualität
+              description="Durch die Anpassung der Zutaten hast du die Proteinqualität
                     deutlich verbessert (Amino Acid Score von 125% auf 134%)."
             />
             <View style={styles.buttonRowContainer}>
@@ -352,6 +352,7 @@ export default function OptimizerFinalScreen() {
             <DetailsNaehstoffprofilComponent
               type="rez"
               recipeNutritionRows={nutritionRows}
+              recipeAminoAcidScore={draftData?.nutrition?.amino_acid_score}
             />
             <View
               style={[

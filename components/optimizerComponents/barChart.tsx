@@ -103,7 +103,7 @@ export default function StackedBarChart({
     return () => {
       animationProgress.removeListener(listenerId);
     };
-  }, [data, animationProgress]);
+  }, [data, animationProgress, animationDuration]);
 
   // limitingAS animieren, wenn es sich ändert
   useEffect(() => {

@@ -103,7 +103,7 @@ export default function OptimizerVisBarScreen() {
   // Before/after chart data from real nutrition
   const beforeChart = recipeData
     ? nutritionToAminoChartData(
-        JSON.parse(recipeData.nutrition_json) as RecipeNutrition
+        JSON.parse(recipeData.nutrition_json ?? "{}") as RecipeNutrition
       )
     : null;
   const afterChart = draftData

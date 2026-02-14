@@ -13,7 +13,20 @@ export interface RecipeIngredient {
 }
 
 export interface RecipeNutrition {
-  [column: string]: number;
+  [column: string]: number | undefined;
+  /** Precomputed minimum of amino acid Ref % (Chemical Score); set when recipe nutrition is calculated. */
+  amino_acid_score?: number;
+}
+
+/**
+ * Computes the Amino Acid Score (minimum of Ref % across amino acids) from a recipe nutrition object.
+ * Returns null if protein is missing or zero.
+ */
+export function computeAminoAcidScore(
+  nutrition: RecipeNutrition
+): number | null {
+  const chart = nutritionToAminoChartData(nutrition);
+  return chart ? chart.limitingAS : null;
 }
 
 /**
@@ -90,7 +103,8 @@ export async function calculateRecipeNutrition(
             ? Number(raw) || 0
             : 0;
 
-        aggregatedNutrition[column] += numeric * factor;
+        aggregatedNutrition[column] =
+          (aggregatedNutrition[column] ?? 0) + numeric * factor;
       });
     } catch (error) {
       console.error(
@@ -98,6 +112,11 @@ export async function calculateRecipeNutrition(
         error
       );
     }
+  }
+
+  const score = computeAminoAcidScore(aggregatedNutrition);
+  if (score !== null) {
+    aggregatedNutrition.amino_acid_score = score;
   }
 
   return aggregatedNutrition;

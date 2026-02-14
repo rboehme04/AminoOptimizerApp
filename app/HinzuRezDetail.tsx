@@ -28,6 +28,7 @@ import {
   getKeyMacros,
   nutritionToRows,
   type RecipeIngredient,
+  type RecipeNutrition,
 } from "@/utils/recipeNutrition";
 import { getRecipeById, initDatabase } from "@/utils/sqlite";
 
@@ -64,6 +65,7 @@ export default function HinzuRezDetailScreen() {
   const [nutritionRows, setNutritionRows] = useState<
     ReturnType<typeof nutritionToRows> | undefined
   >(undefined);
+  const [nutrition, setNutrition] = useState<RecipeNutrition | null>(null);
   const [isOptimized, setIsOptimized] = useState(false);
 
   useEffect(() => {
@@ -99,13 +101,10 @@ export default function HinzuRezDetailScreen() {
         );
 
         // Nutrition handling
-        let nutrition: Record<string, number> | null = null;
+        let nutrition: RecipeNutrition | null = null;
         if (recipeRow.nutrition_json) {
           try {
-            nutrition = JSON.parse(recipeRow.nutrition_json) as Record<
-              string,
-              number
-            >;
+            nutrition = JSON.parse(recipeRow.nutrition_json) as RecipeNutrition;
           } catch (error) {
             console.error("Failed to parse stored nutrition", error);
           }
@@ -115,6 +114,7 @@ export default function HinzuRezDetailScreen() {
           nutrition = await calculateRecipeNutrition(parsedIngredients);
         }
 
+        setNutrition(nutrition);
         const keyMacros = getKeyMacros(nutrition);
         setMacros(keyMacros);
         setCalories(
@@ -272,6 +272,7 @@ export default function HinzuRezDetailScreen() {
             <DetailsNaehstoffprofilComponent
               type="rez"
               recipeNutritionRows={scaledNutritionRows}
+              recipeAminoAcidScore={nutrition?.amino_acid_score}
             />
             <View style={styles.rezLoeschenOuterContainer}>
               <Pressable

@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+import type { RecipeNutrition } from "@/utils/recipeNutrition";
 
 export type RecipeInsert = {
   title: string;
@@ -60,7 +61,7 @@ export const initDatabase = async (): Promise<void> => {
 
 export const insertRecipe = async (
   recipe: RecipeInsert,
-  nutrition?: Record<string, number>,
+  nutrition?: RecipeNutrition,
   isOptimized: boolean = false
 ): Promise<number> => {
   const db = await dbPromise;
@@ -112,7 +113,7 @@ export const getRecipeById = async (id: number): Promise<RecipeRow | null> => {
  */
 export const updateRecipeNutrition = async (
   id: number,
-  nutrition: Record<string, number>
+  nutrition: RecipeNutrition
 ): Promise<void> => {
   const db = await dbPromise;
   const nutritionJson = JSON.stringify(nutrition);
@@ -128,7 +129,7 @@ export const updateRecipeNutrition = async (
 export const updateRecipe = async (
   id: number,
   recipe: RecipeInsert,
-  nutrition?: Record<string, number>
+  nutrition?: RecipeNutrition
 ): Promise<void> => {
   const db = await dbPromise;
   const ingredientsJson = JSON.stringify(recipe.ingredients ?? []);
