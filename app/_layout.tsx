@@ -6,6 +6,7 @@ import { StyleSheet, View } from "react-native";
 
 import { Color } from "@/constants/GlobalStyles";
 import { RecipeDraftProvider } from "@/hooks/useRecipeDraft";
+import { initDatabase } from "@/utils/sqlite";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -22,6 +23,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   useEffect(() => {
+    initDatabase().catch(console.error);
     SplashScreen.hideAsync();
   }, []);
 

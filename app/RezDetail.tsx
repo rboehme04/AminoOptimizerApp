@@ -220,10 +220,11 @@ export default function RezDetailScreen() {
       </ScrollView>
       <NextButton
         text="Optimieren"
+        buttonStyle="brand"
         onPress={() => {
           if (recipe?.id) {
             router.push({
-              pathname: "/OptimizerDummy",
+              pathname: "/Optimizer",
               params: { id: recipe.id.toString() },
             });
           }

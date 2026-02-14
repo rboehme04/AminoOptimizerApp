@@ -1,1 +1,0 @@
-WARN  LinearGradient colors and locations props should be arrays of the same length

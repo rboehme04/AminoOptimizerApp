@@ -16,6 +16,7 @@ import {
   nutritionToRows,
   type RecipeNutrition,
 } from "@/utils/recipeNutrition";
+import { getAllergiesExclusions } from "@/utils/allergiesExclusions";
 import { getRecipeById, initDatabase, type RecipeRow } from "@/utils/sqlite";
 import { supabase } from "@/utils/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -110,7 +111,7 @@ const OptimizerStatusIcon = ({
           duration: 2000, // one full rotation in 2 seconds
           easing: Easing.linear,
           useNativeDriver: true,
-        })
+        }),
       );
       spinAnimation.current.start();
 
@@ -173,9 +174,13 @@ export default function OptimizerScreen() {
     { id: string | number; name: string }[]
   >([]);
   const [recipeData, setRecipeData] = useState<RecipeRow | null>(null);
+  const [allergiesExclusions, setAllergiesExclusions] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
-  const startTimeRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    getAllergiesExclusions().then(setAllergiesExclusions);
+  }, []);
 
   // Parse recipe data for prompt creation
   const recipeForLLM = useMemo(() => {
@@ -204,8 +209,9 @@ export default function OptimizerScreen() {
       recommendedLebensmittel: recommendedLebensmittel,
       recipe: recipeForLLM,
       numberFoodOutput: NUMBER_FOOD_OUTPUT,
+      allergiesExclusions: allergiesExclusions,
     });
-  }, [recommendedLebensmittel, recipeForLLM]);
+  }, [recommendedLebensmittel, recipeForLLM, allergiesExclusions]);
   // LLM state
   const [llmResponse, setLlmResponse] = useState<string | null>(null);
   const [llmLoading, setLlmLoading] = useState(false);
@@ -216,43 +222,18 @@ export default function OptimizerScreen() {
   >(null);
   const lastPromptRef = useRef<string | null>(null);
 
-  // Minimum spin duration: 2 rounds * 2000ms per round = 4000ms
-  const MIN_SPIN_DURATION_MS = 4000;
-
-  // Helper function to ensure minimum spin duration
-  const ensureMinimumSpinDuration = () => {
-    if (!startTimeRef.current) {
-      setIsFinished(true);
-      return;
-    }
-
-    const elapsed = Date.now() - startTimeRef.current;
-    const remaining = MIN_SPIN_DURATION_MS - elapsed;
-
-    if (remaining > 0) {
-      setTimeout(() => {
-        setIsFinished(true);
-      }, remaining);
-    } else {
-      setIsFinished(true);
-    }
-  };
-
   useEffect(() => {
     const runOptimization = async () => {
-      // Record start time for minimum spin duration
-      startTimeRef.current = Date.now();
-
       if (!params.id) {
         setError("Kein Rezept gefunden.");
-        ensureMinimumSpinDuration();
+        setIsFinished(true);
         return;
       }
 
       const recipeId = parseInt(params.id, 10);
       if (Number.isNaN(recipeId)) {
         setError("Ungültige Rezept-ID.");
-        ensureMinimumSpinDuration();
+        setIsFinished(true);
         return;
       }
 
@@ -261,7 +242,7 @@ export default function OptimizerScreen() {
         const recipe = await getRecipeById(recipeId);
         if (!recipe || !recipe.nutrition_json) {
           setError("Keine Nährwertdaten für dieses Rezept vorhanden.");
-          ensureMinimumSpinDuration();
+          setIsFinished(true);
           return;
         }
 
@@ -285,7 +266,7 @@ export default function OptimizerScreen() {
           proteinPer100g <= 0
         ) {
           setError("Aminosäuren oder Proteinangabe fehlen.");
-          ensureMinimumSpinDuration();
+          setIsFinished(true);
           return;
         }
 
@@ -304,7 +285,7 @@ export default function OptimizerScreen() {
             return { label, cs: Math.round(cs) };
           })
           .filter(
-            (item): item is { label: string; cs: number } => item !== null
+            (item): item is { label: string; cs: number } => item !== null,
           )
           .sort((a, b) => a.cs - b.cs)
           //   Todo: Later more than just the limiting Amino Acid should be used in the calculation to ensure an optimal Aminoprofil
@@ -316,7 +297,7 @@ export default function OptimizerScreen() {
         if (scores.length > 0) {
           const limitingAALabel = scores[0].label;
           const limitingAAValue = aminoRow.values.find(
-            v => v.label === limitingAALabel
+            v => v.label === limitingAALabel,
           );
 
           if (limitingAAValue?.column) {
@@ -347,7 +328,7 @@ export default function OptimizerScreen() {
                 .limit(
                   needsSum
                     ? NUMBER_FOOD_RECOMMENDATIONS * 2
-                    : NUMBER_FOOD_RECOMMENDATIONS
+                    : NUMBER_FOOD_RECOMMENDATIONS,
                 );
 
               const { data, error: queryError } = await query;
@@ -392,18 +373,17 @@ export default function OptimizerScreen() {
             } catch (queryErr) {
               console.error(
                 "Error fetching recommended Lebensmittel:",
-                queryErr
+                queryErr,
               );
             }
           }
         }
 
-        // Don't call ensureMinimumSpinDuration here - wait for LLM to complete
-        // Only call it if there's an error that prevents LLM from running
+        // Spinner keeps running until LLM completes (see callLLM effect)
       } catch (e) {
         console.error("Fehler beim Optimieren des Rezepts", e);
         setError("Fehler beim Laden der Rezeptdaten.");
-        ensureMinimumSpinDuration();
+        setIsFinished(true);
       }
     };
 
@@ -413,6 +393,8 @@ export default function OptimizerScreen() {
   // Call LLM when prompt is ready
   useEffect(() => {
     if (!prompt) return;
+
+    console.log("Prompt:", prompt);
 
     // Prevent duplicate calls if prompt hasn't actually changed
     if (lastPromptRef.current === prompt) return;
@@ -456,7 +438,7 @@ export default function OptimizerScreen() {
                     item !== null &&
                     "variant" in item &&
                     "id" in item &&
-                    "recipe" in item
+                    "recipe" in item,
                 );
               } else if (
                 typeof parsed === "object" &&
@@ -469,7 +451,7 @@ export default function OptimizerScreen() {
             } catch (parseError) {
               console.log(
                 "JSON.parse failed, trying to extract objects. Error:",
-                parseError
+                parseError,
               );
               // If JSON parsing fails, the response might be a comma-separated list of objects
               // Try wrapping it in an array first
@@ -493,12 +475,12 @@ export default function OptimizerScreen() {
                         item !== null &&
                         "variant" in item &&
                         "id" in item &&
-                        "recipe" in item
+                        "recipe" in item,
                     );
                     console.log(
                       "Successfully parsed as wrapped array, found",
                       parsedVariants.length,
-                      "variants"
+                      "variants",
                     );
                   }
                 } else {
@@ -507,11 +489,11 @@ export default function OptimizerScreen() {
               } catch (wrapError) {
                 console.log(
                   "Wrapping in array failed:",
-                  wrapError instanceof Error ? wrapError.message : wrapError
+                  wrapError instanceof Error ? wrapError.message : wrapError,
                 );
                 console.log(
                   "Response preview (first 200 chars):",
-                  cleanedResponse.substring(0, 200)
+                  cleanedResponse.substring(0, 200),
                 );
                 console.log("Trying to extract individual objects");
                 // Fallback: try to find complete JSON objects by matching braces
@@ -544,7 +526,7 @@ export default function OptimizerScreen() {
                           console.log(
                             "Failed to parse object:",
                             objStr.substring(0, 100),
-                            parseErr
+                            parseErr,
                           );
                           // Skip invalid JSON
                         }
@@ -555,7 +537,7 @@ export default function OptimizerScreen() {
                   console.log(
                     "extractCompleteObjects found",
                     results.length,
-                    "objects"
+                    "objects",
                   );
                   return results;
                 };
@@ -565,28 +547,23 @@ export default function OptimizerScreen() {
             }
             // console.log("Parsed Variants:", parsedVariants);
             setVariants(parsedVariants);
-            // Mark as finished when LLM call completes (with or without variants)
-            // Ensure minimum spin duration is respected
-            // Only mark as finished if we have variants, otherwise keep loading
-            if (parsedVariants.length > 0) {
-              // Todo: add Timeout error so that is does not load forever
-              ensureMinimumSpinDuration();
-            }
+            // Stop loading as soon as we have fetched and parsed the LLM output
+            setIsFinished(true);
           } catch (parseError) {
             console.error("Error parsing LLM response:", parseError);
             setLlmError("Failed to parse LLM response");
-            // Don't mark as finished if parsing fails - keep trying or show error
+            setIsFinished(true);
           }
         } else {
           setLlmError("No response from LLM");
-          // Don't mark as finished if no response - keep trying or show error
+          setIsFinished(true);
         }
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error occurred";
         setLlmError(errorMessage);
         console.error("Error calling LLM:", error);
-        // Don't mark as finished on error - show error state instead
+        setIsFinished(true);
       } finally {
         setLlmLoading(false);
       }
@@ -626,7 +603,7 @@ export default function OptimizerScreen() {
     try {
       // Parse current recipe ingredients
       const currentIngredients = JSON.parse(
-        recipeData.ingredients_json
+        recipeData.ingredients_json,
       ) as Array<{
         id: string;
         title: string;
@@ -681,7 +658,7 @@ export default function OptimizerScreen() {
         } catch (error) {
           console.warn(
             `Failed to fetch calories for ingredient: ${variantIngredient.name}`,
-            error
+            error,
           );
         }
 
@@ -715,7 +692,7 @@ export default function OptimizerScreen() {
       for (const existingIngredient of currentIngredients) {
         const alreadyIncluded = updatedIngredients.some(
           ing =>
-            ing.title.toLowerCase() === existingIngredient.title.toLowerCase()
+            ing.title.toLowerCase() === existingIngredient.title.toLowerCase(),
         );
         if (!alreadyIncluded) {
           updatedIngredients.push(existingIngredient);
@@ -723,9 +700,8 @@ export default function OptimizerScreen() {
       }
 
       // Recalculate nutrition with updated ingredients
-      const updatedNutrition = await calculateRecipeNutrition(
-        updatedIngredients
-      );
+      const updatedNutrition =
+        await calculateRecipeNutrition(updatedIngredients);
 
       // Store the calculated recipe data temporarily in AsyncStorage
       const optimizerDraftKey = `optimizer_draft_${recipeData.id}`;
@@ -775,7 +751,7 @@ export default function OptimizerScreen() {
       {showPopup && (
         <OptimizerPopUp
           titleText="Nährstoff-Bioverfügbarkeit"
-          descriptionText={`Füge ein lysinreiches Lebensmittel hinzu. Lysin ist die limitierende Aminosäure in Getreide. Durch die Ergänzung gleichst du dieses Defizit aus und erhöhst die Proteinqualität.\n\nDie Empfehlungen basieren auf dem Lysingehalt und sind nach der erwarteten Wirkung auf die Proteinqualität sortiert.`}
+          descriptionText={`Füge ein ${limitingAAs?.[0]?.label ? `${limitingAAs[0].label.charAt(0).toLowerCase()}${limitingAAs[0].label.slice(1)}` : ""}reiches Lebensmittel hinzu. ${limitingAAs?.[0]?.label} ist die limitierende Aminosäure. Durch die Ergänzung gleichst du dieses Defizit aus und erhöhst die Proteinqualität.\n\nDie Empfehlungen basieren auf dem ${limitingAAs?.[0]?.label}gehalt und sind nach der erwarteten Wirkung auf die Proteinqualität sortiert.`}
           isShowButtons={true}
           leftButtonText="Abbrechen"
           rightButtonText="Fertig"
@@ -794,7 +770,7 @@ export default function OptimizerScreen() {
                     text={variant.variant}
                     onCheckPress={() => {
                       setSelectedVariantIndex(
-                        selectedVariantIndex === index ? null : index
+                        selectedVariantIndex === index ? null : index,
                       );
                     }}
                     // Todo: Implement remove press (Lebensmittel ausschließen)

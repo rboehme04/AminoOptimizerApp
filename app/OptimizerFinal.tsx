@@ -15,7 +15,7 @@ import VerbesserungenComponent from "@/components/optimizerComponents/verbesseru
 import RecipeDetailTopComponent from "@/components/recipeDetailTopComponent";
 import ZubereitungDropDown from "@/components/zubereitungDropDown";
 import ZutatenDropDown, { Ingredient } from "@/components/zutatenDropDown";
-import { Color, Padding } from "@/constants/GlobalStyles";
+import { Color } from "@/constants/GlobalStyles";
 import { addRecentRecipe } from "@/utils/recentItems";
 import {
   getKeyMacros,
@@ -357,10 +357,7 @@ export default function OptimizerFinalScreen() {
               style={[
                 styles.spacer,
                 {
-                  paddingBottom:
-                    Padding.padding_next_button +
-                    insets.bottom +
-                    (Platform.OS === "android" ? 20 : 0),
+                  paddingBottom: insets.bottom + (Platform.OS === "android" ? 20 : 0),
                 },
               ]}
             />

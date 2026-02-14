@@ -4,6 +4,7 @@ import {
   type NutritionalValueConfig,
 } from "@/assets/datasetConfig";
 import { ChevronRightIcon, EatSymbolIcon } from "@/assets/icons/icons";
+import DataLicence from "@/components/dataLicence";
 import { Color, Typography } from "@/constants/GlobalStyles";
 import { supabase } from "@/utils/supabase";
 import { useEffect, useRef, useState } from "react";
@@ -359,6 +360,7 @@ function DetailsNaehrstoffprofilComponent({
           />
         ))}
       </View>
+      <DataLicence />
     </View>
   );
 }

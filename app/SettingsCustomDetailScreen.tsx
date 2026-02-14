@@ -1,8 +1,12 @@
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
 import AllergeneComponent from "@/components/settingsComponents/allergeneComponent";
+import {
+  getAllergiesExclusions,
+  setAllergiesExclusions,
+} from "@/utils/allergiesExclusions";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,6 +18,26 @@ const SettingsDetailScreen = () => {
     measuringUnit?: string;
   }>();
   const [allergenValue, setAllergenValue] = useState("");
+
+  const isAllergiesScreen = label === "Allergien und Ausschlüsse";
+
+  useEffect(() => {
+    if (!isAllergiesScreen) return;
+    let cancelled = false;
+    getAllergiesExclusions().then((stored) => {
+      if (!cancelled) setAllergenValue(stored);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAllergiesScreen]);
+
+  const handleSave = useCallback(async () => {
+    if (isAllergiesScreen) {
+      await setAllergiesExclusions(allergenValue);
+    }
+    router.back();
+  }, [isAllergiesScreen, allergenValue, router]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -30,12 +54,7 @@ const SettingsDetailScreen = () => {
           />
         )}
       </ScrollView>
-      <NextButton
-        text="Speichern"
-        onPress={() => {
-          router.back();
-        }}
-      />
+      <NextButton text="Speichern" onPress={handleSave} />
     </SafeAreaView>
   );
 };

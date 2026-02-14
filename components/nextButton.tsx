@@ -9,7 +9,7 @@ interface NextButtonProps {
   disabled?: boolean;
   badge?: string | number;
   keyboardHeight?: number;
-  buttonStyle?: "light" | "dark";
+  buttonStyle?: "light" | "dark" | "brand";
 }
 
 const NextButton = ({
@@ -45,6 +45,7 @@ const NextButton = ({
           style={[
             styles.button,
             buttonStyle === "dark" && styles.buttonDark,
+            buttonStyle === "brand" && styles.buttonBrand,
             disabled && styles.buttonDisabled,
           ]}
           onPress={onPress}
@@ -54,6 +55,7 @@ const NextButton = ({
             style={[
               styles.text,
               buttonStyle === "dark" && styles.textDark,
+              buttonStyle === "brand" && styles.textBrand,
               disabled && styles.textDisabled,
             ]}
           >
@@ -96,6 +98,9 @@ const styles = StyleSheet.create({
   buttonDark: {
     backgroundColor: Color.neutralInputOnDark,
   },
+  buttonBrand: {
+    backgroundColor: Color.brand50GraphicsOrBrandButton,
+  },
   buttonDisabled: {
     backgroundColor: Color.neutralButtonInactive,
   },
@@ -104,6 +109,9 @@ const styles = StyleSheet.create({
     color: Color.neutralBlackText,
   },
   textDark: {
+    color: Color.neutralWhite,
+  },
+  textBrand: {
     color: Color.neutralWhite,
   },
   textDisabled: {
