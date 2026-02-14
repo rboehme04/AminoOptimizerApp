@@ -34,8 +34,16 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Hyperparameters
-const NUMBER_FOOD_OUTPUT = 4;
+const NUMBER_FOOD_OUTPUT = 16;
 const NUMBER_FOOD_RECOMMENDATIONS = 200;
+const VARIANTS_PAGE_SIZE = 4;
+
+// AltLebSelectRow height (44) + gap (4) between rows; 4 visible rows
+const SCROLL_VIEW_ROW_HEIGHT = 44;
+const SCROLL_VIEW_GAP = 4;
+const SCROLL_VIEW_HEIGHT =
+  VARIANTS_PAGE_SIZE * SCROLL_VIEW_ROW_HEIGHT +
+  (VARIANTS_PAGE_SIZE - 1) * SCROLL_VIEW_GAP + 5;
 
 type OptimizerStatus = "not-started" | "running" | "finished";
 
@@ -220,7 +228,15 @@ export default function OptimizerScreen() {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState<
     number | null
   >(null);
+  const [displayedVariantCount, setDisplayedVariantCount] =
+    useState(VARIANTS_PAGE_SIZE);
+  const scrollViewRef = useRef<ScrollView>(null);
   const lastPromptRef = useRef<string | null>(null);
+
+  // Reset displayed count when variants change (e.g. new popup)
+  useEffect(() => {
+    setDisplayedVariantCount(VARIANTS_PAGE_SIZE);
+  }, [variants]);
 
   useEffect(() => {
     const runOptimization = async () => {
@@ -393,8 +409,6 @@ export default function OptimizerScreen() {
   // Call LLM when prompt is ready
   useEffect(() => {
     if (!prompt) return;
-
-    console.log("Prompt:", prompt);
 
     // Prevent duplicate calls if prompt hasn't actually changed
     if (lastPromptRef.current === prompt) return;
@@ -733,6 +747,25 @@ export default function OptimizerScreen() {
     return limitingAAs.map(item => `${item.label}: ${item.cs}%`).join("\n");
   };
 
+  const handleMehrLaden = () => {
+    const nextCount = Math.min(
+      displayedVariantCount + VARIANTS_PAGE_SIZE,
+      NUMBER_FOOD_OUTPUT,
+      variants.length,
+    );
+    setDisplayedVariantCount(nextCount);
+    // Scroll to newly loaded items after layout
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+  };
+
+  const isMehrLadenDisabled =
+    displayedVariantCount >= NUMBER_FOOD_OUTPUT ||
+    displayedVariantCount >= variants.length;
+
+  const visibleVariants = variants.slice(0, displayedVariantCount);
+
   return (
     <SafeAreaView style={styles.Content}>
       <NavBar title="Optimizer" isBold={true} isBackButton={true} />
@@ -761,9 +794,9 @@ export default function OptimizerScreen() {
           onClose={handleClosePopup}
         >
           <View style={styles.selectionContainer}>
-            <ScrollView style={styles.scrollView}>
+            <ScrollView ref={scrollViewRef} style={styles.scrollView}>
               <View style={styles.scrollViewContent}>
-                {variants.map((variant, index) => (
+                {visibleVariants.map((variant, index) => (
                   <AltLebSelectRow
                     key={index}
                     checked={selectedVariantIndex === index}
@@ -790,11 +823,19 @@ export default function OptimizerScreen() {
               </Pressable>
               <Pressable
                 style={styles.mehrLadenClickContainer}
-                onPress={() => {}}
+                onPress={handleMehrLaden}
+                disabled={isMehrLadenDisabled}
                 accessibilityRole="button"
                 accessibilityLabel="Mehr laden"
               >
-                <Text style={styles.mehrLadenText}>Mehr laden</Text>
+                <Text
+                  style={[
+                    styles.mehrLadenText,
+                    isMehrLadenDisabled && styles.mehrLadenTextDisabled,
+                  ]}
+                >
+                  Mehr laden
+                </Text>
               </Pressable>
             </View>
             {/* Todo: only used for debugging, remove later
@@ -841,7 +882,9 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     gap: 4,
   },
-  scrollView: {},
+  scrollView: {
+    height: SCROLL_VIEW_HEIGHT,
+  },
   scrollViewContent: {
     gap: 4,
   },
@@ -865,5 +908,8 @@ const styles = StyleSheet.create({
   mehrLadenText: {
     ...Typography.subheadlineRegular,
     color: Color.brand40LetzteButtonOrBlueText,
+  },
+  mehrLadenTextDisabled: {
+    color: Color.neutralTextOrTabGrey,
   },
 });
