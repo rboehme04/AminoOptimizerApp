@@ -10,11 +10,11 @@ import Svg, {
   TSpan,
 } from "react-native-svg";
 
-// Essential amino acids data structure
+// Datenstruktur für essentielle Aminosäuren
 export type AminoAcidData = {
   name: string;
-  usable: number; // Usable for muscles, cells, enzymes & immune system
-  unusable: number; // Not usable, only used for energy
+  usable: number; // Nutzbar für Muskeln, Zellen, Enzyme & Immunsystem
+  unusable: number; // Nicht nutzbar, wird nur zur Energiegewinnung verwendet
 };
 
 type RadarChartProps = {
@@ -37,22 +37,22 @@ export default function RadarChart({
   const chartHeight = height - margin.top - margin.bottom;
   const centerX = chartWidth / 2;
   const centerY = chartHeight / 2;
-  const radius = Math.min(centerX, centerY) - 40; // Leave space for labels
+  const radius = Math.min(centerX, centerY) - 40; // Platz für Labels lassen
 
-  // Store previous data and animation progress
+  // Vorherige Daten und Animationsfortschritt speichern
   const prevDataRef = useRef<AminoAcidData[]>(data);
   const animationProgress = useRef(new Animated.Value(0)).current;
   const [interpolatedData, setInterpolatedData] =
     useState<AminoAcidData[]>(data);
 
-  // Animate limitingAS position
+  // Position von limitingAS animieren
   const prevLimitingASRef = useRef<number>(limitingAS);
   const limitingASAnimation = useRef(new Animated.Value(limitingAS)).current;
   const [animatedLimitingAS, setAnimatedLimitingAS] = useState(limitingAS);
 
-  // Animate when data changes
+  // Animation starten, wenn sich die Daten ändern
   useEffect(() => {
-    // Check if data actually changed
+    // Prüfen, ob sich die Daten tatsächlich geändert haben
     const dataChanged =
       prevDataRef.current.length !== data.length ||
       prevDataRef.current.some(
@@ -64,23 +64,23 @@ export default function RadarChart({
       );
 
     if (!dataChanged) {
-      // Ensure interpolated data matches current data
+      // Sicherstellen, dass die interpolierten Daten den aktuellen entsprechen
       setInterpolatedData(data);
       return;
     }
 
-    // Capture previous data snapshot before updating (deep copy)
+    // Snapshot der vorherigen Daten vor dem Update erstellen (Deep Copy)
     const previousDataSnapshot = prevDataRef.current.map(item => ({
       ...item,
     }));
 
-    // Start from previous data
+    // Von den vorherigen Daten aus starten
     setInterpolatedData(previousDataSnapshot);
 
-    // Reset animation and start it
+    // Animation zurücksetzen und starten
     animationProgress.setValue(0);
 
-    // Update interpolated data during animation
+    // Interpolierte Daten während der Animation aktualisieren
     const listenerId = animationProgress.addListener(({ value }) => {
       const interpolated = data.map((item, index) => {
         const prevItem = previousDataSnapshot[index];
@@ -96,16 +96,16 @@ export default function RadarChart({
       setInterpolatedData(interpolated);
     });
 
-    // Start animation
+    // Animation starten
     Animated.timing(animationProgress, {
       toValue: 1,
       duration: animationDuration,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
     }).start(() => {
-      // After animation completes, ensure we're at the target values
+      // Nach der Animation sicherstellen, dass die Zielwerte gesetzt sind
       setInterpolatedData(data);
-      // Update previous data reference for next animation
+      // Referenz für die nächste Animation aktualisieren
       prevDataRef.current = data;
     });
 
@@ -114,25 +114,25 @@ export default function RadarChart({
     };
   }, [data, animationProgress, animationDuration]);
 
-  // Animate limitingAS position when it changes
+  // limitingAS animieren, wenn es sich ändert
   useEffect(() => {
     if (prevLimitingASRef.current !== limitingAS) {
-      // Set the animation value to start from the previous value
+      // Animationswert so setzen, dass er beim vorherigen Wert startet
       limitingASAnimation.setValue(prevLimitingASRef.current);
 
-      // Update interpolated limitingAS during animation
+      // Interpolierten limitingAS-Wert während der Animation aktualisieren
       const listenerId = limitingASAnimation.addListener(({ value }) => {
         setAnimatedLimitingAS(value);
       });
 
-      // Start animation
+      // Animation starten
       Animated.timing(limitingASAnimation, {
         toValue: limitingAS,
         duration: animationDuration,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
       }).start(() => {
-        // After animation completes, ensure we're at the target value
+        // Nach der Animation sicherstellen, dass der Zielwert gesetzt ist
         setAnimatedLimitingAS(limitingAS);
         prevLimitingASRef.current = limitingAS;
       });
@@ -143,43 +143,37 @@ export default function RadarChart({
     }
   }, [limitingAS, limitingASAnimation, animationDuration]);
 
-  // Use interpolated data for rendering
+  // Interpolierte Daten zum Rendern verwenden
   const displayData = interpolatedData;
 
-  // Calculate max value for scaling
-  const maxValue = Math.max(
-    ...displayData.map(d => d.usable + d.unusable),
-    250 // Ensure we can show up to 250%
-  );
-
-  // Create scale for radius (0 to maxValue maps to 0 to radius)
+  // Skala für den Radius erstellen (0 bis 250% wird auf 0 bis radius abgebildet)
   const rScale = scaleLinear()
-    .domain([0, 250]) // Set domain to 0-250 for percentage display
+    .domain([0, 250]) // Domain 0–250 für Prozentdarstellung
     .range([0, radius]);
 
-  // Generate grid lines (0% to 250% in 50% increments)
+  // Gitternetzlinien erzeugen (0% bis 250% in 50%-Schritten)
   const gridLevels = [0, 50, 100, 150, 200, 250];
 
-  // Calculate number of data points
+  // Anzahl der Datenpunkte
   const numPoints = displayData.length;
   const angleStep = (2 * Math.PI) / numPoints;
-  const startAngle = -Math.PI / 2; // Start from top (12 o'clock)
+  const startAngle = -Math.PI / 2; // Start oben (12 Uhr)
 
-  // Helper function to convert polar to cartesian coordinates
+  // Hilfsfunktion: Polar- in Kartesische Koordinaten umrechnen
   const polarToCartesian = (angle: number, distance: number) => {
     const x = centerX + distance * Math.cos(angle);
     const y = centerY + distance * Math.sin(angle);
     return { x, y };
   };
 
-  // Generate points for usable polygon
+  // Punkte für das Polygon des nutzbaren Anteils erzeugen
   const usablePoints = displayData.map((d, i) => {
     const angle = startAngle + i * angleStep;
     const distance = rScale(d.usable);
     return polarToCartesian(angle, distance);
   });
 
-  // Generate points for total (usable + unusable) polygon
+  // Punkte für das Gesamt-Polygon (nutzbar + nicht nutzbar) erzeugen
   const totalPoints = displayData.map((d, i) => {
     const angle = startAngle + i * angleStep;
     const total = d.usable + d.unusable;
@@ -187,24 +181,24 @@ export default function RadarChart({
     return polarToCartesian(angle, distance);
   });
 
-  // Convert points to path string for polygons
+  // Punkte in den "points"-String für Polygone umwandeln
   const pointsToPath = (points: Array<{ x: number; y: number }>) => {
     return points.map(p => `${p.x},${p.y}`).join(" ");
   };
 
-  // Calculate label positions (outside the chart)
+  // Label-Positionen (außerhalb des Diagramms) berechnen
   const labelPositions = displayData.map((d, i) => {
     const angle = startAngle + i * angleStep;
-    // Single-line labels should be closer than multi-line labels
+    // Einzeilige Labels können näher stehen als mehrzeilige
     const isMultiLine = d.name.includes("\n");
-    const labelDistance = isMultiLine ? radius + 20 : radius + 15; // Multi-line labels need more space
+    const labelDistance = isMultiLine ? radius + 20 : radius + 15; // Mehrzeilige Labels brauchen mehr Platz
     return polarToCartesian(angle, labelDistance);
   });
 
   return (
     <Svg width={width} height={height}>
       <G x={margin.left} y={margin.top}>
-        {/* Title */}
+        {/* Titel */}
         <SvgText
           x={centerX}
           y={-15}
@@ -215,15 +209,15 @@ export default function RadarChart({
           Amino Acid Score
         </SvgText>
 
-        {/* Grid lines */}
+        {/* Gitternetzlinien */}
         {gridLevels.map(level => {
           const r = rScale(level);
-          // Create points for this grid level at each axis
+          // Punkte für dieses Grid-Level an jeder Achse erzeugen
           const gridPoints = displayData.map((_, i) => {
             const angle = startAngle + i * angleStep;
             return polarToCartesian(angle, r);
           });
-          // Draw lines connecting adjacent points to form a polygon
+          // Linien zwischen benachbarten Punkten zeichnen (Polygon-Form)
           return gridPoints.map((point, i) => {
             const nextPoint = gridPoints[(i + 1) % gridPoints.length];
             return (
@@ -241,18 +235,18 @@ export default function RadarChart({
           });
         })}
 
-        {/* Grid line labels on the left side */}
+        {/* Grid-Labels auf der linken Seite */}
         {gridLevels
-          .filter(level => level > 0) // Skip 0% label
+          .filter(level => level > 0) // 0%-Label überspringen
           .map((level, index) => {
             const r = rScale(level);
-            // Position label on the left side (angle = π, which is leftmost point)
-            const leftAngle = Math.PI; // 180 degrees, left side
+            // Label links positionieren (Winkel = π ist der linke Punkt)
+            const leftAngle = Math.PI; // 180°, linke Seite
             const labelPoint = polarToCartesian(leftAngle, r);
-            // Add increasing y offset to prevent overlap (each label gets more offset)
-            const yOffset = -(0 + index * 15); // Base offset + increasing spacing
-            // Add x offset to bring labels 10px closer to each other (move right for each index)
-            const xOffset = -12 + index * 5; // Move each label 10px closer to center
+            // Ansteigenden y-Offset hinzufügen, um Überlappung zu vermeiden
+            const yOffset = -(0 + index * 15); // Basis-Offset + zunehmender Abstand
+            // x-Offset hinzufügen, um Labels etwas Richtung Mitte zu ziehen
+            const xOffset = -12 + index * 5;
             return (
               <SvgText
                 key={`grid-label-${level}`}
@@ -271,17 +265,17 @@ export default function RadarChart({
               </SvgText>
             );
           })}
-        {/* Unusable segment (gray) - outer layer */}
+        {/* Nicht nutzbarer Anteil (grau) – äußere Ebene */}
         <Polygon
           points={pointsToPath(totalPoints)}
           fill={Color.neutralButtonInactive}
           opacity={0.6}
         />
 
-        {/* Usable segment (green) - inner layer */}
+        {/* Nutzbarer Anteil (grün) – innere Ebene */}
         <Polygon points={pointsToPath(usablePoints)} fill={Color.success70} />
 
-        {/* Reference polygon line for limitingAS */}
+        {/* Referenz-Polygonlinie für limitingAS */}
         {(() => {
           const limitingASRadius = rScale(animatedLimitingAS);
           const limitingASPoints = displayData.map((_, i) => {
@@ -305,7 +299,7 @@ export default function RadarChart({
           });
         })()}
 
-        {/* Label for limitingAS */}
+        {/* Label für limitingAS */}
         <SvgText
           x={centerX + rScale(animatedLimitingAS) + 10}
           y={centerY + 10}
@@ -316,7 +310,7 @@ export default function RadarChart({
           {Math.round(animatedLimitingAS)}%
         </SvgText>
 
-        {/* Labels for amino acids */}
+        {/* Labels der Aminosäuren */}
         {displayData.map((d, i) => {
           const pos = labelPositions[i];
           return (

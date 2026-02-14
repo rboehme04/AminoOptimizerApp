@@ -1,2 +1,0 @@
-please fix this code {code snippet}  
-use GlobalStyles.ts and the {icon} in assets/icons

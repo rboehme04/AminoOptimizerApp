@@ -14,4 +14,3 @@ Todos:
                 --> right now only Lebensmittel are summed up, recipes not
                     for Makros in RezDetailTopComponent and detailNaehrstoffprofil
             - sekundäre Pflanzenstoffe
-            - nährstoffprofil Values auswählen

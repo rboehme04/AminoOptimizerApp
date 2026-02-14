@@ -19,7 +19,9 @@ type RecipeData = {
 type CreatePromptParams = {
   recommendedLebensmittel: RecommendedLebensmittel[];
   recipe: RecipeData;
-  numberFoodOutput: Number;
+  numberFoodOutput?: number;
+  dietaryPattern?: string;
+  allergiesExclusions?: string;
 };
 
 /**
@@ -31,7 +33,9 @@ type CreatePromptParams = {
 export const createPrompt = ({
   recommendedLebensmittel,
   recipe,
-  numberFoodOutput
+  numberFoodOutput = 16,
+  dietaryPattern,
+  allergiesExclusions,
 }: CreatePromptParams): string => {
   // Format recommended Lebensmittel list
   const lebensmittelList = recommendedLebensmittel
@@ -47,20 +51,21 @@ export const createPrompt = ({
     .join("\n");
 
   // Build the prompt
-  const generatedPrompt = `You are a professional nutritionist and recipe developer specialized in high-protein, plant-based recipes with excellent taste and texture. Your task is to optimize a given recipe using recommended foods.
-
+  const generatedPrompt = `You are a professional nutritionist and recipe developer specialized in creating recipes with excellent taste and texture. Your task is to optimize a given recipe using recommended foods.
+  
 Rules:
-
-1. Select exactly ${numberFoodOutput} foods from the recommended foods list that fit the flavor, improve or maintain texture, and realistically work in the recipe. **Prefer whole, minimally processed foods over highly processed foods.** Exclude foods that clearly do not fit (e.g., meat/fish in sweet vegan recipes).
-2. For each selected food, create one recipe variant. The food must be **added** to the recipe. Adjust other ingredient quantities as needed to maintain taste, consistency, and balance.
-3. Recipes must be practical, enjoyable, and not overly thick, chalky, or watery. Avoid extreme protein overload.
+1. Select exactly ${numberFoodOutput} foods from the 'RECOMMENDED FOODS' list that fit the flavor, improve or maintain texture, and realistically work in the recipe. Prefer whole, minimally processed foods over highly processed foods. Exclude foods that clearly do not fit (e.g., meat/fish in sweet recipes).
+2. For each selected food, create one recipe variant. The food must be added to the recipe. Adjust other ingredient quantities as needed to maintain taste, consistency, and balance.
+3. Recipes must be practical, enjoyable, and not overly thick, chalky, gritty, or watery. Avoid extreme protein overload.
+4. Comply with the dietary pattern specified in 'DIETARY PATTERN'. Exclude foods that violate this pattern (e.g., no meat in vegan recipes, no meat/fish in vegetarian recipes).
+5. Exclude all foods listed in the 'ALLERGIES & EXCLUSIONS' variable, including derived ingredients and related categories (e.g., nut allergy excludes all nuts and nut-based products).
 
 OUTPUT:
 Return exactly a JSON array with ${numberFoodOutput} objects. Each object must have this structure:
 
 {
-  "variant": "[Food Name from the recommended foods list]",
-  "id": "[Food id from the recommended foods list exactly]",
+  "variant": "[Food Name from the 'RECOMMENDED FOODS' list]",
+  "id": "[Food id from the 'RECOMMENDED FOODS' list exactly]",
   "recipe": {
     "title": "Recipe Title",
     "ingredients": [
@@ -71,16 +76,21 @@ Return exactly a JSON array with ${numberFoodOutput} objects. Each object must h
 
 Constraints:
 - All ${numberFoodOutput} foods must be unique. Do not include duplicates.
-- The "id" field must match **exactly** the id of a food from the recommended foods list ('RECOMMENDED FOODS'). Do not invent or modify ids.
+- The "id" field must match exactly the id of a food from the 'RECOMMENDED FOODS' list. Do not invent or modify ids.
 - Do not include extra text, numbering, or explanations. Only output valid JSON.
-- Prefer whole foods over processed foods wherever possible, but maintain taste and texture.
 
 BASE RECIPE:
 Titel: ${recipe.title}
 
-Zutaten:
+INGREDIENTS:
 ${ingredientsList}
-${recipe.instructions ? `\nZubereitung:\n${recipe.instructions}` : ""}
+${recipe.instructions ? '\nPREPARATION:\n${recipe.instructions}' : ""}
+
+DIETARY PATTERN:
+${dietaryPattern || "None specified"}
+
+ALLERGIES & EXCLUSIONS:
+${allergiesExclusions || "None specified"}
 
 RECOMMENDED FOODS:
 ${lebensmittelList}
@@ -91,6 +101,6 @@ ${lebensmittelList}
 };
 
 export type {
-    CreatePromptParams, RecipeData, RecipeIngredient, RecommendedLebensmittel
+  CreatePromptParams, RecipeData, RecipeIngredient, RecommendedLebensmittel
 };
 

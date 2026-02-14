@@ -4,11 +4,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, Easing } from "react-native";
 import Svg, { G, Line, Rect, Text as SvgText, TSpan } from "react-native-svg";
 
-// Essential amino acids data structure
+// Datenstruktur für essentielle Aminosäuren
 export type AminoAcidData = {
   name: string;
-  usable: number; // Usable for muscles, cells, enzymes & immune system
-  unusable: number; // Not usable, only used for energy
+  usable: number; // Nutzbar für Muskeln, Zellen, Enzyme & Immunsystem
+  unusable: number; // Nicht nutzbar, wird nur zur Energiegewinnung verwendet
 };
 
 type StackedBarChartProps = {
@@ -30,20 +30,20 @@ export default function StackedBarChart({
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
 
-  // Store previous data and animation progress
+  // Vorherige Daten und Animationsfortschritt speichern
   const prevDataRef = useRef<AminoAcidData[]>(data);
   const animationProgress = useRef(new Animated.Value(0)).current;
   const [interpolatedData, setInterpolatedData] =
     useState<AminoAcidData[]>(data);
 
-  // Animate limitingAS position
+  // Position von limitingAS animieren
   const prevLimitingASRef = useRef<number>(limitingAS);
   const limitingASAnimation = useRef(new Animated.Value(limitingAS)).current;
   const [animatedLimitingAS, setAnimatedLimitingAS] = useState(limitingAS);
 
-  // Animate when data changes
+  // Animation starten, wenn sich die Daten ändern
   useEffect(() => {
-    // Check if data actually changed
+    // Prüfen, ob sich die Daten tatsächlich geändert haben
     const dataChanged =
       prevDataRef.current.length !== data.length ||
       prevDataRef.current.some(
@@ -55,23 +55,23 @@ export default function StackedBarChart({
       );
 
     if (!dataChanged) {
-      // Ensure interpolated data matches current data
+      // Sicherstellen, dass die interpolierten Daten den aktuellen entsprechen
       setInterpolatedData(data);
       return;
     }
 
-    // Capture previous data snapshot before updating (deep copy)
+    // Snapshot der vorherigen Daten vor dem Update erstellen (Deep Copy)
     const previousDataSnapshot = prevDataRef.current.map(item => ({
       ...item,
     }));
 
-    // Start from previous data
+    // Von den vorherigen Daten aus starten
     setInterpolatedData(previousDataSnapshot);
 
-    // Reset animation and start it
+    // Animation zurücksetzen und starten
     animationProgress.setValue(0);
 
-    // Update interpolated data during animation
+    // Interpolierte Daten während der Animation aktualisieren
     const listenerId = animationProgress.addListener(({ value }) => {
       const interpolated = data.map((item, index) => {
         const prevItem = previousDataSnapshot[index];
@@ -87,16 +87,16 @@ export default function StackedBarChart({
       setInterpolatedData(interpolated);
     });
 
-    // Start animation
+    // Animation starten
     Animated.timing(animationProgress, {
       toValue: 1,
       duration: animationDuration,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
     }).start(() => {
-      // After animation completes, ensure we're at the target values
+      // Nach der Animation sicherstellen, dass die Zielwerte gesetzt sind
       setInterpolatedData(data);
-      // Update previous data reference for next animation
+      // Referenz für die nächste Animation aktualisieren
       prevDataRef.current = data;
     });
 
@@ -105,25 +105,25 @@ export default function StackedBarChart({
     };
   }, [data, animationProgress]);
 
-  // Animate limitingAS position when it changes
+  // limitingAS animieren, wenn es sich ändert
   useEffect(() => {
     if (prevLimitingASRef.current !== limitingAS) {
-      // Set the animation value to start from the previous value
+      // Animationswert so setzen, dass er beim vorherigen Wert startet
       limitingASAnimation.setValue(prevLimitingASRef.current);
 
-      // Update interpolated limitingAS during animation
+      // Interpolierten limitingAS-Wert während der Animation aktualisieren
       const listenerId = limitingASAnimation.addListener(({ value }) => {
         setAnimatedLimitingAS(value);
       });
 
-      // Start animation
+      // Animation starten
       Animated.timing(limitingASAnimation, {
         toValue: limitingAS,
         duration: animationDuration,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
       }).start(() => {
-        // After animation completes, ensure we're at the target value
+        // Nach der Animation sicherstellen, dass der Zielwert gesetzt ist
         setAnimatedLimitingAS(limitingAS);
         prevLimitingASRef.current = limitingAS;
       });
@@ -134,20 +134,20 @@ export default function StackedBarChart({
     }
   }, [limitingAS, limitingASAnimation]);
 
-  // Use interpolated data for rendering
+  // Interpolierte Daten zum Rendern verwenden
   const displayData = interpolatedData;
 
-  // Create scales
+  // Skalen erstellen
   const xScale = scaleBand()
     .domain(displayData.map((_, i) => i.toString()))
     .range([0, chartWidth])
     .padding(0.65);
 
   const yScale = scaleLinear()
-    .domain([0, 250]) // Set domain to 0-250 for percentage display
+    .domain([0, 250]) // Domain 0–250 für Prozentdarstellung
     .range([chartHeight, 0]);
 
-  // Generate y-axis ticks (0% to 250% in 50% increments)
+  // y-Achsen-Ticks erzeugen (0% bis 250% in 50%-Schritten)
   const yAxisTicks = [0, 50, 100, 150, 200];
 
   const barWidth = xScale.bandwidth();
@@ -155,7 +155,7 @@ export default function StackedBarChart({
   return (
     <Svg width={width} height={height}>
       <G x={margin.left} y={margin.top}>
-        {/* Y-axis labels */}
+        {/* y-Achsen-Beschriftung */}
         {yAxisTicks.map(tick => {
           const yPos = yScale(tick);
           return (
@@ -171,7 +171,7 @@ export default function StackedBarChart({
             </SvgText>
           );
         })}
-        {/* title for y axis */}
+        {/* Titel der y-Achse */}
         <SvgText
           key={"title"}
           x={-22}
@@ -182,7 +182,7 @@ export default function StackedBarChart({
         >
           Amino Acid Score
         </SvgText>
-        {/* Horizontal grid lines */}
+        {/* Horizontale Gitternetzlinien */}
         {yAxisTicks.map(tick => {
           const yPos = yScale(tick);
           return (
@@ -202,24 +202,24 @@ export default function StackedBarChart({
           const x = xScale(i.toString()) || 0;
           const total = d.usable + d.unusable;
 
-          // In SVG, y=0 is at top, so we calculate from top to bottom
-          // Total bar goes from yScale(total) (top) to chartHeight (bottom)
+          // In SVG liegt y=0 oben; daher von oben nach unten rechnen
+          // Gesamter Balken: von yScale(total) (oben) bis chartHeight (unten)
           const barTop = yScale(total);
           const barHeight = chartHeight - barTop;
 
-          // Usable segment is at the bottom
-          // It goes from (chartHeight - usable portion) to chartHeight
+          // Nutzbarer Anteil liegt unten
+          // Von (chartHeight - nutzbarer Anteil) bis chartHeight
           const usableHeight = total > 0 ? (d.usable / total) * barHeight : 0;
           const usableY = chartHeight - usableHeight;
 
-          // Unusable segment is on top of usable segment
+          // Nicht nutzbarer Anteil liegt oberhalb des nutzbaren Anteils
           const unusableHeight =
             total > 0 ? (d.unusable / total) * barHeight : 0;
           const unusableY = usableY - unusableHeight;
 
           return (
             <G key={i}>
-              {/* Usable segment (green) - bottom */}
+              {/* Nutzbarer Anteil (grün) – unten */}
               <Rect
                 x={x}
                 y={usableY}
@@ -227,7 +227,7 @@ export default function StackedBarChart({
                 height={usableHeight}
                 fill={Color.success70}
               />
-              {/* Unusable segment (gray) - top */}
+              {/* Nicht nutzbarer Anteil (grau) – oben */}
               <Rect
                 x={x}
                 y={unusableY}
@@ -236,7 +236,7 @@ export default function StackedBarChart({
                 fill={Color.neutralButtonInactive}
                 opacity={0.6}
               />
-              {/* Label */}
+              {/* Beschriftung */}
               <SvgText
                 x={x + barWidth / 2}
                 y={chartHeight + 15}
@@ -261,7 +261,7 @@ export default function StackedBarChart({
             </G>
           );
         })}
-        {/* Horizontal line at limitingAS */}
+        {/* Horizontale Linie für limitingAS */}
         <Line
           x1={10}
           y1={yScale(animatedLimitingAS)}
@@ -270,7 +270,7 @@ export default function StackedBarChart({
           stroke="white"
           strokeWidth={1.5}
         />
-        {/* Text label for limitingAS */}
+        {/* Textlabel für limitingAS */}
         <SvgText
           x={chartWidth + 5}
           y={yScale(animatedLimitingAS) + 5}

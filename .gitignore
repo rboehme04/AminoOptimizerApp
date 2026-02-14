@@ -42,3 +42,6 @@ opennutrition_foods*.tsv
 # generated native folders
 /ios
 /android
+
+prompts.txt
+.history
