@@ -11,8 +11,10 @@
  */
 
 import { HfInference } from "@huggingface/inference";
+import { supabase } from "@/utils/supabase";
 
 const HF_API_BASE = "https://api-inference.huggingface.co/models";
+const EDGE_FUNCTION_NAME = "huggingface-chat";
 const MODEL_NAME = "meta-llama/Meta-Llama-3.1-8B-Instruct";
 
 export type ChatMessage = {
@@ -208,32 +210,96 @@ export const validateApiKey = (apiKey: string | null | undefined): boolean => {
 };
 
 /**
- * Test function using @huggingface/inference package
- * This is a simpler alternative to the generateText function above
- * 
+ * Calls Llama via Supabase Edge Function (token stays on server).
+ *
  * @param prompt - User prompt/question
+ * @param systemPrompt - Optional system prompt (default: concise assistant)
  * @returns Generated text response
  */
-const hf = new HfInference(process.env.EXPO_PUBLIC_HF_TOKEN);
+async function getEdgeFunctionErrorMessage(error: unknown): Promise<string> {
+  const err = error as { context?: Response; message?: string };
+  const context = err.context;
+  const status = context?.status;
 
-export async function askLlama(prompt: string) {
-  const response = await hf.chatCompletion({
-    model: "meta-llama/Llama-3.1-8B-Instruct",
-    messages: [
-      {
-        role: "system",
-        content: "You are a concise, helpful assistant.",
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    max_tokens: 3000,
-    temperature: 0.3,
+  if (context) {
+    try {
+      const text = await context.text();
+      if (text) {
+        try {
+          const body = JSON.parse(text) as { error?: string };
+          if (typeof body?.error === "string") return body.error;
+        } catch {
+          return text.slice(0, 200);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const base = err.message ?? "Edge function failed";
+  if (typeof status === "number") {
+    return `${status}: ${base}`;
+  }
+  return base;
+}
+
+export async function askLlama(
+  prompt: string,
+  systemPrompt?: string
+): Promise<string> {
+  const { data, error } = await supabase.functions.invoke(EDGE_FUNCTION_NAME, {
+    body: {
+      prompt,
+      systemPrompt: systemPrompt ?? "You are a concise, helpful assistant.",
+      max_new_tokens: 3000,
+      temperature: 0.3,
+    },
   });
 
-  return response.choices[0].message.content;
+  if (error) {
+    const message = await getEdgeFunctionErrorMessage(error);
+    throw new Error(message);
+  }
+  if (data?.error) {
+    throw new Error(typeof data.error === "string" ? data.error : "LLM error");
+  }
+  if (typeof data?.content !== "string") {
+    throw new Error("Unexpected response from LLM");
+  }
+  return data.content;
+}
+
+/**
+ * Calls Llama via Supabase Edge Function with full message array (no API key in client).
+ */
+export async function generateTextViaEdge(
+  messages: ChatMessage[],
+  options?: {
+    max_new_tokens?: number;
+    temperature?: number;
+    top_p?: number;
+  }
+): Promise<string> {
+  const { data, error } = await supabase.functions.invoke(EDGE_FUNCTION_NAME, {
+    body: {
+      messages,
+      max_new_tokens: options?.max_new_tokens ?? 1024,
+      temperature: options?.temperature ?? 0.7,
+    },
+  });
+
+  if (error) {
+    const message = await getEdgeFunctionErrorMessage(error);
+    throw new Error(message);
+  }
+  if (data?.error) {
+    throw new Error(typeof data.error === "string" ? data.error : "LLM error");
+  }
+  if (typeof data?.content !== "string") {
+    throw new Error("Unexpected response from LLM");
+  }
+  return data.content;
 }
 
 /**

@@ -2,30 +2,48 @@
 
 This guide explains how to use Meta Llama 3.1 8B via Hugging Face in your TypeScript/React Native app.
 
-## Prerequisites
+## Empfohlener Weg: Supabase Edge Function (Token nur auf dem Server)
+
+Der HF-Token wird **nicht** mehr in der Expo-Umgebung (`.env`) gespeichert, sondern in Supabase Secrets. Die App ruft die Edge Function `huggingface-chat` auf; der Token bleibt auf dem Server.
+
+1. **Supabase Secret setzen** (einmalig):
+   ```bash
+   supabase secrets set HF_TOKEN=hf_DEIN_TOKEN
+   ```
+   Oder im Dashboard: Project Settings → Edge Functions → Secrets.
+
+2. **Edge Function deployen**:
+   ```bash
+   supabase functions deploy huggingface-chat
+   ```
+
+3. **Aus der App**: Kein `EXPO_PUBLIC_HUGGINGFACE_API_KEY` oder `EXPO_PUBLIC_HF_TOKEN` mehr nötig. Nach dem Umstieg diese Variablen aus `.env` entfernen.
+
+Details: `supabase/functions/huggingface-chat/README.md`
+
+---
+
+## Prerequisites (für Token/Modell)
 
 1. **Hugging Face Account**: Create a free account at https://huggingface.co
 2. **API Token**: 
    - Go to https://huggingface.co/settings/tokens
-   - Create a new token with **read** permissions (or read/write if you plan to push models)
+   - Create a new token with **read** permissions
    - Copy your token (it should start with `hf_`)
 3. **Model Access**: 
    - Visit https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct
-   - Accept Meta's terms of service (approval usually takes a few minutes)
-   - Once approved, you'll have access to all Llama 3.1 models
+   - Accept Meta's terms of service
 
-## Setup
+## Setup (nur falls du weiterhin direkt mit API-Key arbeitest)
+
+Die App verwendet standardmäßig die Edge Function. Nur wenn du die alte Variante mit API-Key nutzt:
 
 1. **Create a `.env` file** in your project root (if it doesn't exist):
    ```bash
    EXPO_PUBLIC_HUGGINGFACE_API_KEY=your_hf_token_here
    ```
 
-2. **Add `.env` to `.gitignore`** (if not already there):
-   ```
-   .env
-   .env.local
-   ```
+2. **Add `.env` to `.gitignore`** (if not already there).
 
 3. **Restart your Expo development server** after adding the environment variable.
 
