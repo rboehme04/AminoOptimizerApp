@@ -9,6 +9,7 @@ interface ButtonRowProps {
   rightButtonTextColor?: string;
   onLeftButtonPress?: () => void;
   onRightButtonPress?: () => void;
+  disabled?: boolean;
 }
 
 export default function ButtonRow({
@@ -18,6 +19,7 @@ export default function ButtonRow({
   rightButtonTextColor = Color.neutralWhite,
   onLeftButtonPress,
   onRightButtonPress,
+  disabled = false,
 }: ButtonRowProps) {
   const [isRightButtonPressed, setIsRightButtonPressed] = useState(false);
 
@@ -32,9 +34,11 @@ export default function ButtonRow({
         style={({ pressed }) => [
           styles.buttonOuterContainer,
           styles.leftButtonContainer,
-          pressed && styles.buttonPressed,
+          pressed && !disabled && styles.buttonPressed,
+          disabled && styles.buttonDisabled,
         ]}
         onPress={onLeftButtonPress}
+        disabled={disabled}
       >
         <View style={styles.button}>
           <Text style={styles.buttonText}>{leftButtonText}</Text>
@@ -44,9 +48,11 @@ export default function ButtonRow({
         style={({ pressed }) => [
           styles.buttonOuterContainer,
           styles.rightButtonContainer,
-          (pressed || isRightButtonPressed) && styles.buttonPressed,
+          (pressed || isRightButtonPressed) && !disabled && styles.buttonPressed,
+          disabled && styles.buttonDisabled,
         ]}
         onPress={handleRightButtonPress}
+        disabled={disabled}
       >
         <View style={[styles.button, { backgroundColor: rightButtonColor }]}>
           <Text style={[styles.buttonText, { color: rightButtonTextColor }]}>
@@ -70,6 +76,9 @@ const styles = StyleSheet.create({
   },
   buttonPressed: {
     opacity: 0.7,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   leftButtonContainer: {
     flex: 1,

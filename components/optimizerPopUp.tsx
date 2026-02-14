@@ -39,14 +39,19 @@ export default function OptimizerPopUp({
 }: PopUpProps) {
   const [isChecked, setIsChecked] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [areButtonsDisabled, setAreButtonsDisabled] = useState(false);
 
   const handleLeftButtonPress = () => {
+    if (areButtonsDisabled) return;
+    setAreButtonsDisabled(true);
     if (onClose) {
       onClose();
     }
   };
 
   const handleRightButtonPress = () => {
+    if (areButtonsDisabled) return;
+    setAreButtonsDisabled(true);
     if (onRightButtonPress) {
       onRightButtonPress();
     }
@@ -59,9 +64,17 @@ export default function OptimizerPopUp({
 
   return (
     <View style={styles.overlay}>
-      <Pressable style={styles.backdrop} onPress={handleLeftButtonPress} />
+      <Pressable
+        style={styles.backdrop}
+        onPress={handleLeftButtonPress}
+        disabled={areButtonsDisabled}
+      />
       <View style={styles.container}>
-        <Pressable style={styles.closeButton} onPress={handleLeftButtonPress}>
+        <Pressable
+          style={styles.closeButton}
+          onPress={handleLeftButtonPress}
+          disabled={areButtonsDisabled}
+        >
           <CloseXIcon size={20} color={Color.neutralWhite} />
         </Pressable>
 
@@ -92,6 +105,7 @@ export default function OptimizerPopUp({
               rightButtonTextColor={rightButtonTextColor}
               onLeftButtonPress={handleLeftButtonPress}
               onRightButtonPress={handleRightButtonPress}
+              disabled={areButtonsDisabled}
             />
           )}
         </View>

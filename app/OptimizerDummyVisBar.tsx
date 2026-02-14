@@ -6,6 +6,7 @@ import {
 import LeftRightToggle from "@/components/leftRightToggle";
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
+import RadarChart from "@/components/optimizerComponents/radarChart";
 import StackedBarChart, {
   type AminoAcidData,
 } from "@/components/optimizerComponents/barChart";
@@ -413,6 +414,9 @@ export default function OptimizerDummyVisScreen() {
   const [animationDuration, setAnimationDuration] = useState(500); // Default to manual duration
   const [hasUserToggled, setHasUserToggled] = useState(false);
   const hasUserToggledRef = useRef(false);
+  const [visualizationType, setVisualizationType] = useState<"radar" | "bar">(
+    "bar"
+  );
 
   // Automatically switch toggle from "Vorher" to "Nachher" after 3000ms
   // Only if the user hasn't manually toggled
@@ -439,6 +443,10 @@ export default function OptimizerDummyVisScreen() {
     setHasUserToggled(true);
     setAnimationDuration(500); // 500ms for manual toggle
     setToggleValue(value);
+  };
+
+  const handleVisualizationToggle = () => {
+    setVisualizationType(prev => (prev === "radar" ? "bar" : "radar"));
   };
 
   const limitingASBefore = 96;
@@ -472,7 +480,17 @@ export default function OptimizerDummyVisScreen() {
 
   return (
     <SafeAreaView style={styles.Content}>
-      <NavBar title="Optimizer" isBold={true} isBackButton={true} />
+      <NavBar
+        title="Optimizer"
+        isBold={true}
+        isBackButton={true}
+        rightActions={[
+          {
+            icon: <View style={{ width: 44, height: 44, opacity: 0 }} />,
+            onPress: handleVisualizationToggle,
+          },
+        ]}
+      />
       {showLoadingSpinner && (
         <View style={styles.centerContainer}>
           <View style={styles.animationContainer}>
@@ -501,15 +519,31 @@ export default function OptimizerDummyVisScreen() {
                 inactiveColor="#878787" 
               />
               <View style={styles.barChartContainer}>
-                <StackedBarChart
-                  limitingAS={
-                    toggleValue === "left" ? limitingASBefore : limitingASAfter
-                  }
-                  data={toggleValue === "left" ? beforeData : afterData}
-                  width={Dimensions.get("window").width - 32}
-                  height={220}
-                  animationDuration={animationDuration}
-                />
+                {visualizationType === "radar" ? (
+                  <RadarChart
+                    limitingAS={
+                      toggleValue === "left"
+                        ? limitingASBefore
+                        : limitingASAfter
+                    }
+                    data={toggleValue === "left" ? beforeData : afterData}
+                    width={Dimensions.get("window").width - 32}
+                    height={Dimensions.get("window").width - 32}
+                    animationDuration={animationDuration}
+                  />
+                ) : (
+                  <StackedBarChart
+                    limitingAS={
+                      toggleValue === "left"
+                        ? limitingASBefore
+                        : limitingASAfter
+                    }
+                    data={toggleValue === "left" ? beforeData : afterData}
+                    width={Dimensions.get("window").width - 32}
+                    height={220}
+                    animationDuration={animationDuration}
+                  />
+                )}
               </View>
               <View style={styles.legendContainer}>
                 <View style={styles.legendeRow}>
