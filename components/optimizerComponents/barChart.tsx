@@ -137,9 +137,6 @@ export default function StackedBarChart({
   // Use interpolated data for rendering
   const displayData = interpolatedData;
 
-  // Calculate max value for scaling
-  const maxValue = Math.max(...displayData.map(d => d.usable + d.unusable));
-
   // Create scales
   const xScale = scaleBand()
     .domain(displayData.map((_, i) => i.toString()))
