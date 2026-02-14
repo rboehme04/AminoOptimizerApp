@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -15,7 +15,7 @@ import VerbesserungenComponent from "@/components/optimizerComponents/verbesseru
 import RecipeDetailTopComponent from "@/components/recipeDetailTopComponent";
 import ZubereitungDropDown from "@/components/zubereitungDropDown";
 import ZutatenDropDown, { Ingredient } from "@/components/zutatenDropDown";
-import { Color } from "@/constants/GlobalStyles";
+import { Color, Typography } from "@/constants/GlobalStyles";
 import { addRecentRecipe } from "@/utils/recentItems";
 import {
   getKeyMacros,
@@ -60,6 +60,7 @@ export default function OptimizerFinalScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const [draftData, setDraftData] = useState<OptimizerDraftData | null>(null);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [ingredientsReady, setIngredientsReady] = useState(false);
   const [totalCalories, setTotalCalories] = useState(0);
   const [macros, setMacros] = useState<{
     protein: number;
@@ -80,6 +81,8 @@ export default function OptimizerFinalScreen() {
 
     const recipeId = parseInt(params.id, 10);
     if (isNaN(recipeId)) return;
+
+    setIngredientsReady(false);
 
     try {
       const optimizerDraftKey = `optimizer_draft_${recipeId}`;
@@ -184,6 +187,7 @@ export default function OptimizerFinalScreen() {
 
       setIngredients(ingredientsToUse);
       setTotalCalories(Math.round(caloriesToUse));
+      setIngredientsReady(true);
 
       // Convert nutrition to rows
       const rows = nutritionToRows(draft.nutrition);
@@ -329,15 +333,36 @@ export default function OptimizerFinalScreen() {
         />
         <View style={styles.innerContainer}>
           <View style={styles.dropDownsContainer}>
-            <ZutatenDropDown ingredients={ingredients} />
+            {ingredientsReady ? (
+              <ZutatenDropDown ingredients={ingredients} />
+            ) : (
+              <View style={styles.zutatenPlaceholder}>
+                <View style={styles.zutatenPlaceholderHeader}>
+                  <Text style={styles.zutatenPlaceholderLabel}>Zutaten</Text>
+                </View>
+                <View style={styles.zutatenPlaceholderContent}>
+                  {Array.from(
+                    { length: draftData ? (draftData.variant?.recipe?.ingredients?.length ?? draftData.ingredients?.length ?? 4) : 4 },
+                    (_, i) => i + 1
+                  ).map(i => (
+                    <View key={i} style={styles.skeletonRow}>
+                      <View style={styles.skeletonLeft}>
+                        <View style={styles.skeletonLine} />
+                        <View style={[styles.skeletonLine, styles.skeletonLineSmall]} />
+                      </View>
+                      <View style={styles.skeletonKcal} />
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
             <ZubereitungDropDown
               value={draftData?.instructions || undefined}
               // TODO: when zubereitung angepasst wird, dann per default true
               isExpanded={false}
             />
             <VerbesserungenComponent
-              description="Durch die Anpassung der Zutaten hast du die Proteinqualität
-                    deutlich verbessert (Amino Acid Score von 125% auf 134%)."
+              description={`Durch die Anpassung der Zutaten hast du die Proteinqualität deutlich verbessert. Der Amino Acid Score ist nun ${draftData?.nutrition?.amino_acid_score ?? "—"}%.`}
             />
             <View style={styles.buttonRowContainer}>
               <ButtonRow
@@ -389,5 +414,48 @@ const styles = StyleSheet.create({
   buttonRowContainer: {
     paddingHorizontal: 16,
     paddingVertical: 16,
+  },
+  zutatenPlaceholder: {},
+  zutatenPlaceholderHeader: {
+    height: 44,
+    justifyContent: "center",
+  },
+  zutatenPlaceholderLabel: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralTextOrTabGrey,
+  },
+  zutatenPlaceholderContent: {
+    paddingHorizontal: 8,
+    gap: 8,
+  },
+  skeletonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    minHeight: 36,
+  },
+  skeletonLeft: {
+    flex: 1,
+    paddingRight: 8,
+    gap: 0,
+    justifyContent: "center",
+  },
+  skeletonLine: {
+    height: 20,
+    maxWidth: "80%",
+    borderRadius: 2,
+    backgroundColor: Color.neutralBackgroundDarkElevated,
+    opacity: 0.12,
+  },
+  skeletonLineSmall: {
+    height: 16,
+    maxWidth: "40%",
+  },
+  skeletonKcal: {
+    width: 44,
+    height: 20,
+    borderRadius: 2,
+    backgroundColor: Color.neutralBackgroundDarkElevated,
+    opacity: 0.12,
   },
 });

@@ -15,6 +15,7 @@ import {
 
 import DetailsNaehstoffprofilComponent from "@/components/detailsNaehstoffprofilComponent";
 import HinzuRezAmountInput from "@/components/erstellenComponents/hinzuRezAmountInput";
+import VerbesserungenComponent from "@/components/optimizerComponents/verbesserungenComponent";
 import HinzufügenButton from "@/components/erstellenComponents/hinzufügenButton";
 import RecipeDetailTopComponent from "@/components/recipeDetailTopComponent";
 import ZubereitungDropDown from "@/components/zubereitungDropDown";
@@ -269,6 +270,11 @@ export default function HinzuRezDetailScreen() {
           <View style={styles.dropDownsContainer}>
             <ZutatenDropDown ingredients={scaledIngredients} />
             <ZubereitungDropDown isExpanded={false} />
+            {isOptimized ? (
+              <VerbesserungenComponent
+                description={`Durch die Anpassung der Zutaten hast du die Proteinqualität deutlich verbessert. Der Amino Acid Score ist nun ${nutrition?.amino_acid_score ?? "—"}%.`}
+              />
+            ) : null}
             <DetailsNaehstoffprofilComponent
               type="rez"
               recipeNutritionRows={scaledNutritionRows}
