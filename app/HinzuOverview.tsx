@@ -1,6 +1,15 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import RezSelectionAndFilterComponent from "@/components/indexComponents/rezSelectionAndFilterComponent";
@@ -8,11 +17,13 @@ import LeftRightToggle from "@/components/leftRightToggle";
 import NavBar from "@/components/navBar";
 import NextButton from "@/components/nextButton";
 import SearchBar from "@/components/searchBar";
-import { Padding } from "@/constants/GlobalStyles";
+import { Color, Padding, Typography } from "@/constants/GlobalStyles";
 import { useRecipeDraft, useRecipeDraftActions } from "@/hooks/useRecipeDraft";
 import { addRecentLebensmittel, addRecentRecipe } from "@/utils/recentItems";
 import { type RecipeItem } from "@/utils/recipeHelpers";
 import { supabase } from "@/utils/supabase";
+
+const REZEPT_TOOLTIP_SEEN_KEY = "hinzu_rezept_tooltip_seen";
 
 type LebensmittelItem = {
   id: string | number;
@@ -34,6 +45,33 @@ export default function HinzuOverviewScreen() {
   const { addIngredient } = useRecipeDraftActions();
   const isFirstFocus = React.useRef(true);
   const searchQueryRef = React.useRef(searchQuery);
+  const [showRezeptTooltip, setShowRezeptTooltip] = React.useState(false);
+  const [tooltipAnchor, setTooltipAnchor] = React.useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const toggleContainerRef = React.useRef<View>(null);
+
+  const dismissRezeptTooltip = React.useCallback(() => {
+    setShowRezeptTooltip(false);
+    setTooltipAnchor(null);
+    AsyncStorage.setItem(REZEPT_TOOLTIP_SEEN_KEY, "true").catch(() => {});
+  }, []);
+
+  // Measure toggle position when tooltip is shown so we can place it below the toggle
+  React.useEffect(() => {
+    if (!showRezeptTooltip || !toggleContainerRef.current) return;
+    const measure = () => {
+      toggleContainerRef.current?.measureInWindow((x, y, width, height) => {
+        setTooltipAnchor({ x, y, width, height });
+      });
+    };
+    // Small delay so layout is ready after switching to Rezept
+    const t = setTimeout(measure, 100);
+    return () => clearTimeout(t);
+  }, [showRezeptTooltip]);
 
   // Keep ref in sync with searchQuery state
   React.useEffect(() => {
@@ -128,12 +166,24 @@ export default function HinzuOverviewScreen() {
     return () => clearTimeout(timeoutId);
   }, [searchQuery, activeSide]);
 
-  const handleToggle = (side: "left" | "right") => {
-    setActiveSide(side === "left" ? "Rezept" : "Lebensmittel");
-    // Clear search when switching sides
-    setSearchQuery("");
-    setSearchResults([]);
-  };
+  const handleToggle = React.useCallback(
+    async (side: "left" | "right") => {
+      const newSide = side === "left" ? "Rezept" : "Lebensmittel";
+      const wasLebensmittel = activeSide === "Lebensmittel";
+      setActiveSide(newSide);
+      setSearchQuery("");
+      setSearchResults([]);
+      if (newSide === "Rezept" && wasLebensmittel) {
+        try {
+          const seen = await AsyncStorage.getItem(REZEPT_TOOLTIP_SEEN_KEY);
+          if (seen !== "true") setShowRezeptTooltip(true);
+        } catch {
+          setShowRezeptTooltip(true);
+        }
+      }
+    },
+    [activeSide],
+  );
 
   const handleAddIngredient = (item: LebensmittelItem) => {
     // Avoid duplicates by id where possible
@@ -194,12 +244,15 @@ export default function HinzuOverviewScreen() {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        <LeftRightToggle
-          leftLabel="Rezepte"
-          rightLabel="Lebensmittel"
-          onToggle={handleToggle}
-          initialValue="right"
-        />
+        <View ref={toggleContainerRef} collapsable={false}>
+          <LeftRightToggle
+            leftLabel="Rezepte"
+            rightLabel="Lebensmittel"
+            onToggle={handleToggle}
+            initialValue="right"
+            value={activeSide === "Rezept" ? "left" : "right"}
+          />
+        </View>
       </View>
       <ScrollView
         style={styles.outerContainer}
@@ -224,6 +277,57 @@ export default function HinzuOverviewScreen() {
         badge={ingredients.length > 0 ? ingredients.length : undefined}
         onPress={() => router.back()}
       />
+      <Modal
+        visible={showRezeptTooltip}
+        transparent
+        animationType="fade"
+        onRequestClose={dismissRezeptTooltip}
+      >
+        <Pressable
+          style={styles.tooltipOverlay}
+          onPress={dismissRezeptTooltip}
+          accessible
+          accessibilityRole="button"
+          accessibilityLabel="Tooltip schließen"
+        >
+          {tooltipAnchor && (
+            <Pressable
+              style={[
+                styles.tooltipCard,
+                {
+                  position: "absolute",
+                  top: tooltipAnchor.y + tooltipAnchor.height + 8,
+                  left: (() => {
+                    const { width: screenWidth } = Dimensions.get("window");
+                    const cardWidth = 320;
+                    const left = tooltipAnchor.x + tooltipAnchor.width / 2 - cardWidth / 2;
+                    return Math.max(16, Math.min(left, screenWidth - cardWidth - 16));
+                  })(),
+                  width: 320,
+                },
+              ]}
+              onPress={e => e.stopPropagation()}
+            >
+            <Text style={styles.tooltipHeadingText}>
+              Unterrezept hinzufügen
+            </Text>
+            <Text style={styles.tooltipText}>
+              Rezepte können aus Unterrezepten bestehen, diese kannst du hier
+              hinzufügen (z.B. Hauptrezept Lieblingsfrühstück aus Unterrezept
+              Blaubeer-Haaferflocken und Bananen-Smoothie)
+            </Text>
+            <Pressable
+              style={styles.tooltipButton}
+              onPress={dismissRezeptTooltip}
+              accessibilityRole="button"
+              accessibilityLabel="Verstanden"
+            >
+              <Text style={styles.tooltipButtonText}>Verstanden</Text>
+            </Pressable>
+          </Pressable>
+          )}
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -246,5 +350,42 @@ const styles = StyleSheet.create({
   },
   mealRowsContainer: {
     gap: 10,
+  },
+  tooltipOverlay: {
+    flex: 1,
+    backgroundColor: Color.transparentBlack80,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  tooltipCard: {
+    backgroundColor: Color.neutralBackgroundDarkElevated,
+    borderRadius: 12,
+    padding: 20,
+    maxWidth: 320,
+    alignItems: "flex-start",
+    gap: 16,
+  },
+  tooltipHeadingText: {
+    ...Typography.subheadlineEmphasized,
+    color: Color.neutralWhite,
+    textAlign: "left",
+  },
+  tooltipText: {
+    ...Typography.subheadlineRegular,
+    color: Color.neutralTextOrTabGrey,
+  },
+  tooltipButton: {
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: Color.neutralWhite,
+  },
+  tooltipButtonText: {
+    ...Typography.subheadlineEmphasized,
+    color: Color.neutralBlackText,
   },
 });

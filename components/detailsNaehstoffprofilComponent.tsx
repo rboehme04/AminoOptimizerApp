@@ -210,10 +210,11 @@ const NaehrstoffprofilRow = ({
             <View style={styles.valueRowOuterContainer}>
               <View style={styles.valueRowInnerContainer}>
                 <View style={styles.valueRowLeftContainer}>
-                  <Text style={styles.valueRowWhiteText}>Amino Acid Score: {aminoAcidScore}%</Text>
+                  <Text style={styles.valueRowWhiteText}>
+                    Amino Acid Score: {aminoAcidScore}%
+                  </Text>
                 </View>
-                <View style={styles.valueRowRightContainer}>
-                </View>
+                <View style={styles.valueRowRightContainer}></View>
               </View>
             </View>
           )}
@@ -289,10 +290,10 @@ function DetailsNaehrstoffprofilComponent({
                 return Array.isArray(value.column)
                   ? value.column
                   : [value.column];
-              })
+              }),
             )
-            .filter((col): col is string => !!col)
-        )
+            .filter((col): col is string => !!col),
+        ),
       );
 
       if (columns.length === 0) {
