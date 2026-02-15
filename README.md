@@ -67,6 +67,24 @@ npx expo start --tunnel
 | `npx expo start --android` | Start and open Android emulator   |
 | `npx expo start --web`   | Run in the browser             |
 
+## Clean up when done testing
+
+To remove all installed dependencies (and free disk space), delete the `node_modules` folder from the project:
+
+```bash
+rm -rf node_modules
+```
+
+To remove the Expo cache as well:
+
+```bash
+rm -rf node_modules .expo
+```
+
+To remove the project completely, delete the whole project folder (e.g. `AminoOptimizer`) from your computer.
+
+**Windows (Command Prompt or PowerShell):** Use `rmdir /s /q node_modules` instead of `rm -rf node_modules`, or delete the `node_modules` folder in File Explorer.
+
 ## Troubleshooting
 
 - **“Unable to resolve module” or similar:** Run `npm install` again and then `npx expo start`.
