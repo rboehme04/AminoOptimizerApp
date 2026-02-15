@@ -1,92 +1,47 @@
 # AminoOptimizer
 
-An Expo (React Native) app. Run it on your phone using **Expo Go**.
+Eine Expo-(React Native)-App. Starte sie auf deinem Smartphone mit **Expo Go**.
 
-## Prerequisites
+## Voraussetzungen
 
-- **Node.js** (v18 or newer recommended; [nodejs.org](https://nodejs.org))
-- **npm** (comes with Node.js)
-- **Expo Go** on your phone:
+- **Node.js** (v18 oder neuer empfohlen; [nodejs.org](https://nodejs.org))
+- **npm** (ist bei Node.js dabei)
+- **Expo Go** auf deinem Smartphone:
   - [iOS (App Store)](https://apps.apple.com/app/expo-go/id982107779)
   - [Android (Play Store)](https://play.google.com/store/apps/details?id=host.exp.exponent)
 
-## Setup and run
+## Einrichten und starten
 
-### 1. Clone the repository
+### 1. Abhängigkeiten installieren
 
 ```bash
-git clone <repository-url>
 cd AminoOptimizer
-```
-
-### 2. Install dependencies
-
-```bash
 npm install
 ```
 
-### 3. Environment variables
+### 3. Umgebungsvariablen
 
-A `.env` file with Supabase credentials is included in the repo. After cloning, you don't need to create one—the app will use it automatically.
+Die Supabase-URL und der Public Key sind in `.env` gespeichert und müssen in der Regel nicht angepasst werden.
 
-If you want to use your own Supabase project instead, create or edit `.env` in the project root:
+Der LLM-Aufruf erfolgt über eine Supabase Edge Function, daher müssen keine LLM-Tokens eingefügt werden.
 
-```
-EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
-EXPO_PUBLIC_SUPABASE_KEY=your_supabase_anon_key
-```
-
-
-### 4. Start the development server
+### 4. Entwicklungsserver starten
 
 ```bash
 npx expo start
 ```
 
-A QR code will appear in the terminal (and often in the browser).
+Ein QR-Code erscheint im Terminal.
 
-### 5. Open the app in Expo Go
+### 5. App in Expo Go öffnen
 
-- **iPhone:** Open the **Camera** app and scan the QR code, then tap the banner to open in Expo Go.
-- **Android:** Open the **Expo Go** app and tap **“Scan QR code”**, then scan the QR code from the terminal or browser.
+- **iPhone:** Öffne die **Kamera**-App, scanne den QR-Code und tippe dann auf das Banner, um in Expo Go zu öffnen.
+- **Android:** Öffne die **Expo Go**-App, tippe auf **„Scan QR code“** und scanne dann den QR-Code aus Terminal.
 
-**Important:** Your phone and your computer must be on the **same Wi‑Fi network**. If the QR code doesn’t work, try “Tunnel” mode: press `s` in the terminal to switch connection type, or run:
+**Wichtig:** Smartphone und Computer müssen im **gleichen WLAN/LAN** sein.
 
-```bash
-npx expo start --tunnel
-```
+## Aufräumen nach dem Testen
 
-(Tunnel may require installing `@expo/ngrok` when prompted.)
+Um alle installierten Abhängigkeiten zu entfernen (und Speicherplatz freizugeben), lösche den Ordner `node_modules` aus dem Projekt.
 
-## Scripts
-
-| Command              | Description                    |
-|----------------------|--------------------------------|
-| `npm start`          | Start Expo (same as above)     |
-| `npx expo start --ios`   | Start and open iOS simulator (Mac only) |
-| `npx expo start --android` | Start and open Android emulator   |
-| `npx expo start --web`   | Run in the browser             |
-
-## Clean up when done testing
-
-To remove all installed dependencies (and free disk space), delete the `node_modules` folder from the project:
-
-```bash
-rm -rf node_modules
-```
-
-To remove the Expo cache as well:
-
-```bash
-rm -rf node_modules .expo
-```
-
-To remove the project completely, delete the whole project folder (e.g. `AminoOptimizer`) from your computer.
-
-**Windows (Command Prompt or PowerShell):** Use `rmdir /s /q node_modules` instead of `rm -rf node_modules`, or delete the `node_modules` folder in File Explorer.
-
-## Troubleshooting
-
-- **“Unable to resolve module” or similar:** Run `npm install` again and then `npx expo start`.
-- **QR code doesn’t connect:** Use the same Wi‑Fi for phone and computer, or try `npx expo start --tunnel`.
-- **Expo Go asks to update:** Update Expo Go in the App Store / Play Store if the CLI suggests it.
+Um das Projekt vollständig zu entfernen, lösche den gesamten Projektordner (`AminoOptimizer`) von deinem Computer.
