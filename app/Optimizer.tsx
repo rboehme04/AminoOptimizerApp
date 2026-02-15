@@ -505,10 +505,6 @@ export default function OptimizerScreen() {
                   "Wrapping in array failed:",
                   wrapError instanceof Error ? wrapError.message : wrapError,
                 );
-                console.log(
-                  "Response preview (first 200 chars):",
-                  cleanedResponse.substring(0, 200),
-                );
                 console.log("Trying to extract individual objects");
                 // Fallback: try to find complete JSON objects by matching braces
                 // This is more complex - we need to match balanced braces
