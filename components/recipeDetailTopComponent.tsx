@@ -19,8 +19,6 @@ import {
   removeFavoriteRecipe,
   type FavoriteRecipeItem,
 } from "@/utils/favorites";
-const breakfastImage = require("@/assets/images/FrühstücksBowlPicture.png");
-
 interface RecipeDetailTopComponentProps {
   title?: string;
   calories?: number;
