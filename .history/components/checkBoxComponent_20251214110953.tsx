@@ -1,3 +1,0 @@
-<View>
-    <Checkbox
-</View>

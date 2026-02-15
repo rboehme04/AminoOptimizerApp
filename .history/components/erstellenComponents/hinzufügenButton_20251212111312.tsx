@@ -1,1 +1,0 @@
-<View style={styles.container}>
