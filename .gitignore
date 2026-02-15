@@ -48,3 +48,5 @@ supabase/
 
 prompts.txt
 .history
+
+huggingface_llama.py
