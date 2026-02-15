@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { Color } from "@/constants/GlobalStyles";
@@ -19,13 +19,39 @@ export const unstable_settings = {
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // ignore (e.g. in fast refresh)
+});
 
 export default function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
-    initDatabase().catch(console.error);
-    SplashScreen.hideAsync();
+    let cancelled = false;
+
+    async function prepare() {
+      try {
+        // Ensure SQLite schema exists BEFORE any screen queries run.
+        await initDatabase();
+      } catch (error) {
+        console.error("Error initializing database", error);
+      } finally {
+        if (!cancelled) {
+          setIsReady(true);
+          await SplashScreen.hideAsync();
+        }
+      }
+    }
+
+    prepare();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  // Keep splash visible until DB is ready, preventing early queries.
+  if (!isReady) return null;
 
   return <RootLayoutNav />;
 }
