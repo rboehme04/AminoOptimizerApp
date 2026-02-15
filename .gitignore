@@ -43,5 +43,8 @@ opennutrition_foods*.tsv
 /ios
 /android
 
+# Supabase (edge functions edited in dashboard)
+supabase/
+
 prompts.txt
 .history
