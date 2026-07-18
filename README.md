@@ -1,28 +1,28 @@
 # AminoOptimizerApp
 
-**AminoOptimizer** is a mobile app that helps you optimize the **amino acid profile** of your recipes — improving the biological value of a meal's protein by identifying its limiting amino acid and suggesting ingredients that fill the gap.
+**AminoOptimizer** is a mobile app that helps you optimize the amino acid profile of your recipes, improving the biological value of a meal's protein by finding its limiting amino acid and suggesting ingredients that fill the gap.
 
-This project was developed as part of a Bachelor's thesis exploring how nutritional science and AI-assisted recommendations can make everyday cooking more protein-efficient.
+The project started as part of a Bachelor's thesis looking at how nutritional science and AI-assisted recommendations can make everyday cooking more protein-efficient.
 
 ## Why amino acids?
 
-Protein quality isn't just about *how much* protein a meal contains, but about *which* amino acids it provides relative to what the body needs. A meal is only as good as its **limiting amino acid** — the essential amino acid present in the lowest relative amount compared to a reference protein. AminoOptimizer calculates this **Chemical Score** for any recipe and helps you raise it by tweaking ingredients, so more of the protein you eat can actually be used by your body.
+Protein quality isn't just about *how much* protein a meal contains, but about *which* amino acids it provides relative to what the body actually needs. A meal is only as good as its limiting amino acid: the essential amino acid present in the lowest relative amount compared to a reference protein. AminoOptimizer calculates this Chemical Score for any recipe and helps you raise it by tweaking ingredients, so more of the protein you eat can actually be put to use.
 
 ## Features
 
-- **Recipe management** — create, edit, and browse recipes with ingredients, portions, and preparation steps.
-- **Nutrition breakdown** — detailed macro- and micronutrient profile per recipe, computed from a curated food-composition database.
-- **Amino acid score (Chemical Score)** — automatically calculates the limiting amino acid and an overall score for each recipe, visualized with bar and radar charts.
-- **AI-powered optimization** — the Optimizer screen uses an LLM to suggest ingredient swaps or additions that raise the recipe's amino acid score, respecting allergies/dietary exclusions and calorie budget.
-- **Ingredient search & substitution** — browse foods (`Lebensmittel`) from the nutrition database and swap them into recipes with live nutrition recalculation.
-- **Personal settings** — dietary preferences, allergies, goals, and units, used to personalize recommendations.
-- **Favorites & recent items** — quickly access frequently used recipes and ingredients.
+- **Recipe management**: create, edit, and browse recipes with ingredients, portions, and preparation steps.
+- **Nutrition breakdown**: detailed macro- and micronutrient profile per recipe, computed from a curated food-composition database.
+- **Amino acid score (Chemical Score)**: automatically calculates the limiting amino acid and an overall score for each recipe, visualized with bar and radar charts.
+- **AI-powered optimization**: the Optimizer screen uses an LLM to suggest ingredient swaps or additions that raise the recipe's amino acid score, respecting allergies/dietary exclusions and calorie budget.
+- **Ingredient search & substitution**: browse foods (`Lebensmittel`) from the nutrition database and swap them into recipes with live nutrition recalculation.
+- **Personal settings**: dietary preferences, allergies, goals, and units, used to personalize recommendations.
+- **Favorites & recent items**: quickly access frequently used recipes and ingredients.
 
 ## How it works
 
 1. **Nutrition data**: Ingredient nutrition data (macronutrients, micronutrients, and essential amino acids) is sourced from the German *Bundeslebensmittelschlüssel* (BLS) food composition database, cleaned and transformed via scripts in `data_curation/`, and served through Supabase.
 2. **Scoring**: For a given recipe, all ingredient nutrition values are aggregated by portion size. Each essential amino acid is compared to a reference requirement (optionally adjusted for protein digestibility) to compute a **Ref %** per amino acid; the lowest value is the recipe's **Amino Acid Score** (Chemical Score).
-3. **Optimization**: The app identifies the limiting amino acid(s) and a shortlist of recommended foods rich in them. An LLM (Meta Llama 3.1 8B via Hugging Face, called through a Supabase Edge Function) then proposes concrete recipe variants — e.g. adding or swapping ingredients — to raise the score while keeping the recipe realistic and within dietary constraints.
+3. **Optimization**: The app identifies the limiting amino acid(s) and a shortlist of recommended foods rich in them. An LLM (Meta Llama 3.1 8B via Hugging Face, called through a Supabase Edge Function) then proposes concrete recipe variants (e.g. adding or swapping ingredients) to raise the score while keeping the recipe realistic and within dietary constraints.
 4. **Comparison**: Proposed variants are re-scored and presented side-by-side with the original recipe (bar/radar charts) so you can pick and apply the best one.
 
 ## Tech stack
