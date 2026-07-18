@@ -4,6 +4,8 @@
 
 The project started as part of a Bachelor's thesis looking at how nutritional science and AI-assisted recommendations can make everyday cooking more protein-efficient.
 
+📺 [Watch a short demo of the optimization process](https://youtube.com/shorts/GubBGO2NFMk?feature=share)
+
 ## Why amino acids?
 
 Protein quality isn't just about *how much* protein a meal contains, but about *which* amino acids it provides relative to what the body actually needs. A meal is only as good as its limiting amino acid: the essential amino acid present in the lowest relative amount compared to a reference protein. AminoOptimizer calculates this Chemical Score for any recipe and helps you raise it by tweaking ingredients, so more of the protein you eat can actually be put to use.
