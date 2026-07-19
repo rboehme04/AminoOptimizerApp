@@ -1,6 +1,6 @@
-# AminoOptimizerApp
+# AminoApp
 
-**AminoOptimizer** is a mobile app that helps you optimize the amino acid profile of your recipes, improving the biological value of a meal's protein by finding its limiting amino acid and suggesting ingredients that fill the gap.
+**AminoApp** is a mobile app that helps you optimize the amino acid profile of your recipes, improving the biological value of a meal's protein by finding its limiting amino acid and suggesting ingredients that fill the gap.
 
 The project started as part of a Bachelor's thesis looking at how nutritional science and AI-assisted recommendations can make everyday cooking more protein-efficient.
 
